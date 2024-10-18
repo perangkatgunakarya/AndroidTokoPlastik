@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">TokoPlastik</string>
+    <string name="welcome_text">Selamat Datang\ndi\nToko Plastik Haji Ali</string>
+    <string name="small_welcome_text">Belanja plastik terlengkap dan termurah\nMelayani partai besar dan kecil</string>
+</resources>
