@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_auth"
+    app:startDestination="@id/introductionFragment">
+
+    <fragment
+        tools:layout="@layout/fragment_introduction"
+        android:id="@+id/introductionFragment"
+        android:name="com.example.tokoplastik.fragments.login.IntroductionFragment"
+        android:label="IntroductionFragment">
+
+        <action
+            android:id="@+id/to_login_fragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
+
+    <fragment
+        tools:layout="@layout/fragment_login"
+        android:id="@+id/loginFragment"
+        android:name="com.example.tokoplastik.fragments.login.LoginFragment"
+        android:label="LoginFragment" />
+</navigation>
