@@ -28,6 +28,11 @@ android {
             )
         }
     }
+
+    buildFeatures {
+        viewBinding = true
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -51,4 +56,12 @@ dependencies {
 
     implementation(libs.hiltAndroid)
     kapt(libs.hiltCompiler)
+    implementation(libs.retrofit)
+    implementation(libs.coroutines.android)
+    implementation(libs.coroutines.core)
+    implementation(libs.gson)
+    implementation(libs.lifecycle)
+    implementation(libs.navigation.fragment)
+    implementation(libs.navigation.ui)
+    implementation(libs.preference)
 }
