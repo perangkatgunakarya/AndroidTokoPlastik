@@ -1,4 +1,4 @@
-package com.example.tokoplastik.fragments.login
+package com.example.tokoplastik.ui.auth
 
 import androidx.fragment.app.Fragment
 import com.example.tokoplastik.R

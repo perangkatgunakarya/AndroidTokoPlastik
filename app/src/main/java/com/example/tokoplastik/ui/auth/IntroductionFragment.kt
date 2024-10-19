@@ -1,4 +1,4 @@
-package com.example.tokoplastik.fragments.login
+package com.example.tokoplastik.ui.auth
 
 import android.os.Bundle
 import android.view.View

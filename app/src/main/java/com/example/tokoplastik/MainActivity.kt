@@ -1,13 +1,10 @@
-package com.example.tokoplastik.activities
+package com.example.tokoplastik
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import com.example.tokoplastik.R
-import com.example.tokoplastik.fragments.login.IntroductionFragment
+import com.example.tokoplastik.ui.auth.AuthActivity
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

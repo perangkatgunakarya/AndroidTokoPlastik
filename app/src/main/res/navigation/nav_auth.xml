@@ -8,7 +8,7 @@
     <fragment
         tools:layout="@layout/fragment_introduction"
         android:id="@+id/introductionFragment"
-        android:name="com.example.tokoplastik.fragments.login.IntroductionFragment"
+        android:name="com.example.tokoplastik.ui.auth.IntroductionFragment"
         android:label="IntroductionFragment">
 
         <action
@@ -19,6 +19,6 @@
     <fragment
         tools:layout="@layout/fragment_login"
         android:id="@+id/loginFragment"
-        android:name="com.example.tokoplastik.fragments.login.LoginFragment"
+        android:name="com.example.tokoplastik.ui.auth.LoginFragment"
         android:label="LoginFragment" />
 </navigation>

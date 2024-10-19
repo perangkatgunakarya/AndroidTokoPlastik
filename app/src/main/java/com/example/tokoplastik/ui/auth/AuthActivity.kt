@@ -1,4 +1,4 @@
-package com.example.tokoplastik.activities
+package com.example.tokoplastik.ui.auth
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
