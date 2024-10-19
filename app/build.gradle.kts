@@ -31,6 +31,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 
     compileOptions {
@@ -64,4 +65,5 @@ dependencies {
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
     implementation(libs.preference)
+    implementation(libs.okhttp.logging.interceptor)
 }

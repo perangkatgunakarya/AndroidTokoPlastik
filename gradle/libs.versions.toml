@@ -17,6 +17,7 @@ coroutines = "1.7.3"
 lifecycle = "2.2.0"
 navigation = "2.7.4"
 preference = "1.2.1"
+okhttp = "4.11.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -38,6 +39,7 @@ lifecycle = { group = "androidx.lifecycle", name = "lifecycle-extensions", versi
 navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigation" }
 navigation-ui = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigation" }
 preference = { group = "androidx.preference", name = "preference-ktx", version.ref = "preference" }
+okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
