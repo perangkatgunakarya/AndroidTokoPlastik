@@ -1,12 +1,12 @@
-package com.example.tokoplastik.repository
+package com.example.tokoplastik.data.repository
 
-import com.example.tokoplastik.network.AuthApi
+import com.example.tokoplastik.data.network.AuthApi
 
 class AuthRepository (
 
     private val api: AuthApi
 
-): BaseRepository () {
+): BaseRepository() {
 
     suspend fun login (
         email: String,

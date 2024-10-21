@@ -6,13 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import com.example.tokoplastik.R
 import com.example.tokoplastik.databinding.FragmentLoginBinding
-import com.example.tokoplastik.network.AuthApi
-import com.example.tokoplastik.repository.AuthRepository
+import com.example.tokoplastik.data.network.AuthApi
+import com.example.tokoplastik.data.repository.AuthRepository
 import com.example.tokoplastik.ui.base.BaseFragment
 import com.example.tokoplastik.util.Resource
 import com.example.tokoplastik.viewmodel.AuthViewModel
+import kotlinx.coroutines.launch
 
 class LoginFragment: BaseFragment<AuthViewModel, FragmentLoginBinding, AuthRepository> () {
 
@@ -22,7 +24,9 @@ class LoginFragment: BaseFragment<AuthViewModel, FragmentLoginBinding, AuthRepos
         viewModel.loginResponses.observe(viewLifecycleOwner, Observer {
             when(it) {
                 is Resource.Success -> {
-                    Toast.makeText(requireContext(), it.toString(), Toast.LENGTH_LONG).show()
+                    lifecycleScope.launch {
+                        userPreferences.saveAuthToken(it.data?.data!!.token)
+                    }
                 }
                 is Resource.Failure -> {
                     Toast.makeText(requireContext(), "Login Failed", Toast.LENGTH_SHORT).show()

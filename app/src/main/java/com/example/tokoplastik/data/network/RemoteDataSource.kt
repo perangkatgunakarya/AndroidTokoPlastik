@@ -1,4 +1,4 @@
-package com.example.tokoplastik.network
+package com.example.tokoplastik.data.network
 
 import com.example.tokoplastik.BuildConfig
 import okhttp3.OkHttpClient

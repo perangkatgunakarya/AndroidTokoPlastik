@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.tokoplastik.repository.AuthRepository
-import com.example.tokoplastik.responses.LoginResponse
+import com.example.tokoplastik.data.repository.AuthRepository
+import com.example.tokoplastik.data.responses.LoginResponse
 import com.example.tokoplastik.util.Resource
 import kotlinx.coroutines.launch
 

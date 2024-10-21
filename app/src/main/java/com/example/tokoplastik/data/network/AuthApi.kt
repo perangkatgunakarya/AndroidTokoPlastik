@@ -1,6 +1,6 @@
-package com.example.tokoplastik.network
+package com.example.tokoplastik.data.network
 
-import com.example.tokoplastik.responses.LoginResponse
+import com.example.tokoplastik.data.responses.LoginResponse
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST

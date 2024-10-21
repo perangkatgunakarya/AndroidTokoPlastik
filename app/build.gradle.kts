@@ -64,6 +64,8 @@ dependencies {
     implementation(libs.lifecycle)
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
-    implementation(libs.preference)
     implementation(libs.okhttp.logging.interceptor)
+    implementation(libs.datastore.preferences)
+    implementation(libs.lifecycle.runtime)
+    implementation(libs.lifecycle.livedata)
 }

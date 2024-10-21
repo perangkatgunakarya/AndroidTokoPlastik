@@ -1,4 +1,4 @@
-package com.example.tokoplastik.repository
+package com.example.tokoplastik.data.repository
 
 import com.example.tokoplastik.util.Resource
 import kotlinx.coroutines.Dispatchers

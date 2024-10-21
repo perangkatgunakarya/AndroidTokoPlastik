@@ -2,8 +2,8 @@ package com.example.tokoplastik.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.tokoplastik.repository.AuthRepository
-import com.example.tokoplastik.repository.BaseRepository
+import com.example.tokoplastik.data.repository.AuthRepository
+import com.example.tokoplastik.data.repository.BaseRepository
 
 class ViewModelFactory (
     private val repository: BaseRepository

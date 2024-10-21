@@ -1,4 +1,4 @@
-package com.example.tokoplastik.responses
+package com.example.tokoplastik.data.responses
 
 data class LoginResponse(
     val data: User,
