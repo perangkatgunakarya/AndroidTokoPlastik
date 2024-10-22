@@ -3,6 +3,7 @@ package com.example.tokoplastik.data
 import android.content.Context
 import androidx.datastore.DataStore
 import androidx.datastore.preferences.Preferences
+import androidx.datastore.preferences.clear
 import androidx.datastore.preferences.createDataStore
 import androidx.datastore.preferences.edit
 import androidx.datastore.preferences.preferencesKey
@@ -35,5 +36,11 @@ class UserPreferences (
 
     companion object {
         private val KEY_AUTH = preferencesKey<String>("key_auth")
+    }
+
+    suspend fun clearAuthToken() {
+        dataStore.edit {
+            preferences -> preferences.clear()
+        }
     }
 }

@@ -6,12 +6,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.tokoplastik.data.repository.AuthRepository
 import com.example.tokoplastik.data.responses.LoginResponse
+import com.example.tokoplastik.ui.base.BaseViewModel
 import com.example.tokoplastik.util.Resource
 import kotlinx.coroutines.launch
 
 class AuthViewModel (
    private val repository: AuthRepository
-) : ViewModel() {
+) : BaseViewModel(repository) {
 
     private val _loginResponse : MutableLiveData<Resource<LoginResponse>> = MutableLiveData()
     val loginResponses: LiveData<Resource<LoginResponse>>

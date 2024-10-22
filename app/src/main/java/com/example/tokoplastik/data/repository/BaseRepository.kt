@@ -1,5 +1,6 @@
 package com.example.tokoplastik.data.repository
 
+import com.example.tokoplastik.data.network.AuthApi
 import com.example.tokoplastik.util.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -23,5 +24,9 @@ abstract  class BaseRepository {
                 }
             }
         }
+    }
+
+    suspend fun logout (api: AuthApi) = safeApiCall {
+        api.logout()
     }
 }

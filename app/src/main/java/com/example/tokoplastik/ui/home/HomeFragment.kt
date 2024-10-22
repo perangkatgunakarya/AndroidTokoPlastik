@@ -51,6 +51,8 @@ class HomeFragment : BaseFragment <HomeViewModel, FragmentHomeBinding, ProductRe
                 }
             }
         })
+
+        binding.buttonLogout.setOnClickListener { logout() }
     }
 
     override fun getViewModel() = HomeViewModel::class.java

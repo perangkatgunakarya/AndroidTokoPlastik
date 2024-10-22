@@ -45,7 +45,7 @@ class LoginFragment: BaseFragment<AuthViewModel, FragmentLoginBinding, AuthRepos
                 }
                 is Resource.Failure -> {
                     binding.loginProgressBar.visible(false)
-                    handleApiError(it)
+                    handleApiError(it) { login() }
                 }
                 is Resource.Loading -> {
                     binding.loginProgressBar.visible(true)
@@ -59,12 +59,16 @@ class LoginFragment: BaseFragment<AuthViewModel, FragmentLoginBinding, AuthRepos
         }
 
         binding.buttonLogin.setOnClickListener {
-            val email = binding.emailTextField.text.toString().trim()
-            val password = binding.passwordTextField.text.toString().trim()
-
-            // @TODO add input validation
-            viewModel.login(email, password)
+            login()
         }
+    }
+
+    private fun login() {
+        val email = binding.emailTextField.text.toString().trim()
+        val password = binding.passwordTextField.text.toString().trim()
+
+        // @TODO add input validation
+        viewModel.login(email, password)
     }
 
     override fun getViewModel() = AuthViewModel::class.java
