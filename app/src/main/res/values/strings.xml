@@ -2,4 +2,6 @@
     <string name="app_name">TokoPlastik</string>
     <string name="welcome_text">Selamat Datang\ndi\nToko Plastik Haji Ali</string>
     <string name="small_welcome_text">Belanja plastik terlengkap dan termurah\nMelayani partai besar dan kecil</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

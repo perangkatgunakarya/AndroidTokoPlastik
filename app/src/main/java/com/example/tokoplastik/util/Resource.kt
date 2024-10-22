@@ -8,7 +8,7 @@ sealed class Resource<out T>(
 ) {
     class Success<T>(data: T): Resource<T>(data)
     class Error<T>(message: String): Resource<T>(message = message)
-    class Loading<T>: Resource<T>()
+    object Loading: Resource<Nothing>()
     data class Failure(
         val isNetworkError: Boolean,
         val errorCode: Int?,

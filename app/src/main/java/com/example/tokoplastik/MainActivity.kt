@@ -9,6 +9,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.asLiveData
 import com.example.tokoplastik.data.UserPreferences
 import com.example.tokoplastik.ui.auth.AuthActivity
+import com.example.tokoplastik.ui.home.HomeActivity
+import com.example.tokoplastik.util.startNewActivity
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,8 +20,8 @@ class MainActivity : AppCompatActivity() {
 
         val userPreferences = UserPreferences(this)
         userPreferences.authToken.asLiveData().observe(this, Observer {
-            Toast.makeText(this, it ?: "Token Is Null", Toast.LENGTH_SHORT).show()
-            startActivity(Intent(this, AuthActivity::class.java))
+            val activity = if (it == null) AuthActivity::class.java else HomeActivity::class.java
+            startNewActivity(activity)
         })
 
 //        finish()
