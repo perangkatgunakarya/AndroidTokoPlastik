@@ -16,6 +16,7 @@ import com.example.tokoplastik.ui.base.BaseFragment
 import com.example.tokoplastik.ui.home.HomeActivity
 import com.example.tokoplastik.util.Resource
 import com.example.tokoplastik.util.enable
+import com.example.tokoplastik.util.handleApiError
 import com.example.tokoplastik.util.startNewActivity
 import com.example.tokoplastik.util.visible
 import com.example.tokoplastik.viewmodel.AuthViewModel
@@ -31,20 +32,24 @@ class LoginFragment: BaseFragment<AuthViewModel, FragmentLoginBinding, AuthRepos
 
         viewModel.loginResponses.observe(viewLifecycleOwner, Observer {
 
-            binding.loginProgressBar.visible(false)
+            // Show progress bar only while loading
+            binding.loginProgressBar.visible(it is Resource.Loading)
 
             when(it) {
                 is Resource.Success -> {
-                    viewModel.saveAuthToken(it.data?.data!!.token.toString())
-                    requireActivity().startNewActivity(HomeActivity::class.java)
+                    binding.loginProgressBar.visible(false)
+                    lifecycleScope.launch {
+                        viewModel.saveAuthToken(it.data?.data!!.token.toString())
+                        requireActivity().startNewActivity(HomeActivity::class.java)
+                    }
                 }
                 is Resource.Failure -> {
-                    Toast.makeText(requireContext(), "Login Failed", Toast.LENGTH_SHORT).show()
+                    binding.loginProgressBar.visible(false)
+                    handleApiError(it)
                 }
-                is Resource.Error -> {
-                    Toast.makeText(requireContext(), "Login Failed", Toast.LENGTH_SHORT).show()
+                is Resource.Loading -> {
+                    binding.loginProgressBar.visible(true)
                 }
-                is Resource.Loading -> TODO()
             }
         })
 
@@ -56,8 +61,6 @@ class LoginFragment: BaseFragment<AuthViewModel, FragmentLoginBinding, AuthRepos
         binding.buttonLogin.setOnClickListener {
             val email = binding.emailTextField.text.toString().trim()
             val password = binding.passwordTextField.text.toString().trim()
-
-            binding.loginProgressBar.visible(true)
 
             // @TODO add input validation
             viewModel.login(email, password)

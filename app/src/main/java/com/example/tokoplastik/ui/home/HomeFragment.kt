@@ -12,6 +12,7 @@ import com.example.tokoplastik.data.responses.GetProduct
 import com.example.tokoplastik.databinding.FragmentHomeBinding
 import com.example.tokoplastik.ui.base.BaseFragment
 import com.example.tokoplastik.util.Resource
+import com.example.tokoplastik.util.handleApiError
 import com.example.tokoplastik.util.visible
 import com.example.tokoplastik.viewmodel.HomeViewModel
 import kotlinx.coroutines.flow.first
@@ -42,10 +43,8 @@ class HomeFragment : BaseFragment <HomeViewModel, FragmentHomeBinding, ProductRe
                     updateUI(it.data?.data)
                 }
                 is Resource.Failure -> {
-                    Toast.makeText(requireContext(), "API Error", Toast.LENGTH_SHORT).show()
-                }
-                is Resource.Error -> {
-                    Toast.makeText(requireContext(), "API Error", Toast.LENGTH_SHORT).show()
+                    binding.homeProgressBar.visible(false)
+                    handleApiError(it)
                 }
                 is Resource.Loading -> {
                     binding.homeProgressBar.visible(true)

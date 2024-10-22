@@ -3,6 +3,9 @@ package com.example.tokoplastik.util
 import android.app.Activity
 import android.content.Intent
 import android.view.View
+import androidx.fragment.app.Fragment
+import com.example.tokoplastik.ui.auth.LoginFragment
+import com.google.android.material.snackbar.Snackbar
 
 fun <A : Activity> Activity.startNewActivity (
     activity: Class<A>
@@ -21,4 +24,35 @@ fun View.visible (isVisible: Boolean) {
 fun View.enable (enabled: Boolean) {
     isEnabled = enabled
     alpha = if(enabled) 1f else 0.5f
+}
+
+fun View.snackBar (message: String, action: (() -> Unit) ?= null) {
+    val snackbar = Snackbar.make(this, message, Snackbar.LENGTH_LONG)
+    action?.let {
+        snackbar.setAction("Retry") {
+            it()
+        }
+    }
+    snackbar.show()
+}
+
+fun Fragment.handleApiError (
+    failure: Resource.Failure,
+    retry: (() -> Unit) ?= null
+) {
+
+    when {
+        failure.isNetworkError -> requireView().snackBar("Koneksi internet tidak tersambung", retry)
+        failure.errorCode == 401 -> {
+            if (this is LoginFragment) {
+                requireView().snackBar("Email / Password salah", )
+            } else {
+                // @TODO logout
+            }
+        }
+        else -> {
+            val error = failure.errorBody?.string().toString()
+            requireView().snackBar(error)
+        }
+    }
 }
