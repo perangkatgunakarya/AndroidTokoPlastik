@@ -2,18 +2,15 @@ package com.example.tokoplastik.ui.auth
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
-import com.example.tokoplastik.R
 import com.example.tokoplastik.databinding.FragmentLoginBinding
 import com.example.tokoplastik.data.network.AuthApi
 import com.example.tokoplastik.data.repository.AuthRepository
 import com.example.tokoplastik.ui.base.BaseFragment
-import com.example.tokoplastik.ui.home.HomeActivity
+import com.example.tokoplastik.HomeActivity
 import com.example.tokoplastik.util.Resource
 import com.example.tokoplastik.util.enable
 import com.example.tokoplastik.util.handleApiError

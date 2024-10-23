@@ -4,12 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.lifecycle.Observer
 import com.example.tokoplastik.data.network.GetProductApi
 import com.example.tokoplastik.data.repository.ProductRepository
 import com.example.tokoplastik.data.responses.GetProduct
-import com.example.tokoplastik.databinding.FragmentHomeBinding
+import com.example.tokoplastik.databinding.FragmentDashboardBinding
 import com.example.tokoplastik.ui.base.BaseFragment
 import com.example.tokoplastik.util.Resource
 import com.example.tokoplastik.util.handleApiError
@@ -18,7 +17,7 @@ import com.example.tokoplastik.viewmodel.HomeViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
-class HomeFragment : BaseFragment <HomeViewModel, FragmentHomeBinding, ProductRepository> () {
+class DashboardFragment : BaseFragment <HomeViewModel, FragmentDashboardBinding, ProductRepository> () {
 
     private fun updateUI(product: List<GetProduct>?) {
         with(binding) {
@@ -60,7 +59,7 @@ class HomeFragment : BaseFragment <HomeViewModel, FragmentHomeBinding, ProductRe
     override fun getFragmentBinding(
         inflater: LayoutInflater,
         container: ViewGroup?
-    ) = FragmentHomeBinding.inflate(inflater, container, false)
+    ) = FragmentDashboardBinding.inflate(inflater, container, false)
 
     override fun getFragmentRepository(): ProductRepository {
         val token = runBlocking { userPreferences.authToken.first() }
