@@ -14,6 +14,7 @@ class ViewModelFactory (
         return when {
             modelClass.isAssignableFrom(AuthViewModel::class.java) -> AuthViewModel(repository as AuthRepository) as T
             modelClass.isAssignableFrom(HomeViewModel::class.java) -> HomeViewModel(repository as ProductRepository) as T
+            modelClass.isAssignableFrom(ProductViewModel::class.java) -> ProductViewModel(repository as ProductRepository) as T
             else -> throw IllegalArgumentException("ViewModelClass not found")
         }
     }

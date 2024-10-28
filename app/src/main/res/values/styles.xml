@@ -19,8 +19,20 @@
         <item name="android:textSize">@dimen/h4TextSize</item>
     </style>
 
+    <style name="h4_bold">
+        <item name="android:fontFamily">@font/montserrat_medium</item>
+        <item name="android:textColor">@color/g_gray700</item>
+        <item name="android:textSize">@dimen/h4TextSize</item>
+    </style>
+
     <style name="p">
         <item name="android:fontFamily">@font/montserrat_regular</item>
+        <item name="android:textColor">@color/g_gray700</item>
+        <item name="android:textSize">@dimen/pTextSize</item>
+    </style>
+
+    <style name="p_bold">
+        <item name="android:fontFamily">@font/montserrat_bold</item>
         <item name="android:textColor">@color/g_gray700</item>
         <item name="android:textSize">@dimen/pTextSize</item>
     </style>
