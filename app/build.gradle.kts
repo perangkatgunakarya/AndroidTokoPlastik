@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.google.gms.google.services)
     kotlin("kapt")
+    alias(libs.plugins.navigation.safeargs)
 }
 
 android {
@@ -68,4 +69,5 @@ dependencies {
     implementation(libs.datastore.preferences)
     implementation(libs.lifecycle.runtime)
     implementation(libs.lifecycle.livedata)
+    implementation(libs.recyclerview)
 }
