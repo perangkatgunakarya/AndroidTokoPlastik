@@ -29,29 +29,41 @@ import kotlinx.coroutines.withContext
 class ProductFragment : BaseFragment<ProductViewModel, FragmentProductBinding, ProductRepository> () {
 
     private lateinit var getProduct: List<GetProduct>
+    private lateinit var productAdapter: ProductAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         getProduct = listOf()
 
+        setupRecyclerView()
+        observeProducts()
+    }
+
+    private fun setupRecyclerView() {
+        productAdapter = ProductAdapter(getProduct)
+        binding.productRecycler.apply {
+            adapter = productAdapter
+            layoutManager = LinearLayoutManager(requireContext())
+        }
+    }
+
+    private fun observeProducts() {
         viewModel.getProduct()
         viewModel.product.observe(viewLifecycleOwner, Observer {
             when (it) {
                 is Resource.Success -> {
-                    lifecycleScope.launch {
-                        withContext (Dispatchers.Main) {
-                            binding.productRecycler.apply {
-                                adapter = ProductAdapter(getProduct)
-                                layoutManager = LinearLayoutManager(requireContext())
-                            }
-                        }
+                    // Access the list from your response wrapper
+                    it.data?.let { response ->
+                        getProduct = response.data  // Adjust 'products' to match your actual property name
+                        productAdapter.updateList(getProduct)
                     }
                 }
                 is Resource.Failure -> {
                     handleApiError(it)
                 }
                 is Resource.Loading -> {
+                    // Show loading state if needed
                 }
             }
         })

@@ -6,14 +6,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.tokoplastik.data.responses.GetProduct
 import com.example.tokoplastik.databinding.ProductListLayoutBinding
 
-class ProductAdapter (private val productList: List<GetProduct>) : RecyclerView.Adapter<ProductAdapter.ViewHolder> () {
+class ProductAdapter (private var productList: List<GetProduct>) : RecyclerView.Adapter<ProductAdapter.ViewHolder> () {
 
     inner class ViewHolder (val binding : ProductListLayoutBinding) : RecyclerView.ViewHolder(binding.root) {
 
     }
 
-    fun updateData() {
-        notifyDataSetChanged()  // Notify the adapter of data changes
+    fun updateList(newList: List<GetProduct>) {
+        productList = newList
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -22,9 +23,7 @@ class ProductAdapter (private val productList: List<GetProduct>) : RecyclerView.
         )
     }
 
-    override fun getItemCount(): Int {
-        return productList.size
-    }
+    override fun getItemCount(): Int = productList.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentItem = productList[position]
