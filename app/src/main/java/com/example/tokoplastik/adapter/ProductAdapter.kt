@@ -29,8 +29,8 @@ class ProductAdapter (private var productList: List<GetProduct>) : RecyclerView.
         val currentItem = productList[position]
         holder.binding.apply {
             supplierText.text = "( ${currentItem.supplier} )"
-            productNameText.text = "( ${currentItem.name} )"
-            capitalPriceText.text = "( ${currentItem.capitalPrice} )"
+            productNameText.text = "${currentItem.name}"
+            nominalText.text = "${currentItem.capitalPrice}"
         }
     }
 }
