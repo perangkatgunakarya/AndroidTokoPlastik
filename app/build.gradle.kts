@@ -70,4 +70,5 @@ dependencies {
     implementation(libs.lifecycle.runtime)
     implementation(libs.lifecycle.livedata)
     implementation(libs.recyclerview)
+    implementation(libs.swipe.refresh.layout)
 }

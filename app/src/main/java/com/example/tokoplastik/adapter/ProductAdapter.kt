@@ -81,7 +81,7 @@ class ProductAdapter (private var productList: List<GetProduct>) : RecyclerView.
 
         fun bind(product: GetProduct) {
             binding.apply {
-                supplierText.text = product.supplier
+                supplierText.text = "(${product.supplier})"
                 productNameText.text = product.name
                 nominalText.text = "Rp ${product.capitalPrice}"
             }

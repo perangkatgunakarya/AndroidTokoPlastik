@@ -10,13 +10,12 @@ import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.tokoplastik.R
 import com.example.tokoplastik.adapter.ProductAdapter
-import com.example.tokoplastik.data.UserPreferences
 import com.example.tokoplastik.data.network.GetProductApi
 import com.example.tokoplastik.data.repository.ProductRepository
 import com.example.tokoplastik.data.responses.GetProduct
@@ -47,16 +46,24 @@ class ProductFragment : BaseFragment<ProductViewModel, FragmentProductBinding, P
         getProduct = listOf()
 
         setupRecyclerView()
+        setupSwipeRefresh()
         observeProducts()
 
         setupSearchView()
         setupSortingButtons()
     }
 
+    private fun setupSwipeRefresh() {
+        binding.swipeRefreshProduct.apply {
+            setOnRefreshListener {
+                viewModel.getProduct()
+            }
+        }
+    }
+
     private fun setupRecyclerView() {
         productAdapter = ProductAdapter(getProduct).apply {
             setOnItemClickListener { product ->
-                // Navigate to detail fragment/activity
                 val action = ProductFragmentDirections
                     .actionProductFragmentToProductDetailFragment(product.id)
                 findNavController().navigate(action)
@@ -73,50 +80,50 @@ class ProductFragment : BaseFragment<ProductViewModel, FragmentProductBinding, P
                 )
             )
         }
-
-        // Load initial data
-        val products = getProduct // Get your data from repository/database
-        productAdapter.updateList(products)
     }
 
     private fun observeProducts() {
         viewModel.getProduct()
-        viewModel.product.observe(viewLifecycleOwner, Observer {
-            when (it) {
+        viewModel.product.observe(viewLifecycleOwner) { result ->
+            binding.swipeRefreshProduct.isRefreshing = false
+
+            when (result) {
                 is Resource.Success -> {
-                    // Access the list from your response wrapper
-                    it.data?.let { response ->
-                        getProduct = response.data  // Adjust 'products' to match your actual property name
+                    result.data?.let { response ->
+                        getProduct = response.data
                         productAdapter.updateList(getProduct)
                     }
                 }
                 is Resource.Failure -> {
-                    handleApiError(it)
+                    handleApiError(result)
                 }
-                is Resource.Loading -> {
-                    // Show loading state if needed
-                }
+                is Resource.Loading -> {  }
             }
-        })
+        }
     }
 
     private fun setupSearchView() {
         var searchJob: Job? = null
 
-        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                searchJob?.cancel()
-                searchJob = lifecycleScope.launch {
-                    delay(300) // 300ms delay
-                    productAdapter.filterProducts(newText ?: "")
+        binding.searchView.apply {
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    return false
                 }
-                return true
-            }
-        })
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    searchJob?.cancel()
+                    searchJob = lifecycleScope.launch {
+                        delay(300) // 300ms delay
+                        productAdapter.filterProducts(newText ?: "")
+                    }
+                    return true
+                }
+            })
+
+            isIconified = false
+            setIconifiedByDefault(false)
+        }
     }
 
     private fun setupSortingButtons() {
