@@ -1,5 +1,6 @@
 package com.example.tokoplastik.ui.product
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -51,6 +52,11 @@ class ProductFragment : BaseFragment<ProductViewModel, FragmentProductBinding, P
 
         setupSearchView()
         setupSortingButtons()
+
+        binding.buttonAddProduct.setOnClickListener {
+            val intent = Intent(requireContext(), AddProductActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun setupSwipeRefresh() {
@@ -123,6 +129,7 @@ class ProductFragment : BaseFragment<ProductViewModel, FragmentProductBinding, P
 
             isIconified = false
             setIconifiedByDefault(false)
+            clearFocus()
         }
     }
 
