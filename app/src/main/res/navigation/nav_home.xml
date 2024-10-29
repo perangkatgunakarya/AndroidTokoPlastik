@@ -12,7 +12,7 @@
         tools:layout="@layout/fragment_product">
         <action
             android:id="@+id/action_productFragment_to_productDetailFragment"
-            app:destination="@id/historyFragment" />
+            app:destination="@id/detailProductFragment" />
     </fragment>
 
     <fragment
@@ -22,10 +22,10 @@
         tools:layout="@layout/fragment_transaction" />
 
     <fragment
-        android:id="@+id/historyFragment"
-        android:name="com.example.tokoplastik.HistoryFragment"
-        android:label="fragment_history"
-        tools:layout="@layout/fragment_history">
+        android:id="@+id/detailProductFragment"
+        android:name="com.example.tokoplastik.ui.product.ProductDetailFragment"
+        android:label="fragment_detail"
+        tools:layout="@layout/fragment_product_detail">
         <argument
             android:name="productId"
             app:argType="integer" />
