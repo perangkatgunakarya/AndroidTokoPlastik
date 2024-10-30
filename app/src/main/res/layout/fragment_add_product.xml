@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="30dp"
+    tools:context=".ui.product.AddProductFragment">
+
+    <EditText
+        android:id="@+id/product_name_text_field"
+        style="@style/editText"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/edit_text_height"
+        android:layout_marginBottom="20dp"
+        android:padding="10dp"
+        android:hint="Nama Produk" />
+
+    <EditText
+        android:id="@+id/supplier_text_field"
+        style="@style/editText"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/edit_text_height"
+        android:layout_marginBottom="20dp"
+        android:padding="10dp"
+        android:hint="Nama Supplier" />
+
+    <EditText
+        android:id="@+id/capital_price_text_field"
+        style="@style/editText"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/edit_text_height"
+        android:layout_marginBottom="20dp"
+        android:padding="10dp"
+        android:hint="Harga Modal"
+        android:inputType="number" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_add_product"
+        android:layout_width="@dimen/medium_button_width"
+        android:layout_height="@dimen/medium_button_height"
+        style="@style/blueButtonStyle"
+        android:layout_gravity="bottom|end"
+        android:layout_marginTop="30dp"
+        android:text="Tambah"
+        android:textSize="@dimen/h3TextSize" />
+
+    <ProgressBar
+        android:id="@+id/add_product_progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center"/>
+</LinearLayout>

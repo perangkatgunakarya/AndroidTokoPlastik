@@ -34,10 +34,8 @@ class AddProductActivity : AppCompatActivity() {
             title = "Tambah Produk"
         }
 
-        // Get a reference to the HomeActivity
         homeActivity = HomeActivity()
 
-        // Set the back button click listener
         findViewById<Toolbar>(R.id.toolbar).setNavigationOnClickListener {
             homeActivity.navigateToProductFragment()
         }

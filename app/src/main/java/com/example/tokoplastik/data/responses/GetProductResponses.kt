@@ -11,3 +11,9 @@ data class GetProductByIdResponses(
     val message: String,
     val success: Boolean
 )
+
+data class AddProductResponse(
+    val data: GetProduct,
+    val message: String,
+    val success: Boolean
+)
