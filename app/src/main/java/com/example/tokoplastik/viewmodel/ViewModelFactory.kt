@@ -2,6 +2,7 @@ package com.example.tokoplastik.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.tokoplastik.data.repository.AddProductPricesRepository
 import com.example.tokoplastik.data.repository.AddProductRepository
 import com.example.tokoplastik.data.repository.AuthRepository
 import com.example.tokoplastik.data.repository.BaseRepository
@@ -18,6 +19,7 @@ class ViewModelFactory (
             modelClass.isAssignableFrom(ProductViewModel::class.java) -> ProductViewModel(repository as ProductRepository) as T
             modelClass.isAssignableFrom(ProductDetailViewModel::class.java) -> ProductDetailViewModel(repository as ProductRepository) as T
             modelClass.isAssignableFrom(AddProductViewModel::class.java) -> AddProductViewModel(repository as AddProductRepository) as T
+            modelClass.isAssignableFrom(AddProductPricesViewModel::class.java) -> AddProductPricesViewModel(repository as AddProductPricesRepository) as T
             else -> throw IllegalArgumentException("ViewModelClass not found")
         }
     }

@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.navigation.fragment.findNavController
 import com.example.tokoplastik.data.network.AddProductApi
 import com.example.tokoplastik.data.repository.AddProductRepository
 import com.example.tokoplastik.databinding.FragmentAddProductBinding
@@ -70,6 +71,9 @@ class AddProductFragment : BaseFragment<AddProductViewModel, FragmentAddProductB
                 is Resource.Success -> {
                     binding.addProductProgressBar.visible(false)
                     Toast.makeText( requireContext(), "Barang berhasil ditambahkan", Toast.LENGTH_SHORT ).show()
+                    val directions = AddProductFragmentDirections
+                        .actionAddProductFragmentToAddProductPricesFragment(result.data?.data?.id!!)
+                    findNavController().navigate(directions)
                 }
 
                 is Resource.Failure -> {

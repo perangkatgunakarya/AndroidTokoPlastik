@@ -9,10 +9,20 @@
         android:id="@+id/addProductFragment"
         android:name="com.example.tokoplastik.ui.product.AddProductFragment"
         android:label="fragment_add_product"
-        tools:layout="@layout/fragment_add_product" />
+        tools:layout="@layout/fragment_add_product">
+
+        <action
+            android:id="@+id/action_addProductFragment_to_addProductPricesFragment"
+            app:destination="@id/addProductPricesFragment" />
+    </fragment>
     <fragment
         android:id="@+id/addProductPricesFragment"
-        android:name="com.example.tokoplastik.AddProductPricesFragment"
+        android:name="com.example.tokoplastik.ui.product.AddProductPricesFragment"
         android:label="fragment_add_product_prices"
-        tools:layout="@layout/fragment_add_product_prices" />
+        tools:layout="@layout/fragment_add_product_prices">
+
+        <argument
+            android:name="productId"
+            app:argType="integer" />
+    </fragment>
 </navigation>
