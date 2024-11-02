@@ -1,5 +1,6 @@
 package com.example.tokoplastik.ui.product
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.activity.enableEdgeToEdge
@@ -37,7 +38,7 @@ class AddProductActivity : AppCompatActivity() {
         homeActivity = HomeActivity()
 
         findViewById<Toolbar>(R.id.toolbar).setNavigationOnClickListener {
-            homeActivity.navigateToProductFragment()
+            finish()
         }
     }
 }

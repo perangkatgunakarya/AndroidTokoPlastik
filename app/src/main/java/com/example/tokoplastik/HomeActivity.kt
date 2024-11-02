@@ -30,8 +30,4 @@ class HomeActivity : AppCompatActivity() {
 
         NavigationUI.setupWithNavController(bottomNavigation, navController)
     }
-
-    fun navigateToProductFragment() {
-        navController.navigate(R.id.productFragment)
-    }
 }
