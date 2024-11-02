@@ -70,9 +70,11 @@ class ProductFragment : BaseFragment<ProductViewModel, FragmentProductBinding, P
     private fun setupRecyclerView() {
         productAdapter = ProductAdapter(getProduct).apply {
             setOnItemClickListener { product ->
-                val action = ProductFragmentDirections
-                    .actionProductFragmentToProductDetailFragment(product.id)
-                findNavController().navigate(action)
+                    val intent = Intent(requireContext(), AddProductActivity::class.java).apply {
+                        putExtra("openProductPriceFragment", true)
+                        putExtra("productId", product.id)
+                    }
+                    startActivity(intent)
             }
         }
 
