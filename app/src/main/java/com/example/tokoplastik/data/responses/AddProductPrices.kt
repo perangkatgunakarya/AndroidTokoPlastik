@@ -3,6 +3,7 @@ package com.example.tokoplastik.data.responses
 import com.google.gson.annotations.SerializedName
 
 data class AddProductPrices(
+    @SerializedName("product_id")
     val productId: Int,
     val price: Int,
     val unit: String,

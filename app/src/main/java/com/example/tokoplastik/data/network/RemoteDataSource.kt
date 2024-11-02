@@ -22,6 +22,7 @@ class RemoteDataSource {
                 OkHttpClient.Builder()
                     .addInterceptor { chain ->
                         chain.proceed(chain.request().newBuilder().also {
+                            it.addHeader("Accept", "application/json")
                             it.addHeader("Authorization", "Bearer $authToken")
                         }.build())
                     }
