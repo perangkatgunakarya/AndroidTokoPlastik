@@ -1,5 +1,6 @@
 package com.example.tokoplastik.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -22,15 +23,19 @@ class AddProductPricesViewModel(
     val productPrices: LiveData<Resource<AddProductPricesResponses>> = _productPrices
 
     fun addProductPrices(productId: Int, price: Int, unit: String, quantityPerUnit: String) = viewModelScope.launch {
-        _addProductPrices.value = Resource.Loading
+        _addProductPrices.postValue(Resource.Loading)
         val product = AddProductPrices(productId, price, unit, quantityPerUnit)
-        _addProductPrices.value = repository.addProductPrices(product)
+        val result = repository.addProductPrices(product)
+        _addProductPrices.postValue(result)
+        Log.d("ViewModel", "Product price added: $result")
+        getProductPrices(productId)
     }
 
     fun getProductPrices(productId: Int) {
         viewModelScope.launch {
             _productPrices.value = Resource.Loading
             _productPrices.value = repository.getProductPrices(productId)
+            Log.d("ViewModel", "Fetched new data: ${_productPrices.value} items")
         }
     }
 }
