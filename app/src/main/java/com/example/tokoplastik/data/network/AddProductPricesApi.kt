@@ -6,12 +6,13 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface AddProductPricesApi {
 
-    @GET("product-price/{productId}")
+    @GET("product-price")
     suspend fun getProductPrices(
-        @Path("productId") productId: Int
+        @Query("product_id") productId: Int
     ): AddProductPricesResponses
 
     @POST("product-price")

@@ -110,7 +110,7 @@ class AddProductPricesFragment :
                 is Resource.Success -> {
                     binding.productPricesProgressbar.visible(false)
                     result.data?.let { response ->
-                        getProductPrices = listOf(response.data)
+                        getProductPrices = response.data
                         adapter.updateList(getProductPrices)
                     }
                 }

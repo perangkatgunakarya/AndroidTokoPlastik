@@ -9,9 +9,9 @@ import com.example.tokoplastik.data.responses.GetProduct
 import com.example.tokoplastik.data.responses.ProductPrice
 import com.example.tokoplastik.databinding.ProductPriceListLayoutBinding
 
-class ProductPricesAdapter : ListAdapter<ProductPrice, ProductPricesAdapter.ViewHolder>(ProductPriceDiffCallback()) {
+class ProductPricesAdapter : RecyclerView.Adapter<ProductPricesAdapter.ViewHolder>() {
 
-    private var productList = listOf<ProductPrice>()
+    private var productList = mutableListOf<ProductPrice>()
 
     class ViewHolder(private val binding: ProductPriceListLayoutBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -24,9 +24,12 @@ class ProductPricesAdapter : ListAdapter<ProductPrice, ProductPricesAdapter.View
     }
 
     fun updateList(newProductsPrices: List<ProductPrice>) {
-        productList = newProductsPrices
+        productList.clear()
+        productList.addAll(newProductsPrices)
         notifyDataSetChanged()
     }
+
+    override fun getItemCount() = productList.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ProductPriceListLayoutBinding.inflate(
@@ -36,14 +39,6 @@ class ProductPricesAdapter : ListAdapter<ProductPrice, ProductPricesAdapter.View
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(productList[position])
     }
-}
-
-class ProductPriceDiffCallback : DiffUtil.ItemCallback<ProductPrice>() {
-    override fun areItemsTheSame(oldItem: ProductPrice, newItem: ProductPrice) =
-        oldItem.id == newItem.id
-
-    override fun areContentsTheSame(oldItem: ProductPrice, newItem: ProductPrice) =
-        oldItem == newItem
 }

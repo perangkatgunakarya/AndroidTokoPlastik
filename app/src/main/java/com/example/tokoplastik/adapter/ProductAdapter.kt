@@ -42,7 +42,6 @@ class ProductAdapter (private var productList: List<GetProduct>) : RecyclerView.
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        // Use filteredList instead of products
         val currentProduct = filteredList[position]
         holder.bind(currentProduct)
     }
