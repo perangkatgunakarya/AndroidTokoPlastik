@@ -133,7 +133,6 @@ class AddProductPricesFragment :
 
             when (result) {
                 is Resource.Success -> {
-                    Log.d("kaowkowa", "berhasil submit")
                     binding.productPricesProgressbar.visible(false)
                     Toast.makeText(
                         requireContext(),

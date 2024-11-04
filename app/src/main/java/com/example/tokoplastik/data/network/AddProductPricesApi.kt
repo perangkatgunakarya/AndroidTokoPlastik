@@ -2,6 +2,7 @@ package com.example.tokoplastik.data.network
 
 import com.example.tokoplastik.data.responses.AddProductPrices
 import com.example.tokoplastik.data.responses.AddProductPricesResponses
+import com.example.tokoplastik.data.responses.ProductPricesResponses
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -13,7 +14,7 @@ interface AddProductPricesApi {
     @GET("product-price")
     suspend fun getProductPrices(
         @Query("product_id") productId: Int
-    ): AddProductPricesResponses
+    ): ProductPricesResponses
 
     @POST("product-price")
     suspend fun addProductPrices(
