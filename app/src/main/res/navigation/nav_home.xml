@@ -21,7 +21,7 @@
 
     <fragment
         android:id="@+id/transactionFragment"
-        android:name="com.example.tokoplastik.TransactionFragment"
+        android:name="com.example.tokoplastik.ui.transaction.TransactionFragment"
         android:label="fragment_transaction"
         tools:layout="@layout/fragment_transaction" />
 

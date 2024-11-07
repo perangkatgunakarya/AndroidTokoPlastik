@@ -6,6 +6,7 @@ import com.example.tokoplastik.data.repository.AddProductPricesRepository
 import com.example.tokoplastik.data.repository.AddProductRepository
 import com.example.tokoplastik.data.repository.AuthRepository
 import com.example.tokoplastik.data.repository.BaseRepository
+import com.example.tokoplastik.data.repository.CustomerRepository
 import com.example.tokoplastik.data.repository.ProductRepository
 
 class ViewModelFactory (
@@ -20,6 +21,7 @@ class ViewModelFactory (
             modelClass.isAssignableFrom(ProductDetailViewModel::class.java) -> ProductDetailViewModel(repository as ProductRepository) as T
             modelClass.isAssignableFrom(AddProductViewModel::class.java) -> AddProductViewModel(repository as AddProductRepository) as T
             modelClass.isAssignableFrom(AddProductPricesViewModel::class.java) -> AddProductPricesViewModel(repository as AddProductPricesRepository) as T
+            modelClass.isAssignableFrom(TransactionViewModel::class.java) -> TransactionViewModel(repository as CustomerRepository) as T
             else -> throw IllegalArgumentException("ViewModelClass not found")
         }
     }
