@@ -2,6 +2,9 @@ package com.example.tokoplastik.ui.transaction
 
 import android.content.RestrictionEntry.TYPE_NULL
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,62 +46,26 @@ class TransactionFragment : BaseFragment<TransactionViewModel, FragmentTransacti
         addressEditText.inputType = TYPE_NULL
         hpEditText.inputType = TYPE_NULL
 
-        setupCustomerSpinner()
+        setupCustomerAutocomplete()
     }
 
-    private fun setupCustomerSpinner() {
+    private fun setupCustomerAutocomplete() {
         viewModel.getTransaction()
         viewModel.transaction.observe(viewLifecycleOwner, Observer { result ->
-            val customerAdapter = object : ArrayAdapter<Customer>(
+            val customerNames = result.data?.data?.map { it.name } ?: emptyList()
+            val customerAdapter = ArrayAdapter(
                 requireContext(),
-                android.R.layout.simple_spinner_item,
-                result.data?.data ?: emptyList()
-            ) {
-                override fun getFilter(): Filter {
-                    return object : Filter() {
-                        override fun performFiltering(constraint: CharSequence?): FilterResults {
-                            val filteredResults = if (constraint.isNullOrEmpty()) {
-                                result.data?.data ?: emptyList()
-                            } else {
-                                result.data?.data?.filter {
-                                    it.name.contains(constraint.toString(), ignoreCase = true)
-                                }
-                            }
+                android.R.layout.simple_dropdown_item_1line,
+                customerNames
+            )
 
-                            val results = FilterResults()
-                            results.values = filteredResults
-                            return results
-                        }
+            binding.customerDropdown.setAdapter(customerAdapter)
+            binding.customerDropdown.threshold = 1
 
-                        override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-                            (results?.values as? List<Customer>)?.let {
-                                notifyDataSetChanged()
-                            }
-                        }
-                    }
-                }
-
-                override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-                    val view = super.getView(position, convertView, parent)
-                    (view as TextView).text = getItem(position)?.name ?: ""
-                    return view
-                }
-
-                override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
-                    val view = super.getDropDownView(position, convertView, parent)
-                    (view as TextView).text = getItem(position)?.name ?: ""
-                    return view
-                }
-            }
-
-            binding.customerSpinner.adapter = customerAdapter
-            binding.customerSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    val selectedCustomer = customerAdapter.getItem(position)
-                    populateCustomerData(selectedCustomer)
-                }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) {}
+            binding.customerDropdown.setOnItemClickListener { _, _, position, _ ->
+                val selectedCustomerName = customerAdapter.getItem(position)
+                val selectedCustomer = result.data?.data?.find { it.name == selectedCustomerName }
+                populateCustomerData(selectedCustomer)
             }
         })
     }
