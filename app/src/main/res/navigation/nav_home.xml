@@ -23,7 +23,12 @@
         android:id="@+id/transactionFragment"
         android:name="com.example.tokoplastik.ui.transaction.TransactionFragment"
         android:label="fragment_transaction"
-        tools:layout="@layout/fragment_transaction" />
+        tools:layout="@layout/fragment_transaction">
+
+        <action
+            android:id="@+id/action_transactionFragment_to_checkoutFragment"
+            app:destination="@id/checkoutFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/detailProductFragment"
@@ -40,4 +45,15 @@
         android:name="com.example.tokoplastik.ui.home.DashboardFragment"
         android:label="fragment_dashboard"
         tools:layout="@layout/fragment_dashboard" />
+
+    <fragment
+        android:id="@+id/checkoutFragment"
+        android:name="com.example.tokoplastik.ui.transaction.CheckoutFragment"
+        android:label="fragment_checkout"
+        tools:layout="@layout/fragment_checkout">
+
+        <argument
+            android:name="customerId"
+            app:argType="string" />
+    </fragment>
 </navigation>

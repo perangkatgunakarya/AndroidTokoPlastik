@@ -17,7 +17,3 @@ data class Customer(
     @SerializedName("updated_at")
     val updatedAt: String
 )
-
-data class CustomerSpinnerItem(
-    val name: String,
-)

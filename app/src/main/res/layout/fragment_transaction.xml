@@ -100,7 +100,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 style="@style/p_bold"
                 android:inputType="text"
-                android:text="Elham Syahrian putra"
                 tools:ignore="Autofill,LabelFor"/>
 
             <TextView
@@ -121,7 +120,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 style="@style/p_bold"
                 android:inputType="text"
-                android:text="Tenggarong, Kutai Kartanegara"
                 tools:ignore="Autofill,LabelFor"/>
 
             <TextView
@@ -142,7 +140,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 style="@style/p_bold"
                 android:inputType="text"
-                android:text="Tenggarong, Kutai Kartanegara"
                 tools:ignore="Autofill,LabelFor"/>
 
             <TextView

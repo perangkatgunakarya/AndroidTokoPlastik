@@ -9,7 +9,9 @@ data class GetProductResponses(
 data class GetProductByIdResponses(
     val data: GetProduct,
     val message: String,
-    val success: Boolean
+    val success: Boolean,
+
+    val prices: List<ProductPrice>
 )
 
 data class AddProductResponse(

@@ -1,5 +1,7 @@
 package com.example.tokoplastik.ui.transaction
 
+import android.content.Context
+import android.content.Context.INPUT_METHOD_SERVICE
 import android.content.RestrictionEntry.TYPE_NULL
 import android.os.Bundle
 import android.text.Editable
@@ -8,12 +10,15 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Filter
 import android.widget.TextView
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.example.tokoplastik.R
 import com.example.tokoplastik.data.network.CustomerApi
 import com.example.tokoplastik.data.repository.CustomerRepository
@@ -27,16 +32,19 @@ import kotlinx.coroutines.runBlocking
 
 class TransactionFragment : BaseFragment<TransactionViewModel, FragmentTransactionBinding, CustomerRepository>() {
 
+    private var customer_id: Int? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
 
         val nameEditText = binding.customerNameText
         val addressEditText = binding.customerAddressText
         val hpEditText = binding.customerHpText
 
-        nameEditText.enable(false)
-        addressEditText.enable(false)
-        hpEditText.enable(false)
+//        nameEditText.enable(false)
+//        addressEditText.enable(false)
+//        hpEditText.enable(false)
 
         nameEditText.isFocusable = false
         addressEditText.isFocusable = false
@@ -47,6 +55,11 @@ class TransactionFragment : BaseFragment<TransactionViewModel, FragmentTransacti
         hpEditText.inputType = TYPE_NULL
 
         setupCustomerAutocomplete()
+
+        binding.buttonToCheckout.setOnClickListener {
+            val action = TransactionFragmentDirections.actionTransactionFragmentToCheckoutFragment(customer_id.toString())
+            findNavController().navigate(action)
+        }
     }
 
     private fun setupCustomerAutocomplete() {
@@ -66,6 +79,8 @@ class TransactionFragment : BaseFragment<TransactionViewModel, FragmentTransacti
                 val selectedCustomerName = customerAdapter.getItem(position)
                 val selectedCustomer = result.data?.data?.find { it.name == selectedCustomerName }
                 populateCustomerData(selectedCustomer)
+                binding.customerDropdown.text.clear()
+                hideKeyboard()
             }
         })
     }
@@ -75,7 +90,13 @@ class TransactionFragment : BaseFragment<TransactionViewModel, FragmentTransacti
             binding.customerNameText.setText(it.name)
             binding.customerAddressText.setText(it.address)
             binding.customerHpText.setText(it.phone)
+            customer_id = it.id
         }
+    }
+
+    private fun hideKeyboard() {
+        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(requireView().windowToken, 0)
     }
 
     override fun getViewModel() = TransactionViewModel::class.java
