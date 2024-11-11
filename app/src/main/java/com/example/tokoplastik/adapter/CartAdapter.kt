@@ -32,7 +32,7 @@ class CartAdapter(
 
         fun bind(item: CartItem) {
             binding.apply {
-                productText.text = item.product.data?.data?.name
+                productText.text = item.product?.data?.name
 
                 // Setup unit spinner
                 val unitsAdapter = ArrayAdapter(

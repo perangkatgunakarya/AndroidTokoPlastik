@@ -10,6 +10,7 @@ import com.example.tokoplastik.data.responses.GetProduct
 import com.example.tokoplastik.data.responses.GetProductByIdResponses
 import com.example.tokoplastik.data.responses.GetProductResponses
 import com.example.tokoplastik.data.responses.ProductPrice
+import com.example.tokoplastik.data.responses.ProductPricesResponses
 import com.example.tokoplastik.ui.base.BaseViewModel
 import com.example.tokoplastik.util.Resource
 import kotlinx.coroutines.launch
@@ -34,6 +35,7 @@ class CheckoutViewModel (
     val checkoutStatus: LiveData<Boolean> = _checkoutStatus
 
     private var selectedProduct: Resource<GetProductByIdResponses>? = null
+    private var selectedProductPriceProducts: Resource<ProductPricesResponses>? = null
     private var selectedProductPrices: List<ProductPrice> = emptyList()
     private var currentCartItems = mutableListOf<CartItem>()
 
@@ -46,12 +48,14 @@ class CheckoutViewModel (
     fun selectProduct(position: Int) {
         viewModelScope.launch {
             selectedProduct = repository.getProductDetail(position)
-            selectedProductPrices = selectedProduct?.data?.prices ?: emptyList()
+            selectedProductPriceProducts = repository.getProductPrices(position)
+            selectedProductPrices = selectedProductPriceProducts?.data?.data ?: emptyList()
         }
     }
 
     fun addSelectedProductToCart() {
-        val product = selectedProduct
+        val product = selectedProduct?.data
+
         if (product != null && selectedProductPrices.isNotEmpty()) {
             val defaultPrice = selectedProductPrices.first()
             val cartItem = CartItem(
@@ -62,14 +66,20 @@ class CheckoutViewModel (
                 customPrice = defaultPrice.price
             )
             currentCartItems.add(cartItem)
+            Log.i("CheckoutViewModel", "Cart items size: ${currentCartItems.size}")
             _cartItems.value = currentCartItems.toList()
+
 
             // Reset selection
             selectedProduct = null
             selectedProductPrices = emptyList()
         }
 
+
         Log.i("CheckoutViewModel", "Cart items: $cartItems")
+        Log.i("CheckoutViewModel", "list: $currentCartItems")
+
+
     }
 
     fun updateItemQuantity(item: CartItem, newQuantity: Int) {

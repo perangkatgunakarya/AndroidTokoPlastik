@@ -17,8 +17,8 @@ data class TransactionProduct (
     val updatedAt: String
 )
 
-data class CartItem (
-    val product: Resource<GetProductByIdResponses>,
+data class CartItem(
+    val product: GetProductByIdResponses?,
     val productPrice: List<ProductPrice>,
     var selectedPrice: ProductPrice,
     var quantity: Int = 1,
