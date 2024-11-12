@@ -109,7 +109,7 @@ class CheckoutFragment : BaseFragment<CheckoutViewModel, FragmentCheckoutBinding
 
     private fun updateTotalAmount(items: List<CartItem>) {
         val total = items.sumOf { it.customPrice * it.quantity }
-        binding.countTotal.text = getString(R.string.price_format, total)
+        binding.countTotal.text = getString(R.string.price_format, total.toDouble())
     }
 
     override fun getViewModel() = CheckoutViewModel::class.java
