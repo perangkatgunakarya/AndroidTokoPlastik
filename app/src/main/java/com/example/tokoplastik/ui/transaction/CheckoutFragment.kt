@@ -1,9 +1,11 @@
 package com.example.tokoplastik.ui.transaction
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -71,11 +73,13 @@ class CheckoutFragment : BaseFragment<CheckoutViewModel, FragmentCheckoutBinding
                 val selectedProduct = result.data?.data?.find { it.name == selectedProductName }
                 if (selectedProduct != null) {
                     viewModel.selectProduct(selectedProduct.id)
+                    hideKeyboard()
                 }
             }
 
             binding.buttonAddProduct.setOnClickListener {
                 viewModel.addSelectedProductToCart()
+                binding.productDropdown.text.clear()
             }
 
             binding.buttonCheckout.setOnClickListener {
@@ -110,6 +114,11 @@ class CheckoutFragment : BaseFragment<CheckoutViewModel, FragmentCheckoutBinding
     private fun updateTotalAmount(items: List<CartItem>) {
         val total = items.sumOf { it.customPrice * it.quantity }
         binding.countTotal.text = getString(R.string.price_format, total.toDouble())
+    }
+
+    private fun hideKeyboard() {
+        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(requireView().windowToken, 0)
     }
 
     override fun getViewModel() = CheckoutViewModel::class.java

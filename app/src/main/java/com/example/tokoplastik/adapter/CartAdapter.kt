@@ -44,6 +44,7 @@ class CartAdapter(
                 unitsSpinner.adapter = unitsAdapter
 
                 // Set initial unit selection
+                binding.quantityText.text = item.quantity.toString()
                 val initialUnit = item.selectedPrice.unit
                 val position = item.productPrice.indexOfFirst { it.unit == initialUnit }
                 if (position != -1) {
@@ -56,11 +57,13 @@ class CartAdapter(
                 // Quantity controls
                 btnPlus.setOnClickListener {
                     onQuantityChanged(item, item.quantity + 1)
+                    binding.quantityText.text = item.quantity.toString()
                 }
 
                 btnMinus.setOnClickListener {
                     if (item.quantity > 1) {
                         onQuantityChanged(item, item.quantity - 1)
+                        binding.quantityText.text = item.quantity.toString()
                     }
                 }
 

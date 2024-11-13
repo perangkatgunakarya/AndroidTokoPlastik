@@ -66,7 +66,6 @@ class CheckoutViewModel (
                 customPrice = defaultPrice.price
             )
             currentCartItems.add(cartItem)
-            Log.i("CheckoutViewModel", "Cart items size: ${currentCartItems.size}")
             _cartItems.value = currentCartItems.toList()
 
 
@@ -74,12 +73,6 @@ class CheckoutViewModel (
             selectedProduct = null
             selectedProductPrices = emptyList()
         }
-
-
-        Log.i("CheckoutViewModel", "Cart items: $cartItems")
-        Log.i("CheckoutViewModel", "list: $currentCartItems")
-
-
     }
 
     fun updateItemQuantity(item: CartItem, newQuantity: Int) {
