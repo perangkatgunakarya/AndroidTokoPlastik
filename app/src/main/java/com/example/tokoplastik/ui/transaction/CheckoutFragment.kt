@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.tokoplastik.R
 import com.example.tokoplastik.adapter.CartAdapter
@@ -54,6 +55,10 @@ class CheckoutFragment : BaseFragment<CheckoutViewModel, FragmentCheckoutBinding
         binding.cartRecyclerView.apply {
             adapter = cartAdapter
             layoutManager = LinearLayoutManager(requireContext())
+
+            val swipeToDeleteCallback = CartAdapter.createSwipeToDelete(cartAdapter)
+            val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)
+            itemTouchHelper.attachToRecyclerView(this)
         }
 
         viewModel.getProducts()
