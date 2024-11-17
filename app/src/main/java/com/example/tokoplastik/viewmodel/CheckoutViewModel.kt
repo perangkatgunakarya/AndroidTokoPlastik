@@ -3,23 +3,27 @@ package com.example.tokoplastik.viewmodel
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.example.tokoplastik.data.repository.CheckoutRepository
+import com.example.tokoplastik.data.responses.AddProductResponse
 import com.example.tokoplastik.data.responses.CartItem
 import com.example.tokoplastik.data.responses.GetProduct
 import com.example.tokoplastik.data.responses.GetProductByIdResponses
 import com.example.tokoplastik.data.responses.GetProductResponses
 import com.example.tokoplastik.data.responses.ProductPrice
 import com.example.tokoplastik.data.responses.ProductPricesResponses
+import com.example.tokoplastik.data.responses.TransactionRequest
+import com.example.tokoplastik.data.responses.TransactionResponses
 import com.example.tokoplastik.ui.base.BaseViewModel
 import com.example.tokoplastik.util.Resource
 import kotlinx.coroutines.launch
 
-class CheckoutViewModel (
+class CheckoutViewModel(
     private val repository: CheckoutRepository
 ) : BaseViewModel(repository) {
 
-    var customerId: Int? = null
+    var customerId: Int = 0
 
     private val _product = MutableLiveData<Resource<GetProductResponses?>>()
     val product: LiveData<Resource<GetProductResponses?>>
@@ -34,10 +38,14 @@ class CheckoutViewModel (
     private val _checkoutStatus = MutableLiveData<Boolean>()
     val checkoutStatus: LiveData<Boolean> = _checkoutStatus
 
+    private val _addTransaction: MutableLiveData<Resource<TransactionResponses>> = MutableLiveData()
+    val addTransaction: LiveData<Resource<TransactionResponses>>
+        get() = _addTransaction
+
     private var selectedProduct: Resource<GetProductByIdResponses>? = null
     private var selectedProductPriceProducts: Resource<ProductPricesResponses>? = null
     private var selectedProductPrices: List<ProductPrice> = emptyList()
-    private var currentCartItems = mutableListOf<CartItem>()
+    var currentCartItems = mutableListOf<CartItem>()
 
 
     fun getProducts() = viewModelScope.launch {
@@ -63,13 +71,12 @@ class CheckoutViewModel (
                 productPrice = selectedProductPrices,
                 selectedPrice = defaultPrice,
                 quantity = 1,
-                customPrice = defaultPrice.price
+                customPrice = defaultPrice.price,
+                paymentStatus = "belum lunas"
             )
             currentCartItems.add(cartItem)
             _cartItems.value = currentCartItems.toList()
 
-
-            // Reset selection
             selectedProduct = null
             selectedProductPrices = emptyList()
         }
@@ -96,31 +103,22 @@ class CheckoutViewModel (
         _cartItems.value = currentCartItems.toList()
     }
 
-    fun checkout() {
-        viewModelScope.launch {
-            Log.i("CheckoutViewModel", "Checkout started with customerId: $customerId and cartItems: $currentCartItems and total price: ${currentCartItems.sumOf { it.customPrice * it.quantity }}")
-//            try {
-//                // Create transaction first
-//                val transactionId = repository.createTransaction(
-//                    customerId = customerId,
-//                    userId = getCurrentUserId(), // Implement this to get logged in user ID
-//                    total = currentCartItems.sumOf { it.customPrice * it.quantity }
-//                )
-//
-//                // Add all transaction products
-//                currentCartItems.forEach { item ->
-//                    repository.addTransactionProduct(
-//                        transactionId = transactionId,
-//                        productPriceId = item.selectedPrice.id,
-//                        priceAdjustment = item.customPrice - item.selectedPrice.price
-//                    )
-//                }
-//
-//                _checkoutStatus.value = true
-//            } catch (e: Exception) {
-//                _checkoutStatus.value = false
-//                // Handle error
-//            }
+    fun checkout(paymentStatus: String) = viewModelScope.launch {
+        val productPriceIds = currentCartItems.map { it.selectedPrice.id }
+        val priceAdjustments = currentCartItems.map { it.customPrice }
+        try {
+            val transaction = TransactionRequest(
+                customerId,
+                currentCartItems.sumOf { it.customPrice * it.quantity },
+                productPriceIds,
+                priceAdjustments,
+                paymentStatus
+            )
+            val transactionResult = repository.addTransaction(transaction)
+            _addTransaction.value = transactionResult
+            _checkoutStatus.value = true
+        } catch (e: Exception) {
+            _checkoutStatus.value = false
         }
     }
 }

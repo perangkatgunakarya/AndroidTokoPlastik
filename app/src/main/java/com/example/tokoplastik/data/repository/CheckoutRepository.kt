@@ -1,6 +1,7 @@
 package com.example.tokoplastik.data.repository
 
 import com.example.tokoplastik.data.network.CheckoutApi
+import com.example.tokoplastik.data.responses.TransactionRequest
 
 class CheckoutRepository (
     private val api : CheckoutApi
@@ -16,5 +17,9 @@ class CheckoutRepository (
 
     suspend fun getProductPrices(productId: Int) = safeApiCall {
         api.getProductPrices(productId)
+    }
+
+    suspend fun addTransaction(transaction: TransactionRequest) = safeApiCall {
+        api.addTransaction(transaction)
     }
 }

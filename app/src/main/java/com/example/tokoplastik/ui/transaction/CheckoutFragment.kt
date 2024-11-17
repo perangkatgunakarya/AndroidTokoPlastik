@@ -2,16 +2,19 @@ package com.example.tokoplastik.ui.transaction
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.tokoplastik.R
 import com.example.tokoplastik.adapter.CartAdapter
 import com.example.tokoplastik.data.network.CheckoutApi
@@ -19,18 +22,25 @@ import com.example.tokoplastik.data.repository.CheckoutRepository
 import com.example.tokoplastik.data.responses.CartItem
 import com.example.tokoplastik.databinding.FragmentCheckoutBinding
 import com.example.tokoplastik.ui.base.BaseFragment
+import com.example.tokoplastik.util.ReceiptGenerator
+import com.example.tokoplastik.util.ReceiptHandler
+import com.example.tokoplastik.util.Resource
+import com.example.tokoplastik.util.handleApiError
 import com.example.tokoplastik.viewmodel.CheckoutViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
-class CheckoutFragment : BaseFragment<CheckoutViewModel, FragmentCheckoutBinding, CheckoutRepository>() {
+class CheckoutFragment :
+    BaseFragment<CheckoutViewModel, FragmentCheckoutBinding, CheckoutRepository>() {
 
     private lateinit var cartAdapter: CartAdapter
+    private lateinit var receiptHandler: ReceiptHandler
+    private var generatedHtml: String? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val data : CheckoutFragmentArgs by navArgs()
+        val data: CheckoutFragmentArgs by navArgs()
         viewModel.customerId = data.customerId.toInt()
 
         setupViews()
@@ -87,30 +97,28 @@ class CheckoutFragment : BaseFragment<CheckoutViewModel, FragmentCheckoutBinding
                 binding.productDropdown.text.clear()
             }
 
-            binding.buttonCheckout.setOnClickListener {
-                viewModel.checkout()
+            if (viewModel.currentCartItems.isEmpty()) {
+                binding.buttonCheckout.setOnClickListener {
+                    showPaymentStatusDialog()
+                }
             }
         })
     }
 
     private fun setupObservers() {
-        // Observe search results
         viewModel.searchResults.observe(viewLifecycleOwner) { products ->
             val adapter = binding.productDropdown.adapter as ArrayAdapter<String>
             adapter.clear()
             adapter.addAll(products.map { it.name })
         }
 
-        // Observe cart items
         viewModel.cartItems.observe(viewLifecycleOwner) { items ->
             cartAdapter.updateItems(items)
             updateTotalAmount(items)
         }
 
-        // Observe checkout status
         viewModel.checkoutStatus.observe(viewLifecycleOwner) { success ->
             if (success) {
-                // Navigate back or to next screen
                 findNavController().navigateUp()
             }
         }
@@ -122,8 +130,127 @@ class CheckoutFragment : BaseFragment<CheckoutViewModel, FragmentCheckoutBinding
     }
 
     private fun hideKeyboard() {
-        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val imm =
+            requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(requireView().windowToken, 0)
+    }
+
+    private fun showPaymentStatusDialog() {
+        SweetAlertDialog(requireContext(), SweetAlertDialog.NORMAL_TYPE).apply {
+            titleText = "Pembayaran"
+            contentText = "Status Pembayaran"
+
+            setConfirmButton("Lunas") { dialog ->
+                dialog.dismissWithAnimation()
+                processCheckout("lunas")
+            }
+
+            setCancelButton("Belum Lunas") { dialog ->
+                dialog.dismissWithAnimation()
+                processCheckout("belum lunas")
+            }
+
+            confirmButtonBackgroundColor = R.color.g_blue
+            cancelButtonBackgroundColor = R.color.g_orange_yellow
+
+            setCancelable(true)
+            setCanceledOnTouchOutside(true)
+
+            show()
+        }
+    }
+
+    private fun processCheckout(paymentMethod: String) {
+        val loadingDialog =
+            SweetAlertDialog(requireContext(), SweetAlertDialog.PROGRESS_TYPE).apply {
+                titleText = "Processing"
+                contentText = "Processing order..."
+                setCancelable(false)
+                show()
+            }
+
+        viewModel.checkout(paymentMethod)
+        viewModel.addTransaction.observe(viewLifecycleOwner) { result ->
+            when (result) {
+                is Resource.Success -> {
+                    loadingDialog.dismiss()
+                    result.data?.let { response ->
+                        val cartItems = viewModel.cartItems.value ?: emptyList()
+                        if (cartItems.isNotEmpty()) {
+                            try {
+                                val html = ReceiptGenerator.generateHtmlReceipt(
+                                    orderData = response.data,
+                                    cartItems = cartItems,
+                                    orderId = response.data.id.toString()
+                                )
+                                showSuccessDialog(html)
+                            } catch (e: Exception) {
+                                handleReceiptError(e)
+                            }
+                        } else {
+                            showSuccessDialog(null)
+                        }
+                    }
+                }
+
+                is Resource.Failure -> {
+                    loadingDialog.dismiss()
+                    handleApiError(result)
+                }
+                is Resource.Loading -> {}
+            }
+        }
+    }
+
+    private fun showSuccessDialog(receiptHtml: String?) {
+        SweetAlertDialog(requireContext(), SweetAlertDialog.SUCCESS_TYPE).apply {
+            titleText = "Success!"
+            contentText = "Order completed successfully"
+            setConfirmButton("OK") {
+                dismissWithAnimation()
+                if (receiptHtml != null) {
+                    showReceiptOptionsDialog(receiptHtml)
+                } else {
+                    findNavController().navigate(R.id.action_checkoutFragment_to_transactionFragment)
+                }
+            }
+            show()
+        }
+    }
+
+    private fun showReceiptOptionsDialog(receiptHtml: String) {
+        SweetAlertDialog(requireContext(), SweetAlertDialog.NORMAL_TYPE).apply {
+            titleText = "Receipt Options"
+            contentText = "What would you like to do with the receipt?"
+
+            setConfirmButton("Print") {
+                dismissWithAnimation()
+                receiptHandler.printReceipt(receiptHtml)
+            }
+
+            setCancelButton("Share") {
+                dismissWithAnimation()
+                receiptHandler.shareReceipt(receiptHtml)
+            }
+
+            setNeutralButton("Skip") {
+                dismissWithAnimation()
+                findNavController().navigate(R.id.action_checkoutFragment_to_transactionFragment)
+            }
+            show()
+        }
+    }
+
+    private fun handleReceiptError(error: Exception) {
+        SweetAlertDialog(requireContext(), SweetAlertDialog.ERROR_TYPE).apply {
+            titleText = "Receipt Generation Error"
+            contentText = "Failed to generate receipt: ${error.message}"
+            setConfirmButton("OK") {
+                dismissWithAnimation()
+                findNavController().navigate(R.id.action_checkoutFragment_to_transactionFragment)
+            }
+            show()
+        }
     }
 
     override fun getViewModel() = CheckoutViewModel::class.java
@@ -133,7 +260,7 @@ class CheckoutFragment : BaseFragment<CheckoutViewModel, FragmentCheckoutBinding
         container: ViewGroup?
     ) = FragmentCheckoutBinding.inflate(inflater, container, false)
 
-    override fun getFragmentRepository() : CheckoutRepository {
+    override fun getFragmentRepository(): CheckoutRepository {
         val token = runBlocking { userPreferences.authToken.first() }
         val api = remoteDataSource.buildApi(CheckoutApi::class.java, token)
         return CheckoutRepository(api)

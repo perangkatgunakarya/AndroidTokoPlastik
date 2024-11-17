@@ -24,7 +24,7 @@ class CartAdapter(
     private val onDeleteItem: (CartItem) -> Unit
 ) : RecyclerView.Adapter<CartAdapter.CartViewHolder>() {
     private var items = mutableListOf<CartItem>()
-    private var tempPrices = mutableMapOf<Int, Int>() // Store temporary prices by position
+    private var tempPrices = mutableMapOf<Int, Int>()
 
     fun updateItems(newItems: List<CartItem>) {
         items.clear()
@@ -39,7 +39,6 @@ class CartAdapter(
             binding.apply {
                 productText.text = item.product?.data?.name
 
-                // Setup unit spinner
                 val unitsAdapter = ArrayAdapter(
                     itemView.context,
                     android.R.layout.simple_spinner_item,
@@ -48,7 +47,6 @@ class CartAdapter(
                 unitsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 unitsSpinner.adapter = unitsAdapter
 
-                // Set initial unit selection
                 binding.quantityText.text = item.quantity.toString()
                 val initialUnit = item.selectedPrice.unit
                 val position = item.productPrice.indexOfFirst { it.unit == initialUnit }
@@ -56,18 +54,15 @@ class CartAdapter(
                     unitsSpinner.setSelection(position)
                 }
 
-                // Setup price EditText
                 if (!priceEdit.hasFocus()) {
                     // Use temporary price if exists, otherwise use item's price
                     val price = tempPrices[adapterPosition] ?: item.customPrice
                     priceEdit.setText(price.toString())
                 }
 
-                // Set up IME options
                 priceEdit.imeOptions = EditorInfo.IME_ACTION_DONE
                 priceEdit.inputType = InputType.TYPE_CLASS_NUMBER
 
-                // Handle keyboard done action
                 priceEdit.setOnEditorActionListener { _, actionId, _ ->
                     if (actionId == EditorInfo.IME_ACTION_DONE) {
                         tempPrices[adapterPosition]?.let { price ->
@@ -81,7 +76,6 @@ class CartAdapter(
                     }
                 }
 
-                // Store temporary price while typing without triggering updates
                 priceEdit.doOnTextChanged { text, _, _, _ ->
                     if (priceEdit.hasFocus()) {
                         text?.toString()?.toIntOrNull()?.let { price ->
@@ -90,7 +84,6 @@ class CartAdapter(
                     }
                 }
 
-                // Quantity controls
                 btnPlus.setOnClickListener {
                     onQuantityChanged(item, item.quantity + 1)
                     binding.quantityText.text = (item.quantity + 1).toString()
@@ -103,7 +96,6 @@ class CartAdapter(
                     }
                 }
 
-                // Unit selection listener
                 unitsSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                     override fun onItemSelected(
                         parent: AdapterView<*>?,

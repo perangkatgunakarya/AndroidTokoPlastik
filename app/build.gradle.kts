@@ -71,4 +71,5 @@ dependencies {
     implementation(libs.lifecycle.livedata)
     implementation(libs.recyclerview)
     implementation(libs.swipe.refresh.layout)
+    implementation(libs.sweet.alert)
 }

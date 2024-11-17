@@ -55,5 +55,9 @@
         <argument
             android:name="customerId"
             app:argType="string" />
+
+        <action
+            android:id="@+id/action_checkoutFragment_to_transactionFragment"
+            app:destination="@id/transactionFragment" />
     </fragment>
 </navigation>
