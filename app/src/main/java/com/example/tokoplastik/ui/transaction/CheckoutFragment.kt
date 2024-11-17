@@ -116,12 +116,6 @@ class CheckoutFragment :
             cartAdapter.updateItems(items)
             updateTotalAmount(items)
         }
-
-        viewModel.checkoutStatus.observe(viewLifecycleOwner) { success ->
-            if (success) {
-                findNavController().navigateUp()
-            }
-        }
     }
 
     private fun updateTotalAmount(items: List<CartItem>) {
@@ -175,8 +169,10 @@ class CheckoutFragment :
                 is Resource.Success -> {
                     loadingDialog.dismiss()
                     result.data?.let { response ->
+                        Log.i("hasil Checkout response", "${response}")
                         val cartItems = viewModel.cartItems.value ?: emptyList()
                         if (cartItems.isNotEmpty()) {
+                            Log.i("hasil Checkout response", "akan muncul jika cartitem not empty")
                             try {
                                 val html = ReceiptGenerator.generateHtmlReceipt(
                                     orderData = response.data,
@@ -188,6 +184,7 @@ class CheckoutFragment :
                                 handleReceiptError(e)
                             }
                         } else {
+                            Log.i("hasil Checkout response", "akan muncul jika cartitem empty")
                             showSuccessDialog(null)
                         }
                     }
@@ -195,6 +192,7 @@ class CheckoutFragment :
 
                 is Resource.Failure -> {
                     loadingDialog.dismiss()
+                    Log.i("hasil Checkout response", "akan muncul jika error api")
                     handleApiError(result)
                 }
                 is Resource.Loading -> {}
@@ -203,6 +201,7 @@ class CheckoutFragment :
     }
 
     private fun showSuccessDialog(receiptHtml: String?) {
+        Log.i("hasil Checkout response", "akan muncul jika success dialog muncul")
         SweetAlertDialog(requireContext(), SweetAlertDialog.SUCCESS_TYPE).apply {
             titleText = "Success!"
             contentText = "Order completed successfully"
@@ -219,6 +218,7 @@ class CheckoutFragment :
     }
 
     private fun showReceiptOptionsDialog(receiptHtml: String) {
+        Log.i("hasil Checkout response", "akan muncul jika receipt dialog muncul")
         SweetAlertDialog(requireContext(), SweetAlertDialog.NORMAL_TYPE).apply {
             titleText = "Receipt Options"
             contentText = "What would you like to do with the receipt?"
@@ -242,6 +242,7 @@ class CheckoutFragment :
     }
 
     private fun handleReceiptError(error: Exception) {
+        Log.i("hasil Checkout response", "akan muncul jika receipt error")
         SweetAlertDialog(requireContext(), SweetAlertDialog.ERROR_TYPE).apply {
             titleText = "Receipt Generation Error"
             contentText = "Failed to generate receipt: ${error.message}"

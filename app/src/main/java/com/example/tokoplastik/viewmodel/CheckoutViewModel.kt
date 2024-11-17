@@ -115,6 +115,7 @@ class CheckoutViewModel(
                 paymentStatus
             )
             val transactionResult = repository.addTransaction(transaction)
+            Log.i("hasil Checkout response", "${transactionResult}")
             _addTransaction.value = transactionResult
             _checkoutStatus.value = true
         } catch (e: Exception) {
