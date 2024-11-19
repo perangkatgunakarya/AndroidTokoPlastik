@@ -4,19 +4,21 @@ import com.example.tokoplastik.util.Resource
 import com.google.gson.annotations.SerializedName
 
 data class Transaction(
-    @SerializedName("created_at")
-    val createdAt: String,
     @SerializedName("customer_id")
     val customerId: Int,
-    val id: Int,
     val total: Int,
-    @SerializedName("transaction_product")
-    val transactionProduct: List<TransactionProduct>,
+    @SerializedName("status")
     val paymentStatus: String,
+    @SerializedName("user_id")
+    val userId: Int,
     @SerializedName("updated_at")
     val updatedAt: String,
-    @SerializedName("user_id")
-    val userId: Int
+    @SerializedName("created_at")
+    val createdAt: String,
+    val id: Int,
+    @SerializedName("transaction_product")
+    val transactionProduct: List<TransactionProduct>,
+    val customer: Customer
 )
 
 data class TransactionProduct (
@@ -24,11 +26,11 @@ data class TransactionProduct (
     @SerializedName("transaction_id")
     val transactionId: Int,
     @SerializedName("product_price_id")
-    val productPriceId: List<ProductPrice>,
+    val productPriceId: Int,
     @SerializedName("price_adjustment")
-    val priceAdjustment: List<Int>,
-    @SerializedName("created_at")
+    val priceAdjustment: Int,
     val quantity: Int,
+    @SerializedName("created_at")
     val createdAt: String,
     @SerializedName("updated_at")
     val updatedAt: String
@@ -43,7 +45,8 @@ data class TransactionRequest (
     @SerializedName("price_adjustment")
     val priceAdjustment: List<Int>,
     @SerializedName("status")
-    val paymentStatus: String
+    val paymentStatus: String,
+    val quantity: List<Int>
 )
 
 data class CartItem(

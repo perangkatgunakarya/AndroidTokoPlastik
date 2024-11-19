@@ -106,16 +106,17 @@ class CheckoutViewModel(
     fun checkout(paymentStatus: String) = viewModelScope.launch {
         val productPriceIds = currentCartItems.map { it.selectedPrice.id }
         val priceAdjustments = currentCartItems.map { it.customPrice }
+        val quantity = currentCartItems.map { it.quantity }
         try {
             val transaction = TransactionRequest(
                 customerId,
                 currentCartItems.sumOf { it.customPrice * it.quantity },
                 productPriceIds,
                 priceAdjustments,
-                paymentStatus
+                paymentStatus,
+                quantity
             )
             val transactionResult = repository.addTransaction(transaction)
-            Log.i("hasil Checkout response", "${transactionResult}")
             _addTransaction.value = transactionResult
             _checkoutStatus.value = true
         } catch (e: Exception) {

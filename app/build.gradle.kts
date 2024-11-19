@@ -72,4 +72,5 @@ dependencies {
     implementation(libs.recyclerview)
     implementation(libs.swipe.refresh.layout)
     implementation(libs.sweet.alert)
+    implementation(libs.itext.pdf)
 }

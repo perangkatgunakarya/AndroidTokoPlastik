@@ -3,17 +3,17 @@ package com.example.tokoplastik.data.responses
 import com.google.gson.annotations.SerializedName
 
 data class Customer(
-    val address: String,
-    @SerializedName("created_at")
-    val createdAt: String,
-    val email: String,
     val id: Int,
-    @SerializedName("merchant_address")
-    val merchantAddress: String,
+    val name: String,
+    val address: String,
+    val phone: String,
+    val email: String,
     @SerializedName("merchant_name")
     val merchantName: String,
-    val name: String,
-    val phone: String,
+    @SerializedName("merchant_address")
+    val merchantAddress: String,
+    @SerializedName("created_at")
+    val createdAt: String,
     @SerializedName("updated_at")
     val updatedAt: String
 )
