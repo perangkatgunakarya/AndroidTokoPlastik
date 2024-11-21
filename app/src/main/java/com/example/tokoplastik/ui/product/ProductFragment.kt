@@ -20,6 +20,7 @@ import com.example.tokoplastik.databinding.FragmentProductBinding
 import com.example.tokoplastik.ui.base.BaseFragment
 import com.example.tokoplastik.util.Resource
 import com.example.tokoplastik.util.handleApiError
+import com.example.tokoplastik.util.visible
 import com.example.tokoplastik.viewmodel.ProductViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -36,6 +37,8 @@ class ProductFragment : BaseFragment<ProductViewModel, FragmentProductBinding, P
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.productProgressBar.visible(false)
 
         getProduct = listOf()
 
@@ -87,18 +90,23 @@ class ProductFragment : BaseFragment<ProductViewModel, FragmentProductBinding, P
         viewModel.getProduct()
         viewModel.product.observe(viewLifecycleOwner) { result ->
             binding.swipeRefreshProduct.isRefreshing = false
+            binding.productProgressBar.visible(result is Resource.Loading)
 
             when (result) {
                 is Resource.Success -> {
+                    binding.productProgressBar.visible(false)
                     result.data?.let { response ->
                         getProduct = response.data
                         productAdapter.updateList(getProduct)
                     }
                 }
                 is Resource.Failure -> {
+                    binding.productProgressBar.visible(false)
                     handleApiError(result)
                 }
-                is Resource.Loading -> {  }
+                is Resource.Loading -> {
+                    binding.productProgressBar.visible(true)
+                }
             }
         }
     }

@@ -91,7 +91,21 @@ class CheckoutFragment :
                 val selectedProduct = result.data?.data?.find { it.name == selectedProductName }
                 if (selectedProduct != null) {
                     viewModel.selectProduct(selectedProduct.id)
-                    hideKeyboard()
+                    if (viewModel.unsignedproductPrice != true) {
+                        hideKeyboard()
+                    } else {
+                        SweetAlertDialog(requireContext(), SweetAlertDialog.ERROR_TYPE).apply {
+                            titleText = "No Price Found"
+                            contentText = "Produk ini belum memiliki data harga. Silakan tambahkan harga terlebih dahulu."
+                            setConfirmButton("OK") {
+                                dismissWithAnimation()
+                                binding.productDropdown.text = null
+                            }
+                            setCancelable(false)
+                            setCanceledOnTouchOutside(false)
+                            show()
+                        }
+                    }
                 }
             }
 

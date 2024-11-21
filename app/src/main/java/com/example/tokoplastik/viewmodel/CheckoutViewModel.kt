@@ -5,6 +5,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.fragment.findNavController
+import cn.pedant.SweetAlert.SweetAlertDialog
+import com.example.tokoplastik.R
 import com.example.tokoplastik.data.repository.CheckoutRepository
 import com.example.tokoplastik.data.responses.AddProductResponse
 import com.example.tokoplastik.data.responses.CartItem
@@ -46,6 +49,7 @@ class CheckoutViewModel(
     private var selectedProductPriceProducts: Resource<ProductPricesResponses>? = null
     private var selectedProductPrices: List<ProductPrice> = emptyList()
     var currentCartItems = mutableListOf<CartItem>()
+    var unsignedproductPrice: Boolean = false
 
 
     fun getProducts() = viewModelScope.launch {
@@ -65,6 +69,7 @@ class CheckoutViewModel(
         val product = selectedProduct?.data
 
         if (product != null && selectedProductPrices.isNotEmpty()) {
+            unsignedproductPrice = false
             val defaultPrice = selectedProductPrices.first()
             val cartItem = CartItem(
                 product = product,
@@ -79,6 +84,8 @@ class CheckoutViewModel(
 
             selectedProduct = null
             selectedProductPrices = emptyList()
+        } else {
+            unsignedproductPrice = true
         }
     }
 

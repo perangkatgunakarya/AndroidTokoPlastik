@@ -1,8 +1,10 @@
 package com.example.tokoplastik.ui.auth
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
@@ -29,7 +31,6 @@ class LoginFragment: BaseFragment<AuthViewModel, FragmentLoginBinding, AuthRepos
 
         viewModel.loginResponses.observe(viewLifecycleOwner, Observer {
 
-            // Show progress bar only while loading
             binding.loginProgressBar.visible(it is Resource.Loading)
 
             when(it) {
@@ -46,6 +47,7 @@ class LoginFragment: BaseFragment<AuthViewModel, FragmentLoginBinding, AuthRepos
                 }
                 is Resource.Loading -> {
                     binding.loginProgressBar.visible(true)
+                    hideKeyboard()
                 }
             }
         })
@@ -66,6 +68,12 @@ class LoginFragment: BaseFragment<AuthViewModel, FragmentLoginBinding, AuthRepos
 
         // @TODO add input validation
         viewModel.login(email, password)
+    }
+
+    private fun hideKeyboard() {
+        val imm =
+            requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(requireView().windowToken, 0)
     }
 
     override fun getViewModel() = AuthViewModel::class.java
