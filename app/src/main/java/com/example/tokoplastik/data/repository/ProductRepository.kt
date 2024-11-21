@@ -15,4 +15,8 @@ class ProductRepository (
     suspend fun getProductDetail(productId: Int) = safeApiCall {
         api.getProductDetail(productId)
     }
+
+    suspend fun deleteProduct(productId: Int) = safeApiCall {
+        api.deleteProduct(productId)
+    }
 }

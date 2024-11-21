@@ -6,9 +6,14 @@ data class AddProductPricesResponses(
     val success: Boolean
 )
 
-
 data class ProductPricesResponses(
     val data: List<ProductPrice>,
+    val message: String,
+    val success: Boolean
+)
+
+data class DeleteProductPricesResponses(
+    val data: List<Any>,
     val message: String,
     val success: Boolean
 )

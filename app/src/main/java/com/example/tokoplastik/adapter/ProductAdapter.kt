@@ -1,15 +1,20 @@
 package com.example.tokoplastik.adapter
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.tokoplastik.data.responses.GetProduct
 import com.example.tokoplastik.databinding.ProductListLayoutBinding
 
-class ProductAdapter (private var productList: List<GetProduct>) : RecyclerView.Adapter<ProductAdapter.ViewHolder> () {
+class ProductAdapter(
+    private val onDeleteItem: (GetProduct) -> Unit
+) : RecyclerView.Adapter<ProductAdapter.ViewHolder> () {
 
-    private var originalList = listOf<GetProduct>()  // Store original list
-    private var filteredList = listOf<GetProduct>()  // Store filtered list
+    private var originalList = mutableListOf<GetProduct>()
+    private var filteredList = mutableListOf<GetProduct>()
     private var onItemClickListener: ((GetProduct) -> Unit)? = null
 
     fun setOnItemClickListener(listener: (GetProduct) -> Unit) {
@@ -17,21 +22,87 @@ class ProductAdapter (private var productList: List<GetProduct>) : RecyclerView.
     }
 
     fun updateList(newProducts: List<GetProduct>) {
-        originalList = newProducts
-        filteredList = newProducts  // Initialize filtered list with all products
+        originalList.clear()
+        originalList.addAll(newProducts)
+        filteredList.clear()
+        filteredList.addAll(newProducts)
         notifyDataSetChanged()
+    }
+
+    fun removeItem(product: GetProduct) {
+        val originalIndex = originalList.indexOfFirst { it == product }
+        val filteredIndex = filteredList.indexOfFirst { it == product }
+
+        if (originalIndex != -1) {
+            originalList.removeAt(originalIndex)
+        }
+        if (filteredIndex != -1) {
+            filteredList.removeAt(filteredIndex)
+            notifyItemRemoved(filteredIndex)
+        }
     }
 
     fun filterProducts(query: String) {
         filteredList = if (query.isEmpty()) {
-            originalList  // If query is empty, show all products
+            originalList.toMutableList()
         } else {
             originalList.filter {
                 it.name.contains(query, ignoreCase = true) ||
                         it.supplier.contains(query, ignoreCase = true)
-            }
+            }.toMutableList()
         }
         notifyDataSetChanged()
+    }
+
+
+    companion object {
+        fun createSwipeToDelete(
+            adapter: ProductAdapter,
+            context: Context
+        ): ItemTouchHelper.SimpleCallback {
+            return object : ItemTouchHelper.SimpleCallback (
+                0,
+                ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+            ) {
+                override fun onMove(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder,
+                    target: RecyclerView.ViewHolder
+                ): Boolean = false
+
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                    val position = viewHolder.adapterPosition
+                    val item = adapter.originalList[position]
+
+                    SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE)
+                        .setTitleText("Hapus Produk")
+                        .setContentText("Apakah Anda yakin ingin menghapus produk ini?")
+                        .setConfirmText("Hapus")
+                        .setConfirmClickListener { sDialog ->
+                            adapter.removeItem(item)
+                            adapter.onDeleteItem(item)
+                            sDialog.dismissWithAnimation()
+                            confirm()
+                        }
+                        .setCancelText("Cancel")
+                        .setCancelClickListener { sDialog ->
+                            adapter.notifyItemChanged(position)
+                            sDialog.dismissWithAnimation()
+                        }
+                        .show()
+                }
+
+                fun confirm() {
+                    SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE).apply {
+                        contentText = "Produk Berhasil Dihapus"
+                        setConfirmButton("OK") {
+                            dismissWithAnimation()
+                        }
+                        show()
+                    }
+                }
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -46,23 +117,23 @@ class ProductAdapter (private var productList: List<GetProduct>) : RecyclerView.
         holder.bind(currentProduct)
     }
 
-    override fun getItemCount() = filteredList.size  // Return filtered list size
+    override fun getItemCount() = filteredList.size
 
     fun sortByName(ascending: Boolean = true) {
         filteredList = if (ascending) {
-            filteredList.sortedBy { it.name }
+            filteredList.sortedBy { it.name }.toMutableList()
         } else {
             filteredList.sortedByDescending { it.name }
-        }
+        }.toMutableList()
         notifyDataSetChanged()
     }
 
     fun sortByPrice(ascending: Boolean = true) {
         filteredList = if (ascending) {
-            filteredList.sortedBy { it.capitalPrice }
+            filteredList.sortedBy { it.capitalPrice }.toMutableList()
         } else {
             filteredList.sortedByDescending { it.capitalPrice }
-        }
+        }.toMutableList()
         notifyDataSetChanged()
     }
 

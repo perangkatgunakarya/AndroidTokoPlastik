@@ -1,15 +1,17 @@
 package com.example.tokoplastik.adapter
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.example.tokoplastik.data.responses.GetProduct
+import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.tokoplastik.data.responses.ProductPrice
 import com.example.tokoplastik.databinding.ProductPriceListLayoutBinding
 
-class ProductPricesAdapter : RecyclerView.Adapter<ProductPricesAdapter.ViewHolder>() {
+class ProductPricesAdapter(
+    private val onDeleteItem: (ProductPrice) -> Unit
+) : RecyclerView.Adapter<ProductPricesAdapter.ViewHolder>() {
 
     private var productList = mutableListOf<ProductPrice>()
 
@@ -27,6 +29,55 @@ class ProductPricesAdapter : RecyclerView.Adapter<ProductPricesAdapter.ViewHolde
         productList.clear()
         productList.addAll(newProductsPrices)
         notifyDataSetChanged()
+    }
+
+    companion object {
+        fun createSwipeToDelete(
+            adapter: ProductPricesAdapter,
+            context: Context
+        ): ItemTouchHelper.SimpleCallback {
+            return object : ItemTouchHelper.SimpleCallback (
+                0,
+                ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+            ) {
+                override fun onMove(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder,
+                    target: RecyclerView.ViewHolder
+                ): Boolean = false
+
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                    val position = viewHolder.adapterPosition
+                    val item = adapter.productList[position]
+
+                    SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE)
+                        .setTitleText("Hapus Harga Produk")
+                        .setContentText("Apakah Anda yakin ingin menghapus harga produk?")
+                        .setConfirmText("Hapus")
+                        .setConfirmClickListener { sDialog ->
+                            adapter.onDeleteItem(item)
+                            sDialog.dismissWithAnimation()
+                            confirm()
+                        }
+                        .setCancelText("Cancel")
+                        .setCancelClickListener { sDialog ->
+                            adapter.notifyItemChanged(position)
+                            sDialog.dismissWithAnimation()
+                        }
+                        .show()
+                }
+
+                fun confirm() {
+                    SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE).apply {
+                        contentText = "Harga Produk Berhasil Dihapus"
+                        setConfirmButton("OK") {
+                            dismissWithAnimation()
+                        }
+                        show()
+                    }
+                }
+            }
+        }
     }
 
     override fun getItemCount() = productList.size

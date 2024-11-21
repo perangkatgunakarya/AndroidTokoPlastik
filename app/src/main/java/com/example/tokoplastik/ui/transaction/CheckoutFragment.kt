@@ -24,7 +24,6 @@ import com.example.tokoplastik.data.responses.Transaction
 import com.example.tokoplastik.databinding.FragmentCheckoutBinding
 import com.example.tokoplastik.ui.base.BaseFragment
 import com.example.tokoplastik.util.ReceiptGenerator
-import com.example.tokoplastik.util.ReceiptHandler
 import com.example.tokoplastik.util.Resource
 import com.example.tokoplastik.util.handleApiError
 import com.example.tokoplastik.viewmodel.CheckoutViewModel

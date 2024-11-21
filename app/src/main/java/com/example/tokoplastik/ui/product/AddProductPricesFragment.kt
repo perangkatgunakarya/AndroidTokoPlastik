@@ -10,6 +10,8 @@ import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.tokoplastik.adapter.ProductPricesAdapter
 import com.example.tokoplastik.data.network.AddProductPricesApi
 import com.example.tokoplastik.data.repository.AddProductPricesRepository
@@ -27,7 +29,7 @@ class AddProductPricesFragment :
     BaseFragment<AddProductPricesViewModel, FragmentAddProductPricesBinding, AddProductPricesRepository>() {
 
     private val args: AddProductPricesFragmentArgs by navArgs()
-    private val adapter = ProductPricesAdapter()
+    private lateinit var pricesAdapter: ProductPricesAdapter
     private lateinit var getProductPrices: List<ProductPrice>
     private var productId: Int = -1
 
@@ -61,10 +63,19 @@ class AddProductPricesFragment :
     }
 
     private fun setupViews() {
-        binding.productPricesRecyclerView.adapter = adapter
-        binding.productPricesRecyclerView.addItemDecoration(
-            DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+        pricesAdapter = ProductPricesAdapter (
+            onDeleteItem = { item ->
+                viewModel.deleteProductPrice(item.id)
+            }
         )
+        binding.productPricesRecyclerView.apply {
+            adapter = pricesAdapter
+            layoutManager = LinearLayoutManager(requireContext())
+
+            val swipeToDeleteCallback = ProductPricesAdapter.createSwipeToDelete(pricesAdapter, this.context)
+            val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)
+            itemTouchHelper.attachToRecyclerView(this)
+        }
 
         binding.buttonAddPrice.setOnClickListener {
             val unit = binding.unitSpinner.selectedItem.toString()
@@ -115,8 +126,8 @@ class AddProductPricesFragment :
                     result.data?.let { response ->
                         getProductPrices = response.data
                         Log.d("ProductPrices", "Received ${getProductPrices.size} items")
-                        adapter.updateList(getProductPrices)
-                        adapter.notifyDataSetChanged()
+                        pricesAdapter.updateList(getProductPrices)
+                        pricesAdapter.notifyDataSetChanged()
                     }
                 }
 

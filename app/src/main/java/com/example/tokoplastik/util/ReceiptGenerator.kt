@@ -56,13 +56,14 @@ class ReceiptGenerator(
 
             val headerTable = PdfPTable(2)
             headerTable.widthPercentage = 100f
-            headerTable.setWidths(floatArrayOf(1f, 1f))
+            headerTable.setWidths(floatArrayOf(5f, 5f))
 
             val customerInfoCell = PdfPCell().apply {
                 border = Rectangle.NO_BORDER
-                val customerFont = FontFactory.getFont(FontFactory.HELVETICA, 12f, grayText)
+                val customerFont = FontFactory.getFont(FontFactory.HELVETICA, 13f, BaseColor.BLACK)
+                val addressFont = FontFactory.getFont(FontFactory.HELVETICA, 12f, grayText)
                 addElement(Paragraph(orderData.customer.name, customerFont))
-                addElement(Paragraph(orderData.customer.address, customerFont))
+                addElement(Paragraph(orderData.customer.address, addressFont))
             }
 
             val invoiceDetailsCell = PdfPCell().apply {
@@ -71,7 +72,7 @@ class ReceiptGenerator(
                 val detailsFont = FontFactory.getFont(FontFactory.HELVETICA, 11f)
                 addElement(Paragraph("Referensi    : TPHA-${orderId}", detailsFont))
                 addElement(Paragraph("Tanggal      : ${SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(Date())}", detailsFont))
-                addElement(Paragraph("Status       : ${orderData.paymentStatus}", detailsFont))
+                addElement(Paragraph("Status        : ${orderData.paymentStatus}", detailsFont))
             }
 
             headerTable.addCell(customerInfoCell)
@@ -85,10 +86,10 @@ class ReceiptGenerator(
 
             val table = PdfPTable(5)
             table.widthPercentage = 100f
-            table.setWidths(floatArrayOf(2.5f, 1f, 1.5f, 1f, 1.5f))
+            table.setWidths(floatArrayOf(0.5f, 1.5f, 2.5f, 1.5f, 1.5f))
 
             val headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11f, BaseColor.WHITE)
-            arrayOf("Produk", "Kuantitas", "Harga", "Unit", "Jumlah").forEach { header ->
+            arrayOf("NO", "BANYAKNYA", "NAMA ITEM", "HARGA",  "JUMLAH").forEach { header ->
                 val cell = PdfPCell(Phrase(header, headerFont))
                 cell.backgroundColor = blueHeader
                 cell.setPadding(8f)
@@ -100,12 +101,13 @@ class ReceiptGenerator(
             val contentFont = FontFactory.getFont(FontFactory.HELVETICA, 10f)
             var isAlternateRow = false
 
+            var index: Int = 0
             cartItems.forEach { item ->
                 val cells = arrayOf(
+                    "${++index}",
+                    "${item.quantity} ${item.selectedPrice.unit}",
                     item.product?.data?.name,
-                    item.quantity.toString(),
                     String.format("Rp %,d", item.customPrice),
-                    item.selectedPrice.unit,
                     String.format("Rp %,d", item.customPrice * item.quantity)
                 )
 
@@ -124,8 +126,6 @@ class ReceiptGenerator(
             document.add(table)
             document.add(Paragraph("\n"))
 
-            val totalFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11f)
-
             val totalPara = Paragraph(
                 "Total: ${String.format("Rp %,d", orderData.total.toLong())}",
                 FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12f, blueHeader)
@@ -136,7 +136,7 @@ class ReceiptGenerator(
             document.add(Paragraph("\n\n"))
 
             val footer = Paragraph(
-                "Dengan Hormat,\n\n\n\nToko Plastik H. Ali\nH. Ali",
+                "Dengan Hormat,\n\n\n\nToko Plastik H. Ali\n",
                 FontFactory.getFont(FontFactory.HELVETICA, 11f)
             )
             footer.alignment = Element.ALIGN_CENTER

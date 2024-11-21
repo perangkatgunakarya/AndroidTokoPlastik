@@ -8,8 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.tokoplastik.R
 import com.example.tokoplastik.adapter.ProductAdapter
@@ -64,7 +63,12 @@ class ProductFragment : BaseFragment<ProductViewModel, FragmentProductBinding, P
     }
 
     private fun setupRecyclerView() {
-        productAdapter = ProductAdapter(getProduct).apply {
+        productAdapter = ProductAdapter(
+            onDeleteItem = { item ->
+                viewModel.deleteProduct(item.id)
+            }
+        )
+        productAdapter.apply {
             setOnItemClickListener { product ->
                     val intent = Intent(requireContext(), AddProductActivity::class.java).apply {
                         putExtra("openProductPriceFragment", true)
@@ -77,12 +81,10 @@ class ProductFragment : BaseFragment<ProductViewModel, FragmentProductBinding, P
         binding.productRecycler.apply {
             adapter = productAdapter
             layoutManager = LinearLayoutManager(requireContext())
-            addItemDecoration(
-                DividerItemDecoration(
-                    requireContext(),
-                    DividerItemDecoration.VERTICAL
-                )
-            )
+
+            val swipeToDeleteCallback = ProductAdapter.createSwipeToDelete(productAdapter, this.context)
+            val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)
+            itemTouchHelper.attachToRecyclerView(this)
         }
     }
 

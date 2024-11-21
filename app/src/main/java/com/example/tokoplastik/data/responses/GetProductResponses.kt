@@ -19,3 +19,9 @@ data class AddProductResponse(
     val message: String,
     val success: Boolean
 )
+
+data class DeleteProductResponse(
+    val data: List<Any>,
+    val message: String,
+    val success: Boolean
+)

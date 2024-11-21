@@ -13,4 +13,8 @@ class AddProductPricesRepository (
     suspend fun addProductPrices(product: AddProductPrices) = safeApiCall {
         api.addProductPrices(AddProductPrices(product.productId, product.price, product.unit, product.quantityPerUnit))
     }
+
+    suspend fun deleteProductPrices(productId: Int) = safeApiCall {
+        api.deleteProductPrices(productId)
+    }
 }

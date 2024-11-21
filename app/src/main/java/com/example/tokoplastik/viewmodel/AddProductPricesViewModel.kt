@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.tokoplastik.data.repository.AddProductPricesRepository
 import com.example.tokoplastik.data.responses.AddProductPrices
 import com.example.tokoplastik.data.responses.AddProductPricesResponses
+import com.example.tokoplastik.data.responses.DeleteProductPricesResponses
 import com.example.tokoplastik.data.responses.ProductPricesResponses
 import com.example.tokoplastik.ui.base.BaseViewModel
 import com.example.tokoplastik.util.Resource
@@ -23,6 +24,9 @@ class AddProductPricesViewModel(
     private val _productPrices: MutableLiveData<Resource<ProductPricesResponses>> = MutableLiveData()
     val productPrices: LiveData<Resource<ProductPricesResponses>> = _productPrices
 
+    private val _deleteResult: MutableLiveData<Resource<DeleteProductPricesResponses>> = MutableLiveData()
+    val deleteResult: LiveData<Resource<DeleteProductPricesResponses>> = _deleteResult
+
     fun addProductPrices(productId: Int, price: Int, unit: String, quantityPerUnit: String) = viewModelScope.launch {
         _addProductPrices.postValue(Resource.Loading)
         val product = AddProductPrices(productId, price, unit, quantityPerUnit)
@@ -35,6 +39,13 @@ class AddProductPricesViewModel(
         viewModelScope.launch {
             _productPrices.value = Resource.Loading
             _productPrices.value = repository.getProductPrices(productId)
+        }
+    }
+
+    fun deleteProductPrice(productId: Int) {
+        viewModelScope.launch {
+            _deleteResult.value = Resource.Loading
+            _deleteResult.value = repository.deleteProductPrices(productId)
         }
     }
 }
