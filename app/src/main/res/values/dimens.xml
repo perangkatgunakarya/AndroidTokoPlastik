@@ -7,4 +7,5 @@
     <dimen name="edit_text_height">60dp</dimen>
     <dimen name="medium_button_width">200dp</dimen>
     <dimen name="medium_button_height">55dp</dimen>
+    <dimen name="keyboard_padding">120dp</dimen>
 </resources>

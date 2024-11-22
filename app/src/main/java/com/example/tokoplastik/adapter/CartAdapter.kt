@@ -21,7 +21,8 @@ class CartAdapter(
     private val onQuantityChanged: (CartItem, Int) -> Unit,
     private val onPriceChanged: (CartItem, Int) -> Unit,
     private val onUnitChanged: (CartItem, ProductPrice) -> Unit,
-    private val onDeleteItem: (CartItem) -> Unit
+    private val onDeleteItem: (CartItem) -> Unit,
+    private val onItemFocused: (Int) -> Unit
 ) : RecyclerView.Adapter<CartAdapter.CartViewHolder>() {
     private var items = mutableListOf<CartItem>()
     private var tempPrices = mutableMapOf<Int, Int>()
@@ -55,9 +56,10 @@ class CartAdapter(
                 }
 
                 if (!priceEdit.hasFocus()) {
-                    // Use temporary price if exists, otherwise use item's price
                     val price = tempPrices[adapterPosition] ?: item.customPrice
                     priceEdit.setText(price.toString())
+                } else {
+                    onItemFocused(absoluteAdapterPosition)
                 }
 
                 priceEdit.imeOptions = EditorInfo.IME_ACTION_DONE
@@ -67,7 +69,7 @@ class CartAdapter(
                     if (actionId == EditorInfo.IME_ACTION_DONE) {
                         tempPrices[adapterPosition]?.let { price ->
                             onPriceChanged(item, price)
-                            tempPrices.remove(adapterPosition) // Clear temporary price
+                            tempPrices.remove(adapterPosition)
                         }
                         priceEdit.clearFocus()
                         true

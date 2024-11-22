@@ -6,9 +6,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -45,8 +49,24 @@ class CheckoutFragment :
         val data: CheckoutFragmentArgs by navArgs()
         viewModel.customerId = data.customerId.toInt()
 
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val imeHeight = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
+            binding.cartRecyclerView.updatePadding(bottom = imeHeight)
+            insets
+        }
+
         setupViews()
         setupObservers()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
     }
 
     private fun setupViews() {
@@ -62,6 +82,15 @@ class CheckoutFragment :
             },
             onDeleteItem = { item ->
                 viewModel.removeCartItem(item)
+            },
+            onItemFocused = { position ->
+                binding.cartRecyclerView.postDelayed({
+                    try {
+                        binding.cartRecyclerView.smoothScrollToPosition(position)
+                    } catch (e: Exception) {
+                        Log.e("CheckoutFragment", "Scroll error: ${e.message}")
+                    }
+                }, 100)
             }
         )
         binding.cartRecyclerView.apply {
