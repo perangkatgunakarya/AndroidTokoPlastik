@@ -1,5 +1,6 @@
 package com.example.tokoplastik.data.network
 
+import com.example.tokoplastik.data.responses.AllTransactionResponses
 import com.example.tokoplastik.data.responses.GetProductByIdResponses
 import com.example.tokoplastik.data.responses.GetProductResponses
 import com.example.tokoplastik.data.responses.ProductPricesResponses
@@ -30,4 +31,8 @@ interface CheckoutApi {
     suspend fun addTransaction(
         @Body transaction: TransactionRequest
     ): TransactionResponses
+
+    @GET("transaction")
+    suspend fun getTransaction(): AllTransactionResponses
+
 }

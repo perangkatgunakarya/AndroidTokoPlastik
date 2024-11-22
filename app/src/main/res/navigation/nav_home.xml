@@ -60,4 +60,9 @@
             android:id="@+id/action_checkoutFragment_to_transactionFragment"
             app:destination="@id/transactionFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/historyFragment"
+        android:name="com.example.tokoplastik.ui.history.HistoryFragment"
+        android:label="fragment_history"
+        tools:layout="@layout/fragment_history" />
 </navigation>

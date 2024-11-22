@@ -1,7 +1,22 @@
 package com.example.tokoplastik.data.responses
 
-import com.example.tokoplastik.util.Resource
 import com.google.gson.annotations.SerializedName
+
+data class AllTransaction(
+    val id: Int,
+    @SerializedName("user_id")
+    val userId: Int,
+    @SerializedName("customer_id")
+    val customerId: Int,
+    val total: Int,
+    @SerializedName("status")
+    val paymentStatus: String,
+    val customer: Customer,
+    @SerializedName("created_at")
+    val createdAt: String,
+    @SerializedName("updated_at")
+    val updatedAt: String
+)
 
 data class Transaction(
     @SerializedName("customer_id")

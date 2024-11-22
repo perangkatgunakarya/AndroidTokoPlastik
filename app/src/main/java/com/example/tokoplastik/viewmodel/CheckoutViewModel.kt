@@ -10,6 +10,7 @@ import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.tokoplastik.R
 import com.example.tokoplastik.data.repository.CheckoutRepository
 import com.example.tokoplastik.data.responses.AddProductResponse
+import com.example.tokoplastik.data.responses.AllTransactionResponses
 import com.example.tokoplastik.data.responses.CartItem
 import com.example.tokoplastik.data.responses.GetProduct
 import com.example.tokoplastik.data.responses.GetProductByIdResponses
@@ -41,6 +42,10 @@ class CheckoutViewModel(
     private val _checkoutStatus = MutableLiveData<Boolean>()
     val checkoutStatus: LiveData<Boolean> = _checkoutStatus
 
+    private val _transactions = MutableLiveData<Resource<AllTransactionResponses>>()
+    val transactions: LiveData<Resource<AllTransactionResponses>>
+        get() = _transactions
+
     private val _addTransaction: MutableLiveData<Resource<TransactionResponses>> = MutableLiveData()
     val addTransaction: LiveData<Resource<TransactionResponses>>
         get() = _addTransaction
@@ -51,6 +56,10 @@ class CheckoutViewModel(
     var currentCartItems = mutableListOf<CartItem>()
     var unsignedproductPrice: Boolean = false
 
+    fun getTransactions() = viewModelScope.launch {
+        _transactions.value = Resource.Loading
+        _transactions.value = repository.getTransactions()
+    }
 
     fun getProducts() = viewModelScope.launch {
         _product.value = Resource.Loading
