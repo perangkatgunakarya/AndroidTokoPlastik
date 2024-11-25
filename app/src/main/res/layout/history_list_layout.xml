@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginTop="10dp"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="5dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp"
+        android:paddingBottom="20dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp" >
+
+        <TextView
+            android:id="@+id/customer_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="NAMA CUSTOMER"
+            style="@style/h3_bold"
+            android:maxLines="2"
+            android:ellipsize="end"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"/>
+
+        <TextView
+            android:id="@+id/date_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="19 Okt 2024"
+            style="@style/p"
+            app:layout_constraintTop_toBottomOf="@id/customer_text"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"/>
+
+        <TextView
+            android:id="@+id/clock_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="10:00"
+            style="@style/p"
+            app:layout_constraintStart_toEndOf="@id/date_text"
+            app:layout_constraintTop_toBottomOf="@id/customer_text"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"/>
+
+        <TextView
+            android:id="@+id/total_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TOTAL : "
+            style="@style/h4_bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/clock_text"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="10dp" />
+
+        <TextView
+            android:id="@+id/total_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rp. 100.000"
+            style="@style/h4_bold"
+            app:layout_constraintTop_toBottomOf="@id/date_text"
+            app:layout_constraintStart_toEndOf="@id/total_title"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"/>
+
+        <ImageView
+            android:id="@+id/cap_lunas"
+            android:layout_width="100dp"
+            android:layout_height="70dp"
+            android:src="@drawable/cap_lunas"
+            app:layout_constraintStart_toEndOf="@id/clock_text"
+            app:layout_constraintTop_toBottomOf="@id/customer_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="80dp"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>
