@@ -4,6 +4,7 @@ import com.example.tokoplastik.data.responses.AllTransactionResponses
 import com.example.tokoplastik.data.responses.GetProductByIdResponses
 import com.example.tokoplastik.data.responses.GetProductResponses
 import com.example.tokoplastik.data.responses.ProductPricesResponses
+import com.example.tokoplastik.data.responses.TransactionDetailResponses
 import com.example.tokoplastik.data.responses.TransactionRequest
 import com.example.tokoplastik.data.responses.TransactionResponses
 import retrofit2.http.Body
@@ -35,4 +36,8 @@ interface CheckoutApi {
     @GET("transaction")
     suspend fun getTransaction(): AllTransactionResponses
 
+    @GET("transaction/{transactionId}")
+    suspend fun getTransactionDetail(
+        @Path("transactionId") transactionId: Int
+    ): TransactionDetailResponses
 }

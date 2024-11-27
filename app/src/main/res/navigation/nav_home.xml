@@ -60,9 +60,24 @@
             android:id="@+id/action_checkoutFragment_to_transactionFragment"
             app:destination="@id/transactionFragment" />
     </fragment>
+
     <fragment
         android:id="@+id/historyFragment"
         android:name="com.example.tokoplastik.ui.history.HistoryFragment"
         android:label="fragment_history"
-        tools:layout="@layout/fragment_history" />
+        tools:layout="@layout/fragment_history">
+        <action
+            android:id="@+id/action_historyFragment_to_detailHistoryFragment"
+            app:destination="@id/detailHistoryFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/detailHistoryFragment"
+        android:name="com.example.tokoplastik.ui.history.DetailHistoryFragment"
+        android:label="fragment_detail_history"
+        tools:layout="@layout/fragment_detail_history">
+        <argument
+            android:name="transactionId"
+            app:argType="integer" />
+    </fragment>
 </navigation>

@@ -72,3 +72,39 @@ data class CartItem(
     var customPrice: Int = 0,
     var paymentStatus: String
 )
+
+
+data class TransactionDetail(
+    @SerializedName("customer_id")
+    val customerId: Int,
+    val total: Int,
+    @SerializedName("status")
+    val paymentStatus: String,
+    @SerializedName("user_id")
+    val userId: Int,
+    @SerializedName("updated_at")
+    val updatedAt: String,
+    @SerializedName("created_at")
+    val createdAt: String,
+    val id: Int,
+    @SerializedName("transaction_product")
+    val transactionProduct: List<TransactionDetailProduct>,
+    val customer: Customer
+)
+
+data class TransactionDetailProduct(
+    val id: Int,
+    @SerializedName("transaction_id")
+    val transactionId: Int,
+    @SerializedName("product_price_id")
+    val productPriceId: Int,
+    @SerializedName("price_adjustment")
+    val priceAdjustment: Int,
+    val quantity: Int,
+    @SerializedName("created_at")
+    val createdAt: String,
+    @SerializedName("updated_at")
+    val updatedAt: String,
+    @SerializedName("product_price")
+    val productPrice: ProductPrice
+)

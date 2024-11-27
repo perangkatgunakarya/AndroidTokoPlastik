@@ -26,4 +26,8 @@ class CheckoutRepository (
     suspend fun getTransactions() = safeApiCall {
         api.getTransaction()
     }
+
+    suspend fun getTransactionDetail(transactionId: Int) = safeApiCall {
+        api.getTransactionDetail(transactionId)
+    }
 }

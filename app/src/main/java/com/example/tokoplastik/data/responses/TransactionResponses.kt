@@ -11,3 +11,9 @@ data class TransactionResponses(
     val message: String,
     val success: Boolean
 )
+
+data class TransactionDetailResponses(
+    val data: TransactionDetail,
+    val message: String,
+    val success: Boolean
+)

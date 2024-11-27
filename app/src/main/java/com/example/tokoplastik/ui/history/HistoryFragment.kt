@@ -6,8 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import androidx.appcompat.widget.SearchView
-import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.tokoplastik.R
 import com.example.tokoplastik.adapter.HistoryAdapter
@@ -51,8 +51,10 @@ class HistoryFragment :
 
     private fun setupRecyclerView() {
         historyAdapter = HistoryAdapter().apply {
-            setOnItemClickListener { product ->
-                // @TODO make action to detail transaction fragment
+            setOnItemClickListener { transaction ->
+                val directions = HistoryFragmentDirections
+                    .actionHistoryFragmentToDetailHistoryFragment(transaction.id)
+                findNavController().navigate(directions)
             }
         }
         binding.historyRecycler.apply {

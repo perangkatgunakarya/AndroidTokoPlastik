@@ -1,15 +1,9 @@
 package com.example.tokoplastik.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.fragment.findNavController
-import cn.pedant.SweetAlert.SweetAlertDialog
-import com.example.tokoplastik.R
 import com.example.tokoplastik.data.repository.CheckoutRepository
-import com.example.tokoplastik.data.responses.AddProductResponse
 import com.example.tokoplastik.data.responses.AllTransactionResponses
 import com.example.tokoplastik.data.responses.CartItem
 import com.example.tokoplastik.data.responses.GetProduct
@@ -17,6 +11,7 @@ import com.example.tokoplastik.data.responses.GetProductByIdResponses
 import com.example.tokoplastik.data.responses.GetProductResponses
 import com.example.tokoplastik.data.responses.ProductPrice
 import com.example.tokoplastik.data.responses.ProductPricesResponses
+import com.example.tokoplastik.data.responses.TransactionDetailResponses
 import com.example.tokoplastik.data.responses.TransactionRequest
 import com.example.tokoplastik.data.responses.TransactionResponses
 import com.example.tokoplastik.ui.base.BaseViewModel
@@ -50,6 +45,10 @@ class CheckoutViewModel(
     val addTransaction: LiveData<Resource<TransactionResponses>>
         get() = _addTransaction
 
+    private val _transactionDetail: MutableLiveData<Resource<TransactionDetailResponses>> = MutableLiveData()
+    val transactionDetail: LiveData<Resource<TransactionDetailResponses>>
+        get() = _transactionDetail
+
     private var selectedProduct: Resource<GetProductByIdResponses>? = null
     private var selectedProductPriceProducts: Resource<ProductPricesResponses>? = null
     private var selectedProductPrices: List<ProductPrice> = emptyList()
@@ -59,6 +58,11 @@ class CheckoutViewModel(
     fun getTransactions() = viewModelScope.launch {
         _transactions.value = Resource.Loading
         _transactions.value = repository.getTransactions()
+    }
+
+    fun getTransactionDetail(transactionId: Int) = viewModelScope.launch {
+        _transactionDetail.value = Resource.Loading
+        _transactionDetail.value = repository.getTransactionDetail(transactionId)
     }
 
     fun getProducts() = viewModelScope.launch {
