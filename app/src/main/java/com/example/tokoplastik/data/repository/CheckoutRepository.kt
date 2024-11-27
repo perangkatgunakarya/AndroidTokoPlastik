@@ -1,6 +1,7 @@
 package com.example.tokoplastik.data.repository
 
 import com.example.tokoplastik.data.network.CheckoutApi
+import com.example.tokoplastik.data.responses.PaymentStatusUpdateRequest
 import com.example.tokoplastik.data.responses.TransactionRequest
 
 class CheckoutRepository (
@@ -29,5 +30,9 @@ class CheckoutRepository (
 
     suspend fun getTransactionDetail(transactionId: Int) = safeApiCall {
         api.getTransactionDetail(transactionId)
+    }
+
+    suspend fun setPaymentStatus(transactionId: Int, statusUpdateRequest: PaymentStatusUpdateRequest) = safeApiCall {
+        api.setPaymentStatus(transactionId, statusUpdateRequest)
     }
 }

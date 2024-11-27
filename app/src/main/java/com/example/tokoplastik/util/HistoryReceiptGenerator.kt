@@ -5,22 +5,31 @@ import android.content.Intent
 import android.hardware.usb.UsbManager
 import android.os.Environment
 import androidx.core.content.FileProvider
-import com.example.tokoplastik.data.responses.CartItem
-import com.example.tokoplastik.data.responses.Transaction
-import com.itextpdf.text.*
+import com.example.tokoplastik.data.responses.TransactionDetail
+import com.example.tokoplastik.data.responses.TransactionDetailProduct
+import com.itextpdf.text.BaseColor
+import com.itextpdf.text.Document
+import com.itextpdf.text.Element
+import com.itextpdf.text.FontFactory
+import com.itextpdf.text.PageSize
+import com.itextpdf.text.Paragraph
+import com.itextpdf.text.Phrase
+import com.itextpdf.text.Rectangle
 import com.itextpdf.text.pdf.PdfPCell
 import com.itextpdf.text.pdf.PdfPTable
 import com.itextpdf.text.pdf.PdfWriter
-import java.io.*
+import java.io.File
+import java.io.FileOutputStream
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
-class ReceiptGenerator(
+class HistoryReceiptGenerator (
     private val context: Context
 ) {
     fun generatedPdfReceipt(
-        orderData: Transaction,
-        cartItems: List<CartItem>,
+        orderData: TransactionDetail,
+        cartItems: List<TransactionDetailProduct>,
         orderId: String
     ): File {
         val filename = "Invoice_${orderId}.pdf"
@@ -66,7 +75,12 @@ class ReceiptGenerator(
                 horizontalAlignment = Element.ALIGN_RIGHT
                 val detailsFont = FontFactory.getFont(FontFactory.HELVETICA, 11f)
                 addElement(Paragraph("Referensi    : TPHA-${orderId}", detailsFont))
-                addElement(Paragraph("Tanggal      : ${SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(Date())}", detailsFont))
+                addElement(
+                    Paragraph("Tanggal      : ${
+                        SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(
+                            Date()
+                        )}", detailsFont)
+                )
                 addElement(Paragraph("Status        : ${orderData.paymentStatus}", detailsFont))
             }
 
@@ -100,10 +114,10 @@ class ReceiptGenerator(
             cartItems.forEach { item ->
                 val cells = arrayOf(
                     "${++index}",
-                    "${item.quantity} ${item.selectedPrice.unit}",
-                    item.product?.data?.name,
-                    String.format("Rp %,d", item.customPrice),
-                    String.format("Rp %,d", item.customPrice * item.quantity)
+                    "${item.quantity} ${item.productPrice.unit}",
+                    item.productPrice.product.name,
+                    String.format("Rp %,d", item.priceAdjustment),
+                    String.format("Rp %,d", item.priceAdjustment * item.quantity)
                 )
 
                 cells.forEach { content ->
@@ -164,8 +178,8 @@ class ReceiptGenerator(
     }
 
     fun printReceipt(
-        orderData: Transaction,
-        cartItems: List<CartItem>,
+        orderData: TransactionDetail,
+        cartItems: List<TransactionDetailProduct>,
         orderId: String
     ) {
         val printerCommands = StringBuilder()
@@ -186,7 +200,10 @@ class ReceiptGenerator(
 
         printerCommands.append("\n")
         printerCommands.append("Referensi   : INV-${orderId}\n")
-        printerCommands.append("Tanggal     : ${SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(Date())}\n")
+        printerCommands.append("Tanggal     : ${
+            SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(
+                Date()
+            )}\n")
         printerCommands.append("STATUS      : ${orderData.paymentStatus}\n")
         printerCommands.append("\n")
 
@@ -200,14 +217,14 @@ class ReceiptGenerator(
         printerCommands.append("----------------------------------------\n")
 
         cartItems.forEach { item ->
-            printerCommands.append(String.format("%-15s\n", item.product?.data?.name))
+            printerCommands.append(String.format("%-15s\n", item.productPrice.product.name))
             printerCommands.append(
                 String.format(
                     "%8.0f x %-5d %8.0f%% %11.0f\n",
-                    item.customPrice,
+                    item.priceAdjustment,
                     item.quantity,
-                    item.selectedPrice.unit,
-                    item.customPrice * item.quantity
+                    item.productPrice.unit,
+                    item.priceAdjustment * item.quantity
                 )
             )
         }

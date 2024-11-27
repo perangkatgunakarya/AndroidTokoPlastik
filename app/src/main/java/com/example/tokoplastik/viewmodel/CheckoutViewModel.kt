@@ -9,6 +9,8 @@ import com.example.tokoplastik.data.responses.CartItem
 import com.example.tokoplastik.data.responses.GetProduct
 import com.example.tokoplastik.data.responses.GetProductByIdResponses
 import com.example.tokoplastik.data.responses.GetProductResponses
+import com.example.tokoplastik.data.responses.PaymentStatusUpdateRequest
+import com.example.tokoplastik.data.responses.PaymentStatusUpdateResponses
 import com.example.tokoplastik.data.responses.ProductPrice
 import com.example.tokoplastik.data.responses.ProductPricesResponses
 import com.example.tokoplastik.data.responses.TransactionDetailResponses
@@ -48,6 +50,10 @@ class CheckoutViewModel(
     private val _transactionDetail: MutableLiveData<Resource<TransactionDetailResponses>> = MutableLiveData()
     val transactionDetail: LiveData<Resource<TransactionDetailResponses>>
         get() = _transactionDetail
+
+    private val _paymentStatus: MutableLiveData<Resource<PaymentStatusUpdateResponses>> = MutableLiveData()
+    val paymentStatus: LiveData<Resource<PaymentStatusUpdateResponses>>
+        get() = _paymentStatus
 
     private var selectedProduct: Resource<GetProductByIdResponses>? = null
     private var selectedProductPriceProducts: Resource<ProductPricesResponses>? = null
@@ -142,5 +148,10 @@ class CheckoutViewModel(
         } catch (e: Exception) {
             _checkoutStatus.value = false
         }
+    }
+
+    fun updatePaymentStatus(transactionId: Int, status: String) = viewModelScope.launch {
+        val statusUpdateRequest = PaymentStatusUpdateRequest(status)
+        _paymentStatus.value = repository.setPaymentStatus(transactionId, statusUpdateRequest)
     }
 }

@@ -108,3 +108,7 @@ data class TransactionDetailProduct(
     @SerializedName("product_price")
     val productPrice: ProductPrice
 )
+
+data class PaymentStatusUpdateRequest(
+    val status: String
+)
