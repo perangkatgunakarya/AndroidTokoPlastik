@@ -24,6 +24,7 @@ class ViewModelFactory (
             modelClass.isAssignableFrom(AddProductPricesViewModel::class.java) -> AddProductPricesViewModel(repository as AddProductPricesRepository) as T
             modelClass.isAssignableFrom(TransactionViewModel::class.java) -> TransactionViewModel(repository as CustomerRepository) as T
             modelClass.isAssignableFrom(CheckoutViewModel::class.java) -> CheckoutViewModel(repository as CheckoutRepository) as T
+            modelClass.isAssignableFrom(CustomerViewModel::class.java) -> CustomerViewModel(repository as CustomerRepository) as T
             else -> throw IllegalArgumentException("ViewModelClass not found")
         }
     }

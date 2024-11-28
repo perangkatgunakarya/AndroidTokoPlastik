@@ -17,3 +17,24 @@ data class Customer(
     @SerializedName("updated_at")
     val updatedAt: String
 )
+
+data class AddCustomer(
+    val name: String,
+    val address: String,
+    val phone: String,
+    val email: String,
+    @SerializedName("merchant_name")
+    val merchantName: String,
+    @SerializedName("merchant_address")
+    val merchantAddress: String,
+    @SerializedName("created_at")
+    val createdAt: String,
+    @SerializedName("updated_at")
+    val updatedAt: String
+)
+
+data class AddCustomerRequest(
+    val name: String,
+    val address: String,
+    val phone: String,
+)

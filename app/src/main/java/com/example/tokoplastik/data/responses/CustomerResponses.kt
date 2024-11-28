@@ -5,3 +5,9 @@ data class GetCustomerResponses(
     val message: String,
     val success: Boolean
 )
+
+data class AddCustomerResponses(
+    val data: AddCustomer,
+    val message: String,
+    val success: Boolean
+)

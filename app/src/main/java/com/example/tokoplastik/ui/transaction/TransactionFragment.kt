@@ -42,9 +42,10 @@ class TransactionFragment : BaseFragment<TransactionViewModel, FragmentTransacti
         val addressEditText = binding.customerAddressText
         val hpEditText = binding.customerHpText
 
-//        nameEditText.enable(false)
-//        addressEditText.enable(false)
-//        hpEditText.enable(false)
+        binding.buttonAddCustomer.setOnClickListener {
+            val directions = TransactionFragmentDirections.actionTransactionFragmentToAddCustomerFragment()
+            findNavController().navigate(directions)
+        }
 
         nameEditText.isFocusable = false
         addressEditText.isFocusable = false
