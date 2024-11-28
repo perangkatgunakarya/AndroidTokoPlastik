@@ -11,21 +11,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Filter
-import android.widget.TextView
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import com.example.tokoplastik.R
 import com.example.tokoplastik.data.network.CustomerApi
 import com.example.tokoplastik.data.repository.CustomerRepository
 import com.example.tokoplastik.data.responses.Customer
 import com.example.tokoplastik.databinding.FragmentTransactionBinding
 import com.example.tokoplastik.ui.base.BaseFragment
-import com.example.tokoplastik.util.enable
 import com.example.tokoplastik.viewmodel.TransactionViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -59,6 +52,13 @@ class TransactionFragment : BaseFragment<TransactionViewModel, FragmentTransacti
 
         binding.buttonToCheckout.setOnClickListener {
             val action = TransactionFragmentDirections.actionTransactionFragmentToCheckoutFragment(customer_id.toString())
+            findNavController().navigate(action)
+        }
+
+        binding.buttonEditData.setOnClickListener {
+            val action = TransactionFragmentDirections.actionTransactionFragmentToUpdateCustomerFragment(
+                customer_id!!
+            )
             findNavController().navigate(action)
         }
     }

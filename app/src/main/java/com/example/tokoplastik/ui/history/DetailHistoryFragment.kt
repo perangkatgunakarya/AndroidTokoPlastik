@@ -165,6 +165,8 @@ class DetailHistoryFragment :
                 setConfirmButton("OK") {
                     dismissWithAnimation()
                 }
+
+                show()
             }
         }
     }

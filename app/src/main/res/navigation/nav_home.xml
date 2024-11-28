@@ -32,6 +32,10 @@
         <action
             android:id="@+id/action_transactionFragment_to_addCustomerFragment"
             app:destination="@id/addCustomerFragment" />
+
+        <action
+            android:id="@+id/action_transactionFragment_to_updateCustomerFragment"
+            app:destination="@id/updateCustomerFragment" />
     </fragment>
 
     <fragment
@@ -91,6 +95,18 @@
         tools:layout="@layout/fragment_add_customer">
         <action
             android:id="@+id/action_addCustomerFragment_to_transactionFragment"
+            app:destination="@id/transactionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/updateCustomerFragment"
+        android:name="com.example.tokoplastik.ui.customer.UpdateCustomerFragment"
+        android:label="fragment_update_customer"
+        tools:layout="@layout/fragment_update_customer">
+        <argument
+            android:name="customerId"
+            app:argType="integer"/>
+        <action
+            android:id="@+id/action_updateCustomerFragment_to_transactionFragment"
             app:destination="@id/transactionFragment" />
     </fragment>
 </navigation>

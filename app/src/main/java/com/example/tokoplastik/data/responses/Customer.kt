@@ -38,3 +38,9 @@ data class AddCustomerRequest(
     val address: String,
     val phone: String,
 )
+
+data class UpdateCustomerRequest(
+    val name: String?,
+    val address: String?,
+    val phone: String?,
+)

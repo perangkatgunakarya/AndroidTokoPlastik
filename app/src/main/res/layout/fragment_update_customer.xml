@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="30dp"
+    tools:context=".ui.customer.UpdateCustomerFragment">
+
+    <EditText
+        android:id="@+id/customer_name_text_field"
+        style="@style/editText"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/edit_text_height"
+        android:layout_marginBottom="20dp"
+        android:padding="10dp"
+        android:hint="Nama Customer" />
+
+    <EditText
+        android:id="@+id/address_text_field"
+        style="@style/editText"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/edit_text_height"
+        android:layout_marginBottom="20dp"
+        android:padding="10dp"
+        android:hint="Alamat" />
+
+    <EditText
+        android:id="@+id/phone_text_field"
+        style="@style/editText"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/edit_text_height"
+        android:layout_marginBottom="20dp"
+        android:padding="10dp"
+        android:hint="Nomor HP"
+        android:inputType="number" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_edit_customer"
+        android:layout_width="@dimen/medium_button_width"
+        android:layout_height="@dimen/medium_button_height"
+        style="@style/blueButtonStyle"
+        android:layout_gravity="bottom|end"
+        android:layout_marginTop="30dp"
+        android:text="Update"
+        android:textSize="@dimen/h3TextSize" />
+
+    <ProgressBar
+        android:id="@+id/update_customer_progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center"/>
+
+</LinearLayout>

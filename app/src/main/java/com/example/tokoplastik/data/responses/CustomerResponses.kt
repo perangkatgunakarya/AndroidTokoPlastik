@@ -11,3 +11,15 @@ data class AddCustomerResponses(
     val message: String,
     val success: Boolean
 )
+
+data class GetCustomerByIdResponses(
+    val data: Customer,
+    val message: String,
+    val success: Boolean
+)
+
+data class UpdateCustomerResponses(
+    val data: Customer,
+    val message: String,
+    val success: Boolean
+)

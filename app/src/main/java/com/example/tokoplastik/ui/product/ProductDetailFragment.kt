@@ -39,7 +39,7 @@ class ProductDetailFragment : BaseFragment<ProductDetailViewModel, FragmentProdu
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val productId = args.productId
-        // Observe product details
+
         viewModel.getProductDetail(productId)
         viewModel.productDetail.observe(viewLifecycleOwner, Observer {
             when (it) {
@@ -50,7 +50,6 @@ class ProductDetailFragment : BaseFragment<ProductDetailViewModel, FragmentProdu
                             textProductName.text = product?.name
                             textProductPrice.text = "Rp ${product?.capitalPrice}"
                             textProductDescription.text = product?.supplier
-                            // Add more UI bindings as needed
                         }
                     }
                 }
