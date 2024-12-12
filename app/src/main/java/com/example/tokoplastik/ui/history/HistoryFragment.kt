@@ -120,10 +120,9 @@ class HistoryFragment :
     }
 
     private fun setupSortingButtons() {
-        binding.btnSortDate.setOnClickListener{
-            isDateSortAscending = !isDateSortAscending
-            historyAdapter.sortByDate(isDateSortAscending)
-            updateSortButtonIcon(binding.btnSortDate, isDateSortAscending)
+        binding.sortFilterFab.setOnClickListener {
+            val bottomSheet = SortFilterBottomSheet()
+            bottomSheet.show(childFragmentManager, "SORT_FILTER_BOTTOM_SHEET")
         }
     }
 

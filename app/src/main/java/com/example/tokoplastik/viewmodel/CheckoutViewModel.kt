@@ -1,5 +1,6 @@
 package com.example.tokoplastik.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -19,6 +20,14 @@ import com.example.tokoplastik.data.responses.TransactionResponses
 import com.example.tokoplastik.ui.base.BaseViewModel
 import com.example.tokoplastik.util.Resource
 import kotlinx.coroutines.launch
+
+enum class SortType {
+    DATE
+}
+enum class SortOrder {
+    ASCENDING,
+    DESCENDING
+}
 
 class CheckoutViewModel(
     private val repository: CheckoutRepository
@@ -60,6 +69,22 @@ class CheckoutViewModel(
     private var selectedProductPrices: List<ProductPrice> = emptyList()
     var currentCartItems = mutableListOf<CartItem>()
     var unsignedproductPrice: Boolean = false
+
+    // sort and filter
+    private val _sortType = MutableLiveData(SortType.DATE)
+    val sortType: LiveData<SortType> = _sortType
+
+    private val _sortOrder = MutableLiveData(SortOrder.ASCENDING)
+    val sortOrder: LiveData<SortOrder> = _sortOrder
+
+    private val _startDate = MutableLiveData<Long>()
+    val startDate: LiveData<Long> = _startDate
+
+    private val _endDate = MutableLiveData<Long>()
+    val endDate: LiveData<Long> = _endDate
+
+    private val _filteredData = MutableLiveData<List<CartItem>>()
+    val filteredData: LiveData<List<CartItem>> = _filteredData
 
     fun getTransactions() = viewModelScope.launch {
         _transactions.value = Resource.Loading
@@ -154,5 +179,24 @@ class CheckoutViewModel(
         _paymentStatus.value = Resource.Loading
         val statusUpdateRequest = PaymentStatusUpdateRequest(status)
         _paymentStatus.value = repository.setPaymentStatus(transactionId, statusUpdateRequest)
+    }
+
+    fun setSortType(type: SortType) {
+        _sortType.value = type
+    }
+
+    fun setSortOrder(order: SortOrder) {
+        _sortOrder.value = order
+    }
+
+    fun setDateRange(start: Long, end: Long) {
+        _startDate.value = start
+        _endDate.value = end
+    }
+
+    fun applyFilters() = viewModelScope.launch {
+        _transactions.value = Resource.Loading
+        _transactions.value = repository.getTransactions(startDate.value?.toString(), endDate.value?.toString())
+        Log.d("CheckoutViewModel", "Applying filters: Start Date: ${startDate.value}, End Date: ${endDate.value}")
     }
 }

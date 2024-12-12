@@ -24,8 +24,8 @@ class CheckoutRepository (
         api.addTransaction(transaction)
     }
 
-    suspend fun getTransactions() = safeApiCall {
-        api.getTransaction()
+    suspend fun getTransactions(startDate: String? = null, endDate: String? = null) = safeApiCall {
+        api.getTransaction(startDate, endDate)
     }
 
     suspend fun getTransactionDetail(transactionId: Int) = safeApiCall {

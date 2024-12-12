@@ -37,7 +37,10 @@ interface CheckoutApi {
     ): TransactionResponses
 
     @GET("transaction")
-    suspend fun getTransaction(): AllTransactionResponses
+    suspend fun getTransaction(
+        @Query("startDate") startDate: String? = null,
+        @Query("endDate") endDate: String? = null
+    ): AllTransactionResponses
 
     @GET("transaction/{transactionId}")
     suspend fun getTransactionDetail(
