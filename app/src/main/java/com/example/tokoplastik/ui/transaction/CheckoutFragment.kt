@@ -145,7 +145,6 @@ class CheckoutFragment :
 
             if (viewModel.currentCartItems.isEmpty()) {
                 binding.buttonCheckout.setOnClickListener {
-                    //showPaymentStatusDialog()
                     val bottomSheet = PaidBottomSheet()
                     bottomSheet.show(childFragmentManager, "SORT_FILTER_BOTTOM_SHEET")
                 }

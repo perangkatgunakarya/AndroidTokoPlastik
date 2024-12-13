@@ -1,6 +1,7 @@
 package com.example.tokoplastik.ui.history
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,8 +11,10 @@ import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.tokoplastik.adapter.DetailHistoryAdapter
 import com.example.tokoplastik.data.network.CheckoutApi
 import com.example.tokoplastik.data.repository.CheckoutRepository
+import com.example.tokoplastik.data.responses.TransactionDetail
 import com.example.tokoplastik.databinding.FragmentDetailHistoryBinding
 import com.example.tokoplastik.ui.base.BaseFragment
+import com.example.tokoplastik.ui.transaction.PaidBottomSheet
 import com.example.tokoplastik.util.HistoryReceiptGenerator
 import com.example.tokoplastik.util.Resource
 import com.example.tokoplastik.util.handleApiError
@@ -24,7 +27,10 @@ class DetailHistoryFragment :
 
     private val args: DetailHistoryFragmentArgs by navArgs()
     private var transactionId: Int = -1
+    private lateinit var detailTransactions: TransactionDetail
     private lateinit var invoiceGenerator: HistoryReceiptGenerator
+    private lateinit var statusPayment : String
+    private var totalPaid : Int = 0
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -47,7 +53,8 @@ class DetailHistoryFragment :
         }
 
         binding.buttonLunas.setOnClickListener {
-            showLunasDialog(transactionId)
+            val bottomSheet = CreditBottomSheet()
+            bottomSheet.show(childFragmentManager, "CREDIT_BOTTOM_SHEET")
         }
     }
 
@@ -57,7 +64,7 @@ class DetailHistoryFragment :
             when (result) {
                 is Resource.Success -> {
                     result.data?.let { response ->
-                        val detailTransactions = response.data
+                        detailTransactions = response.data
                         (binding.historyDetailRecycler.adapter as DetailHistoryAdapter).updateList(
                             detailTransactions.transactionProduct,
                             detailTransactions.total.toString()
@@ -90,6 +97,25 @@ class DetailHistoryFragment :
                 Resource.Loading -> {}
             }
         }
+
+        viewModel.paidAmount.observe(viewLifecycleOwner) { amount ->
+            Log.d("DetailHistoryFragment", "Paid amount: $amount")
+            if (amount == 0) {
+                statusPayment = "belum lunas"
+                totalPaid = 0
+                setPaymentStatus(transactionId, statusPayment, totalPaid)
+            }
+            if (amount > 0 && amount < detailTransactions.total) {
+                statusPayment = "dalam cicilan"
+                totalPaid = amount
+                setPaymentStatus(transactionId, statusPayment, totalPaid)
+            }
+            else {
+                statusPayment = "lunas"
+                totalPaid = amount
+                setPaymentStatus(transactionId, statusPayment, totalPaid)
+            }
+        }
     }
 
     private fun showLunasDialog(transactionId: Int) {
@@ -102,7 +128,7 @@ class DetailHistoryFragment :
 
                 setConfirmButton("LUNAS") {
                     dismissWithAnimation()
-                    setPaymentStatus(transactionId)
+                    setPaymentStatus(transactionId, "lunas", 0)
                 }
 
                 setCancelButton("Cancel") {
@@ -114,19 +140,19 @@ class DetailHistoryFragment :
         }
     }
 
-    private fun setPaymentStatus(transactionId: Int) {
+    private fun setPaymentStatus(transactionId: Int, status: String, paid: Int) {
         if (!isAdded) return
 
         context?.let { ctx ->
             val loadingDialog = SweetAlertDialog(ctx, SweetAlertDialog.PROGRESS_TYPE)
             loadingDialog.apply {
                 titleText = "Processing"
-                contentText = "Processing status..."
+                contentText = "Processing payment..."
                 setCancelable(false)
                 show()
             }
 
-            viewModel.updatePaymentStatus(transactionId, "lunas")
+            viewModel.updatePaymentStatus(transactionId, status, paid)
 
             viewModel.paymentStatus.observe(viewLifecycleOwner) { result ->
                 if (!isAdded) {
@@ -160,10 +186,11 @@ class DetailHistoryFragment :
                 SweetAlertDialog.SUCCESS_TYPE
             ).apply {
                 titleText = "Berhasil"
-                contentText = "Status pembayaran berhasil diubah."
+                contentText = "Status pembayaran berhasil diperbarui."
 
                 setConfirmButton("OK") {
                     dismissWithAnimation()
+                    requireActivity().onBackPressed()
                 }
 
                 show()

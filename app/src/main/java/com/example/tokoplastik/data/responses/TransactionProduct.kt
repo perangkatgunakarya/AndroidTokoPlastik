@@ -114,5 +114,6 @@ data class TransactionDetailProduct(
 )
 
 data class PaymentStatusUpdateRequest(
+    val paid : Int?,
     val status: String
 )
