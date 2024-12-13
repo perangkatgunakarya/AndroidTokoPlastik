@@ -9,6 +9,7 @@ data class AllTransaction(
     @SerializedName("customer_id")
     val customerId: Int,
     val total: Int,
+    val paid: Int,
     @SerializedName("status")
     val paymentStatus: String,
     val customer: Customer,
@@ -22,6 +23,7 @@ data class Transaction(
     @SerializedName("customer_id")
     val customerId: Int,
     val total: Int,
+    val paid: Int,
     @SerializedName("status")
     val paymentStatus: String,
     @SerializedName("user_id")
@@ -55,6 +57,7 @@ data class TransactionRequest (
     @SerializedName("customer_id")
     val customerId: Int,
     val total: Int,
+    val paid: Int,
     @SerializedName("product_price_id")
     val productPriceId: List<Int>,
     @SerializedName("price_adjustment")
@@ -78,6 +81,7 @@ data class TransactionDetail(
     @SerializedName("customer_id")
     val customerId: Int,
     val total: Int,
+    val paid: Int,
     @SerializedName("status")
     val paymentStatus: String,
     @SerializedName("user_id")

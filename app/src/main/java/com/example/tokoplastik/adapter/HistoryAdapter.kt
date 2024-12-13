@@ -76,7 +76,7 @@ class HistoryAdapter : RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
 
         fun bind(transaction: AllTransaction) {
             binding.apply {
-                customerText.text = "(${transaction.customer.name})"
+                customerText.text = "(${transaction.paymentStatus})"
 
                 val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'")
                 parser.timeZone = TimeZone.getTimeZone("UTC")
@@ -84,7 +84,7 @@ class HistoryAdapter : RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
                 dateText.text = SimpleDateFormat("dd MMM Y").format(date)
                 clockText.text = SimpleDateFormat("HH:mm").format(date)
 
-                totalText.text = "Rp ${transaction.total}"
+                totalText.text = "Rp ${transaction.total - transaction.paid}"
 
                 if (transaction.paymentStatus == "belum lunas") {
                     capLunas.visibility = View.GONE

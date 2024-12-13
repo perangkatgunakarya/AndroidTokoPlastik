@@ -27,6 +27,7 @@ import com.example.tokoplastik.data.responses.CartItem
 import com.example.tokoplastik.data.responses.Transaction
 import com.example.tokoplastik.databinding.FragmentCheckoutBinding
 import com.example.tokoplastik.ui.base.BaseFragment
+import com.example.tokoplastik.ui.history.SortFilterBottomSheet
 import com.example.tokoplastik.util.ReceiptGenerator
 import com.example.tokoplastik.util.Resource
 import com.example.tokoplastik.util.handleApiError
@@ -144,7 +145,9 @@ class CheckoutFragment :
 
             if (viewModel.currentCartItems.isEmpty()) {
                 binding.buttonCheckout.setOnClickListener {
-                    showPaymentStatusDialog()
+                    //showPaymentStatusDialog()
+                    val bottomSheet = PaidBottomSheet()
+                    bottomSheet.show(childFragmentManager, "SORT_FILTER_BOTTOM_SHEET")
                 }
             }
         })
@@ -160,6 +163,18 @@ class CheckoutFragment :
         viewModel.cartItems.observe(viewLifecycleOwner) { items ->
             cartAdapter.updateItems(items)
             updateTotalAmount(items)
+        }
+
+        viewModel.paidAmount.observe(viewLifecycleOwner) { amount ->
+            if (amount == 0) {
+                processCheckout("belum lunas")
+            }
+            if (amount > 0 && amount < viewModel.cartItems.value?.sumOf { it.customPrice * it.quantity } ?: 0) {
+                processCheckout("dalam cicilan")
+            }
+            else {
+                processCheckout("lunas")
+            }
         }
     }
 

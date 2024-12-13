@@ -52,6 +52,9 @@ class CheckoutViewModel(
     val transactions: LiveData<Resource<AllTransactionResponses>>
         get() = _transactions
 
+    private val _paidAmount = MutableLiveData<Int>()
+    val paidAmount: LiveData<Int> = _paidAmount
+
     private val _addTransaction: MutableLiveData<Resource<TransactionResponses>> = MutableLiveData()
     val addTransaction: LiveData<Resource<TransactionResponses>>
         get() = _addTransaction
@@ -154,14 +157,20 @@ class CheckoutViewModel(
         _cartItems.value = currentCartItems.toList()
     }
 
+    fun setPaidAmount(amount: Int) {
+        _paidAmount.value = amount
+    }
+
     fun checkout(paymentStatus: String) = viewModelScope.launch {
         val productPriceIds = currentCartItems.map { it.selectedPrice.id }
         val priceAdjustments = currentCartItems.map { it.customPrice }
         val quantity = currentCartItems.map { it.quantity }
+        val paid = paidAmount.value ?: 0
         try {
             val transaction = TransactionRequest(
                 customerId,
                 currentCartItems.sumOf { it.customPrice * it.quantity },
+                paid,
                 productPriceIds,
                 priceAdjustments,
                 paymentStatus,
