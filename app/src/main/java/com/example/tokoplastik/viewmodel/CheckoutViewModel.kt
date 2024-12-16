@@ -20,6 +20,9 @@ import com.example.tokoplastik.data.responses.TransactionResponses
 import com.example.tokoplastik.ui.base.BaseViewModel
 import com.example.tokoplastik.util.Resource
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 enum class SortType {
     DATE
@@ -79,6 +82,9 @@ class CheckoutViewModel(
 
     private val _sortOrder = MutableLiveData(SortOrder.ASCENDING)
     val sortOrder: LiveData<SortOrder> = _sortOrder
+
+    private val _isDateSortAscending = MutableLiveData(true)
+    val isDateSortAscending: LiveData<Boolean> = _isDateSortAscending
 
     private val _startDate = MutableLiveData<Long>()
     val startDate: LiveData<Long> = _startDate
@@ -205,7 +211,13 @@ class CheckoutViewModel(
 
     fun applyFilters() = viewModelScope.launch {
         _transactions.value = Resource.Loading
-        _transactions.value = repository.getTransactions(startDate.value?.toString(), endDate.value?.toString())
-        Log.d("CheckoutViewModel", "Applying filters: Start Date: ${startDate.value}, End Date: ${endDate.value}")
+        _transactions.value = repository.getTransactions(startDate.value?.let { formatDate(it) },
+            endDate.value?.let { formatDate(it) })
+
+        _isDateSortAscending.value = sortOrder.value == SortOrder.ASCENDING
+    }
+
+    private fun formatDate(timestamp: Long): String {
+        return SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(timestamp))
     }
 }

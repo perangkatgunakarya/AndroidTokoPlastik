@@ -65,6 +65,13 @@ class DetailHistoryFragment :
                 is Resource.Success -> {
                     result.data?.let { response ->
                         detailTransactions = response.data
+
+                        if (detailTransactions.paymentStatus == "lunas") {
+                            binding.buttonLunas.visibility = View.GONE
+                        } else {
+                            binding.buttonLunas.visibility = View.VISIBLE
+                        }
+
                         (binding.historyDetailRecycler.adapter as DetailHistoryAdapter).updateList(
                             detailTransactions.transactionProduct,
                             detailTransactions.total.toString()

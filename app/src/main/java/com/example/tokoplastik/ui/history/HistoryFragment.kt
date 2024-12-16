@@ -20,6 +20,7 @@ import com.example.tokoplastik.util.Resource
 import com.example.tokoplastik.util.handleApiError
 import com.example.tokoplastik.util.visible
 import com.example.tokoplastik.viewmodel.CheckoutViewModel
+import com.example.tokoplastik.viewmodel.SortOrder
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
@@ -91,6 +92,10 @@ class HistoryFragment :
                 }
                 Resource.Loading -> binding.historyProgressBar.visible(true)
             }
+        }
+
+        viewModel.isDateSortAscending.observe(viewLifecycleOwner) { it ->
+            historyAdapter.sortByDate(it)
         }
     }
 

@@ -56,7 +56,7 @@ class CreditBottomSheet : BottomSheetDialogFragment() {
             val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'")
             parser.timeZone = TimeZone.getTimeZone("UTC")
             val date = parser.parse(transactionDetail.data?.data?.updatedAt)
-            paidDate.text = SimpleDateFormat("dd MMM Y").format(date)
+            paidDate.text = "Terakhir bayar : ${SimpleDateFormat("dd MMM Y").format(date)}"
 
             //remaining total
             remainingTotal.text = getString(R.string.price_format, (transactionDetail.data?.data?.total?.toDouble() ?: 0.0) - (transactionDetail.data?.data?.paid?.toDouble() ?: 0.0))

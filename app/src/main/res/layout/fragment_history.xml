@@ -20,18 +20,6 @@
         android:focusableInTouchMode="false"
         app:queryHint="Cari Customer atau Tanggal Transaksi..." />
 
-    <ImageButton
-        android:id="@+id/btnSortDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="Sort by Date"
-        android:padding="8dp"
-        android:src="@drawable/align_bot"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh_history"
         android:layout_width="match_parent"
