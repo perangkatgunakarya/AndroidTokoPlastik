@@ -24,6 +24,7 @@ safe-args = "2.7.7"
 swipeRefresh = "1.1.0"
 sweetAlert = "1.6.2"
 itextPdf = "5.5.13.3"
+chart = "3.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -52,6 +53,7 @@ recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version
 swipe-refresh-layout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swipeRefresh" }
 sweet-alert = { group = "com.github.f0ris.sweetalert", name = "library", version.ref = "sweetAlert" }
 itext-pdf = { group = "com.itextpdf", name = "itextpdf", version.ref="itextPdf" }
+mp-chart = { group = "com.github.PhilJay", name = "MPAndroidChart", version.ref = "chart" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

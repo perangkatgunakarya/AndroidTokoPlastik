@@ -7,57 +7,118 @@
     android:layout_height="match_parent"
     tools:context=".ui.home.DashboardFragment">
 
-    <TableLayout
-        android:id="@+id/table"
-        android:layout_width="280dp"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:padding="12dp"
-        android:stretchColumns="*">
+        android:layout_marginHorizontal="20dp"
+        app:cardElevation="2dp"
+        app:cardCornerRadius="10dp"
+        android:layout_marginTop="20dp">
 
-        <TableRow>
-
-            <TextView
-                style="@style/p"
-                android:text="ID" />
-
-            <TextView
-                android:id="@+id/id_text"
-                style="@style/p"
-                tools:text="1" />
-        </TableRow>
-
-        <TableRow>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
+            android:orientation="vertical">
 
             <TextView
-                style="@style/p"
-                android:text="Name" />
+                android:id="@+id/TitleTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Grafik Penjualan Harian"
+                android:textSize="20sp"/>
 
-            <TextView
-                android:id="@+id/name_text"
-                style="@style/p"
-                tools:text="nemo" />
-        </TableRow>
+            <RadioGroup
+                android:id="@+id/radioGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:checkableBehavior="single">
 
-        <TableRow>
+                <RadioButton
+                    android:id="@+id/radioButtonDaily"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Harian"
+                    android:checked="true"
+                    style="@style/Widget.MaterialComponents.CompoundButton.RadioButton"
+                    android:button="@null"
+                    android:background="?attr/selectableItemBackground"
+                    android:padding="16dp"
+                    android:textColor="?android:textColorPrimary" />
 
-            <TextView
-                style="@style/p"
-                android:text="Supplier" />
+                <RadioButton
+                    android:id="@+id/radioButtonMonthly"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Bulanan"
+                    style="@style/Widget.MaterialComponents.CompoundButton.RadioButton"
+                    android:button="@null"
+                    android:background="?attr/selectableItemBackground"
+                    android:padding="16dp"
+                    android:textColor="?android:textColorPrimary" />
+            </RadioGroup>
 
-            <TextView
-                android:id="@+id/supplier_text"
-                style="@style/p"
-                tools:text="et" />
-        </TableRow>
-    </TableLayout>
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/chart"
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+<!--    <TableLayout-->
+<!--        android:id="@+id/table"-->
+<!--        android:layout_width="280dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_centerInParent="true"-->
+<!--        android:padding="12dp"-->
+<!--        android:stretchColumns="*">-->
+
+<!--        <TableRow>-->
+
+<!--            <TextView-->
+<!--                style="@style/p"-->
+<!--                android:text="ID" />-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/id_text"-->
+<!--                style="@style/p"-->
+<!--                tools:text="1" />-->
+<!--        </TableRow>-->
+
+<!--        <TableRow>-->
+
+<!--            <TextView-->
+<!--                style="@style/p"-->
+<!--                android:text="Name" />-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/name_text"-->
+<!--                style="@style/p"-->
+<!--                tools:text="nemo" />-->
+<!--        </TableRow>-->
+
+<!--        <TableRow>-->
+
+<!--            <TextView-->
+<!--                style="@style/p"-->
+<!--                android:text="Supplier" />-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/supplier_text"-->
+<!--                style="@style/p"-->
+<!--                tools:text="et" />-->
+<!--        </TableRow>-->
+<!--    </TableLayout>-->
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button_logout"
         style="@style/blueButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/table"
+        android:layout_below="@id/cardView"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="12dp"
         android:text="Logout" />
