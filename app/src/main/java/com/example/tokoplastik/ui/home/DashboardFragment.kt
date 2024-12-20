@@ -42,6 +42,7 @@ class DashboardFragment : BaseFragment <DashboardViewModel, FragmentDashboardBin
         lineChart = binding.chart
         setupChipGroupListener()
         setupObserver()
+        viewModel.getDashboardData()
         viewModel.getChart()
 
         binding.buttonLogout.setOnClickListener { logout() }
@@ -51,12 +52,10 @@ class DashboardFragment : BaseFragment <DashboardViewModel, FragmentDashboardBin
         binding.radioGroup.setOnCheckedChangeListener { group, checkedId ->
             when (checkedId) {
                 binding.radioButtonDaily.id -> {
-                    Log.d("DashboardFragment", "RadioButton Daily checked")
                     viewModel.getChart()
                     binding.TitleTextView.text = "Grafik Penjualan Harian"
                 }
                 binding.radioButtonMonthly.id -> {
-                    Log.d("DashboardFragment", "RadioButton Monthly checked")
                     viewModel.getChartMonthly()
                     binding.TitleTextView.text = "Grafik Penjualan Bulanan"
                 }
@@ -80,6 +79,23 @@ class DashboardFragment : BaseFragment <DashboardViewModel, FragmentDashboardBin
                     handleApiError(it)
                 }
 
+                is Resource.Loading -> {}
+            }
+        }
+
+        viewModel.dashboardData.observe(viewLifecycleOwner) {
+            when (it) {
+                is Resource.Success -> {
+                    binding.homeProgressBar.visible(false)
+                    binding.topText.text = it.data?.data?.topProduct?.product?.name
+                    binding.omzetText.text = it.data?.data?.todayIncome.toString()
+                    binding.profitText.text = it.data?.data?.monthlyProfit.toString()
+                    binding.unpaidText.text = it.data?.data?.unpaidOrder.toString()
+                }
+                is Resource.Failure -> {
+                    binding.homeProgressBar.visible(false)
+                    handleApiError(it)
+                }
                 is Resource.Loading -> {}
             }
         }

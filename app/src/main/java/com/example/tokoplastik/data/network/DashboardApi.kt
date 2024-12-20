@@ -1,5 +1,6 @@
 package com.example.tokoplastik.data.network
 
+import com.example.tokoplastik.data.responses.DashboardResponses
 import com.example.tokoplastik.data.responses.GetChartResponses
 import retrofit2.http.GET
 
@@ -10,4 +11,7 @@ interface DashboardApi {
 
     @GET("summary/monthly")
     suspend fun getChartMonthly(): GetChartResponses
+
+    @GET("dashboard")
+    suspend fun getDashboard(): DashboardResponses
 }

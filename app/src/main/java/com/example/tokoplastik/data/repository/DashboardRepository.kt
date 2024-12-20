@@ -13,4 +13,8 @@ class DashboardRepository (
     suspend fun getChartMonthly () = safeApiCall {
         api.getChartMonthly()
     }
+
+    suspend fun getDashboard () = safeApiCall {
+        api.getDashboard()
+    }
 }

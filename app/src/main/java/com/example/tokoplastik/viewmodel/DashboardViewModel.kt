@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.tokoplastik.data.repository.DashboardRepository
+import com.example.tokoplastik.data.responses.DashboardResponses
 import com.example.tokoplastik.data.responses.GetChartResponses
 import com.example.tokoplastik.ui.base.BaseViewModel
 import com.example.tokoplastik.util.Resource
@@ -17,6 +18,10 @@ class DashboardViewModel (
     val chart: LiveData<Resource<GetChartResponses>>
         get() = _chart
 
+    private val _dashboardData: MutableLiveData<Resource<DashboardResponses>> = MutableLiveData()
+    val dashboardData: LiveData<Resource<DashboardResponses>>
+        get() = _dashboardData
+
     fun getChart() = viewModelScope.launch {
         _chart.value = Resource.Loading
         _chart.value = repository.getChart()
@@ -25,5 +30,10 @@ class DashboardViewModel (
     fun getChartMonthly() = viewModelScope.launch {
         _chart.value = Resource.Loading
         _chart.value = repository.getChartMonthly()
+    }
+
+    fun getDashboardData() = viewModelScope.launch {
+        _dashboardData.value = Resource.Loading
+        _dashboardData.value = repository.getDashboard()
     }
 }
