@@ -28,17 +28,35 @@ class UserPreferences (
             preferences -> preferences[KEY_AUTH]
         }
 
+    val username: Flow<String?>
+        get() = dataStore.data.map {
+            preferences -> preferences[KEY_USERNAME]
+        }
+
     suspend fun saveAuthToken(authToken: String) {
         dataStore.edit {
             preferences -> preferences[KEY_AUTH] = authToken
         }
     }
 
+    suspend fun saveUsername(username: String) {
+        dataStore.edit {
+            preferences -> preferences[KEY_USERNAME] = username
+        }
+    }
+
     companion object {
         private val KEY_AUTH = preferencesKey<String>("key_auth")
+        private val KEY_USERNAME = preferencesKey<String>("key_username")
     }
 
     suspend fun clearAuthToken() {
+        dataStore.edit {
+            preferences -> preferences.clear()
+        }
+    }
+
+    suspend fun clearUsername() {
         dataStore.edit {
             preferences -> preferences.clear()
         }

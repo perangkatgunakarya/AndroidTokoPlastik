@@ -38,6 +38,7 @@ class LoginFragment: BaseFragment<AuthViewModel, FragmentLoginBinding, AuthRepos
                     binding.loginProgressBar.visible(false)
                     lifecycleScope.launch {
                         viewModel.saveAuthToken(it.data?.data!!.token.toString())
+                        viewModel.saveUsername(it.data?.data!!.name.toString())
                         requireActivity().startNewActivity(HomeActivity::class.java)
                     }
                 }

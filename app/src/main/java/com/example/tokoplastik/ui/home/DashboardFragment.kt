@@ -38,6 +38,8 @@ class DashboardFragment : BaseFragment <DashboardViewModel, FragmentDashboardBin
         super.onViewCreated(view, savedInstanceState)
 
         binding.homeProgressBar.visible(false)
+        binding.todayDate.text = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(Date())
+        binding.userName.text = "Hello, ${runBlocking { userPreferences.username.first() }}"
 
         lineChart = binding.chart
         setupChipGroupListener()
@@ -104,25 +106,36 @@ class DashboardFragment : BaseFragment <DashboardViewModel, FragmentDashboardBin
     private fun updateChart(chartData: ChartData?) {
         val omzetEntries = mutableListOf<Entry>()
         val costEntries = mutableListOf<Entry>()
+        val range = chartData?.range
 
         chartData?.data?.forEach { series ->
             when (series.label) {
                 "Omzet" -> {
                     series.points.forEach { point ->
-                        val dateIndex = convertDateToIndex(point.x)
-                        omzetEntries.add(Entry(dateIndex, point.y.toFloat()))
+                        if (range.toString() == "daily") {
+                            val dateIndex = convertDateToIndex(point.x)
+                            omzetEntries.add(Entry(dateIndex, point.y.toFloat()))
+                        } else {
+                            val dateIndex = convertDateToIndexMonthly(point.x)
+                            omzetEntries.add(Entry(dateIndex, point.y.toFloat()))
+                        }
                     }
                 }
                 "Cost" -> {
                     series.points.forEach { point ->
-                        val dateIndex = convertDateToIndex(point.x)
-                        costEntries.add(Entry(dateIndex, point.y.toFloat()))
+                        if (range.toString() == "daily") {
+                            val dateIndex = convertDateToIndex(point.x)
+                            costEntries.add(Entry(dateIndex, point.y.toFloat()))
+                        } else {
+                            val dateIndex = convertDateToIndexMonthly(point.x)
+                            costEntries.add(Entry(dateIndex, point.y.toFloat()))
+                        }
                     }
                 }
             }
         }
 
-        setupLineChart(lineChart, omzetEntries, costEntries)
+        setupLineChart(lineChart, omzetEntries, costEntries, range.toString())
     }
 
     private fun convertDateToIndex(dateStr: String): Float {
@@ -141,7 +154,23 @@ class DashboardFragment : BaseFragment <DashboardViewModel, FragmentDashboardBin
         }
     }
 
-    private fun setupLineChart(chart: LineChart, omzet: List<Entry>, cost: List<Entry>) {
+    private fun convertDateToIndexMonthly(dateStr: String): Float {
+        val sdf = SimpleDateFormat("yyyy-MM", Locale.getDefault())
+        val date = sdf.parse(dateStr) ?: Date()
+        return date.time.toFloat()
+    }
+
+    private fun dateValueFormatterMonthly() : ValueFormatter {
+        val sdf = SimpleDateFormat("yyyy-MM", Locale.getDefault())
+        return object : ValueFormatter() {
+            override fun getFormattedValue(value: Float): String {
+                val date = Date(value.toLong())
+                return sdf.format(date)
+            }
+        }
+    }
+
+    private fun setupLineChart(chart: LineChart, omzet: List<Entry>, cost: List<Entry>, range: String) {
         val omzetDataSet = LineDataSet(omzet, "Omzet").apply {
             color = android.graphics.Color.BLUE
             valueTextColor = android.graphics.Color.BLACK
@@ -154,10 +183,14 @@ class DashboardFragment : BaseFragment <DashboardViewModel, FragmentDashboardBin
             lineWidth = 2f
         }
 
-        // Combine the data sets into LineData
         val lineData = LineData(omzetDataSet, costDataSet)
 
-        // Configure chart settings
+        if (range == "daily") {
+            chart.xAxis.valueFormatter = dateValueFormatter()
+        } else {
+            chart.xAxis.valueFormatter = dateValueFormatterMonthly()
+        }
+
         chart.apply {
             data = lineData
             description.isEnabled = false
@@ -166,9 +199,8 @@ class DashboardFragment : BaseFragment <DashboardViewModel, FragmentDashboardBin
             setScaleEnabled(true)
             setPinchZoom(true)
             xAxis.position = com.github.mikephil.charting.components.XAxis.XAxisPosition.BOTTOM
-            xAxis.valueFormatter = dateValueFormatter()
             xAxis.labelRotationAngle = -90f
-            invalidate() // Refresh the chart
+            invalidate()
         }
     }
 

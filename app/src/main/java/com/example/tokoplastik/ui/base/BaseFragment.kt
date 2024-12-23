@@ -51,6 +51,7 @@ abstract class BaseFragment<VM: BaseViewModel, B: ViewBinding, R: BaseRepository
 
         viewModel.logout(api)
         userPreferences.clearAuthToken()
+        userPreferences.clearUsername()
 
         requireActivity().startNewActivity(AuthActivity::class.java)
     }

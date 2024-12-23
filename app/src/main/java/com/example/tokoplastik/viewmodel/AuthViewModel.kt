@@ -29,4 +29,8 @@ class AuthViewModel (
     suspend fun saveAuthToken(token: String) {
         repository.saveAuthToken(token)
     }
+
+    suspend fun saveUsername(username: String) {
+        repository.saveUsername(username)
+    }
 }

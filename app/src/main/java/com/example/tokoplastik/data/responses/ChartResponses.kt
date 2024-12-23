@@ -10,6 +10,7 @@ data class GetChartResponses(
 
 data class ChartData(
     val type: String,
+    val range: String,
     val data: List<ChartSeries>
 )
 
