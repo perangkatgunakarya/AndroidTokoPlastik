@@ -1,5 +1,6 @@
 package com.example.tokoplastik.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -29,5 +30,28 @@ class ProductViewModel (
     fun deleteProduct(productId: Int) = viewModelScope.launch {
         _deleteResult.value = Resource.Loading
         _deleteResult.value = repository.deleteProduct(productId)
+    }
+
+    // sort data
+    private val _sortType = MutableLiveData(SortType.NAME)
+    val sortType: LiveData<SortType> = _sortType
+
+    private val _sortOrder = MutableLiveData(SortOrder.ASCENDING)
+    val sortOrder: LiveData<SortOrder> = _sortOrder
+
+    private val _isDataSortAscending = MutableLiveData(true)
+    val isDataSortAscending: LiveData<Boolean> = _isDataSortAscending
+
+    fun setSortOrder(order: SortOrder) {
+        _sortOrder.value = order
+    }
+
+    fun applySort(type: SortType) = viewModelScope.launch {
+        _product.value = Resource.Loading
+        _product.value = repository.getProduct()
+
+        _sortType.value = type
+
+        _isDataSortAscending.value = sortOrder.value == SortOrder.ASCENDING
     }
 }

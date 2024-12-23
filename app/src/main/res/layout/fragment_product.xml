@@ -12,37 +12,12 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        app:layout_constraintEnd_toStartOf="@+id/btnSortName"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:iconifiedByDefault="false"
         android:focusable="false"
         android:focusableInTouchMode="false"
         app:queryHint="Cari Nama Produk / Supplier..." />
-
-    <ImageButton
-        android:id="@+id/btnSortName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="Sort by name"
-        android:padding="8dp"
-        android:src="@drawable/align_bot"
-        app:layout_constraintEnd_toStartOf="@+id/btnSortPrice"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageButton
-        android:id="@+id/btnSortPrice"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="Sort by price"
-        android:padding="8dp"
-        android:src="@drawable/align_top"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh_product"
@@ -76,6 +51,23 @@
         app:tint="@color/white"
         android:contentDescription="Tambah Produk"
         android:src="@drawable/ic_add"/>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/sortFilterFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|bottom"
+        android:layout_marginBottom="50dp"
+        android:backgroundTint="@color/g_blue"
+        android:text="Urutkan"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:icon="@drawable/align_bot"
+        app:iconTint="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <ProgressBar
         android:id="@+id/product_progress_bar"

@@ -17,10 +17,12 @@ import com.example.tokoplastik.data.repository.ProductRepository
 import com.example.tokoplastik.data.responses.GetProduct
 import com.example.tokoplastik.databinding.FragmentProductBinding
 import com.example.tokoplastik.ui.base.BaseFragment
+import com.example.tokoplastik.ui.history.SortFilterBottomSheet
 import com.example.tokoplastik.util.Resource
 import com.example.tokoplastik.util.handleApiError
 import com.example.tokoplastik.util.visible
 import com.example.tokoplastik.viewmodel.ProductViewModel
+import com.example.tokoplastik.viewmodel.SortType
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
@@ -111,6 +113,24 @@ class ProductFragment : BaseFragment<ProductViewModel, FragmentProductBinding, P
                 }
             }
         }
+
+        viewModel.sortType.observe(viewLifecycleOwner) {
+            when (it) {
+                SortType.NAME -> viewModel.isDataSortAscending.observe(viewLifecycleOwner) { ascending ->
+                    when (ascending) {
+                        true -> productAdapter.sortByName(true)
+                        false -> productAdapter.sortByName(false)
+                    }
+                }
+                SortType.CAPITAL -> viewModel.isDataSortAscending.observe(viewLifecycleOwner) { ascending ->
+                    when (ascending) {
+                        true -> productAdapter.sortByPrice(true)
+                        false -> productAdapter.sortByPrice(false)
+                    }
+                }
+                SortType.DATE -> TODO()
+            }
+        }
     }
 
     private fun setupSearchView() {
@@ -139,16 +159,9 @@ class ProductFragment : BaseFragment<ProductViewModel, FragmentProductBinding, P
     }
 
     private fun setupSortingButtons() {
-        binding.btnSortName.setOnClickListener {
-            isNameSortAscending = !isNameSortAscending
-            productAdapter.sortByName(isNameSortAscending)
-            updateSortButtonIcon(binding.btnSortName, isNameSortAscending)
-        }
-
-        binding.btnSortPrice.setOnClickListener {
-            isPriceSortAscending = !isPriceSortAscending
-            productAdapter.sortByPrice(isPriceSortAscending)
-            updateSortButtonIcon(binding.btnSortPrice, isPriceSortAscending)
+        binding.sortFilterFab.setOnClickListener {
+            val bottomSheet = ProductSortBottomSheet()
+            bottomSheet.show(childFragmentManager, "PRODUCT_SORT_BOTTOM_SHEET")
         }
     }
 

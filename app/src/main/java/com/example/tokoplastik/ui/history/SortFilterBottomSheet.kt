@@ -114,6 +114,8 @@ class SortFilterBottomSheet : BottomSheetDialogFragment() {
         when (viewModel.sortType.value) {
             SortType.DATE -> sortRadioGroup.check(R.id.sortByDate)
             null -> sortRadioGroup.check(R.id.sortByDate) // Default
+            SortType.CAPITAL -> TODO()
+            SortType.NAME -> TODO()
         }
 
         // Restore sort order

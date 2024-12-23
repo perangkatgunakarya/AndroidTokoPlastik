@@ -24,14 +24,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-enum class SortType {
-    DATE
-}
-enum class SortOrder {
-    ASCENDING,
-    DESCENDING
-}
-
 class CheckoutViewModel(
     private val repository: CheckoutRepository
 ) : BaseViewModel(repository) {
