@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.tokoplastik.R
@@ -72,11 +73,13 @@ class ProductFragment : BaseFragment<ProductViewModel, FragmentProductBinding, P
         )
         productAdapter.apply {
             setOnItemClickListener { product ->
-                    val intent = Intent(requireContext(), AddProductActivity::class.java).apply {
-                        putExtra("openProductPriceFragment", true)
-                        putExtra("productId", product.id)
-                    }
-                    startActivity(intent)
+//                    val intent = Intent(requireContext(), AddProductActivity::class.java).apply {
+//                        putExtra("openProductPriceFragment", true)
+//                        putExtra("productId", product.id)
+//                    }
+//                    startActivity(intent)
+                val directions = ProductFragmentDirections.actionProductFragmentToProductDetailFragment(product.id)
+                findNavController().navigate(directions)
             }
         }
 

@@ -3,46 +3,269 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.product.ProductDetailFragment">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.09" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.91" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/toolbar_detail_product"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        app:cardElevation="5dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_inside_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.09" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_inside_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.91" />
+
+            <ImageButton
+                android:id="@+id/button_back"
+                android:layout_width="55dp"
+                android:layout_height="55dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Back"
+                android:src="@drawable/ic_back"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <TextView
+                android:id="@+id/text_product_detail"
+                style="@style/h4_bold"
+                android:textColor="@color/g_black"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:textAlignment="textStart"
+                android:text="NAMA PRODUCT"
+                android:maxLines="1"
+                android:ellipsize="end"
+                app:layout_constraintStart_toEndOf="@id/button_back"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        app:layout_constraintEnd_toEndOf="@id/guideline_2"
+        app:layout_constraintStart_toStartOf="@id/guideline_1"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_detail_product">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nama Produk"/>
+
+        <EditText
+            android:id="@+id/productName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:inputType="text"
+            android:maxLines="1"
+            android:hint="Nama Produk"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="@id/guideline_2"
+        app:layout_constraintStart_toStartOf="@id/guideline_1"
+        app:layout_constraintTop_toBottomOf="@id/relativeLayout1">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nama Supplier"/>
+
+        <EditText
+            android:id="@+id/supplierName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:inputType="text"
+            android:maxLines="1"
+            android:hint="Nama Supplier"/>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="@id/guideline_2"
+        app:layout_constraintStart_toStartOf="@id/guideline_1"
+        app:layout_constraintTop_toBottomOf="@id/relativeLayout2">
+
+        <RelativeLayout
+            android:layout_width="180dp"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Harga Modal Terakhir"/>
+
+            <EditText
+                android:id="@+id/latestCapital"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:inputType="text"
+                android:maxLines="1"
+                android:hint="Modal Terakhir"
+                android:enabled="false"/>
+
+            <TextView
+                android:id="@+id/latestCapitalDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="60dp"
+                android:textSize="10sp"
+                android:text="Terakhir diperbarui : 24 Desember 2024"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Perbarui"/>
+
+            <EditText
+                android:id="@+id/currentCapital"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:inputType="number"
+                android:maxLines="1"
+                android:hint="Modal Terbaru"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="@id/guideline_2"
+        app:layout_constraintStart_toStartOf="@id/guideline_1"
+        app:layout_constraintTop_toBottomOf="@id/linearLayout1">
+
+        <RelativeLayout
+            android:layout_width="250dp"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Stock Terakhir"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/latestStock"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:hint="Stock Terakhir"
+                    android:enabled="false"/>
+
+                <Spinner
+                    android:id="@+id/lowestUnit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"/>
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/stockCardButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Kartu Stok"
+            android:textSize="10sp"
+            android:layout_gravity="center"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/g_red"/>
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/goToProductPriceButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Tambahkan Harga Jual"
+        style="@style/blueButtonStyle"
+        android:layout_marginTop="30dp"
+        android:layout_gravity="center"
+        android:layout_marginEnd="10dp"
+        android:backgroundTint="@color/g_orange_yellow"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toStartOf="@id/guideline_1"
+        app:layout_constraintEnd_toStartOf="@id/saveButton"
+        app:layout_constraintTop_toBottomOf="@id/linearLayout2"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/saveButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Simpan"
+        style="@style/blueButtonStyle"
+        android:layout_marginTop="30dp"
+        android:layout_gravity="center"
+        app:layout_constraintStart_toEndOf="@id/goToProductPriceButton"
+        app:layout_constraintEnd_toEndOf="@id/guideline_2"
+        app:layout_constraintTop_toBottomOf="@id/linearLayout2"/>
 
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/textProductName"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/textProductPrice"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:textSize="18sp"
-        android:textColor="@android:color/holo_green_dark"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textProductName" />
-
-    <TextView
-        android:id="@+id/textProductDescription"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textProductPrice" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -38,7 +38,7 @@ class CartAdapter(
 
         fun bind(item: CartItem) {
             binding.apply {
-                productText.text = item.product?.data?.name
+                productText.text = item.product?.data?.product?.name
 
                 val unitsAdapter = ArrayAdapter(
                     itemView.context,

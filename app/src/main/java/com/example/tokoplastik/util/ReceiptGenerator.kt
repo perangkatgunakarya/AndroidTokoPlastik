@@ -101,7 +101,7 @@ class ReceiptGenerator(
                 val cells = arrayOf(
                     "${++index}",
                     "${item.quantity} ${item.selectedPrice.unit}",
-                    item.product?.data?.name,
+                    item.product?.data?.product?.name,
                     String.format("Rp %,d", item.customPrice),
                     String.format("Rp %,d", item.customPrice * item.quantity)
                 )
@@ -200,7 +200,7 @@ class ReceiptGenerator(
         printerCommands.append("----------------------------------------\n")
 
         cartItems.forEach { item ->
-            printerCommands.append(String.format("%-15s\n", item.product?.data?.name))
+            printerCommands.append(String.format("%-15s\n", item.product?.data?.product?.name))
             printerCommands.append(
                 String.format(
                     "%8.0f x %-5d %8.0f%% %11.0f\n",
