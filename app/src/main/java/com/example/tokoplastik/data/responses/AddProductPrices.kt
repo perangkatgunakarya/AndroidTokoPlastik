@@ -7,7 +7,7 @@ data class AddProductPrices(
     val productId: Int,
     val price: Int,
     val unit: String,
-    @SerializedName("quantity_per_unit")
+    @SerializedName("quantity_per_lowest_unit")
     val quantityPerUnit: String,
 )
 
@@ -18,7 +18,7 @@ data class ProductPrice(
     val price: Int,
     val product: GetProduct,
     val productId: Int,
-    @SerializedName("quantity_per_unit")
+    @SerializedName("quantity_per_lowest_unit")
     val quantityPerUnit: String,
     val unit: String,
     @SerializedName("updated_at")

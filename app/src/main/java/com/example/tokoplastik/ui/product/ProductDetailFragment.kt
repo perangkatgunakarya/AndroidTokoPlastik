@@ -1,5 +1,6 @@
 package com.example.tokoplastik.ui.product
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -30,7 +31,7 @@ class ProductDetailFragment : BaseFragment<ProductDetailViewModel, FragmentProdu
     private val args: ProductDetailFragmentArgs by navArgs()
     private var productId: Int = -1
     private lateinit var spinner: Spinner
-    private val units = listOf("pcs", "pack", "unit", "buah", "pasang", "kotak", "lusin", "lembar", "keping", "batang", "bungkus", "potong", "tablet", "ekor", "rim", "karat", "botol", "butir", "roll", "dus", "karung", "koli", "sak", "bal", "kaleng", "set", "slop", "gulung", "ton", "kg", "gram", "mg", "meter", "m2", "m3", "inch", "cc", "liter")
+    private val units = listOf("pcs", "unit", "pack", "unit", "buah", "pasang", "kotak", "lusin", "lembar", "keping", "batang", "bungkus", "potong", "tablet", "ekor", "rim", "karat", "botol", "butir", "roll", "dus", "karung", "koli", "sak", "bal", "kaleng", "set", "slop", "gulung", "ton", "kg", "gram", "mg", "meter", "m2", "m3", "inch", "cc", "liter")
     private var selectedUnit: String? = null
     private var defaultPosition: Int = 0
     private var latestCapitalPrice: Int? = null
@@ -57,7 +58,11 @@ class ProductDetailFragment : BaseFragment<ProductDetailViewModel, FragmentProdu
         }
 
         binding.goToProductPriceButton.setOnClickListener {
-//            @TODO pindah ke fragment add product prices
+            val intent = Intent(requireContext(), AddProductActivity::class.java).apply {
+                putExtra("openProductPriceFragment", true)
+                putExtra("productId", productId)
+            }
+            startActivity(intent)
         }
 
 //        spinner
@@ -121,10 +126,19 @@ class ProductDetailFragment : BaseFragment<ProductDetailViewModel, FragmentProdu
             var newest: Int? = null
 
             if (newestCapitalPrice == 0) {
-                latest = binding.currentCapital.text.toString().toInt()
-                newest = binding.currentCapital.text.toString().toInt()
+                if (binding.currentCapital.text.toString() == "") {
+                    latest = binding.currentCapital.text.toString().toInt()
+                    newest = binding.currentCapital.text.toString().toInt()
+                } else {
+                    latest = 0
+                    newest = 0
+                }
             } else {
-                newest = binding.currentCapital.text.toString().toInt()
+                if (binding.currentCapital.text.toString() == "") {
+                    newest = 0
+                } else {
+                    newest = binding.currentCapital.text?.toString()?.toInt()
+                }
                 latest = newestCapitalPrice
             }
 

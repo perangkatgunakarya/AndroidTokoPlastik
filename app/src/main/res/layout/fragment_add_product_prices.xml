@@ -18,12 +18,13 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <Spinner
-                android:id="@+id/unit_spinner"
+            <AutoCompleteTextView
+                android:id="@+id/unit_dropdown"
+                style="@style/editText"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/edit_text_height"
                 android:layout_marginBottom="20dp"
-                style="@style/editText"/>
+                android:hint="Satuan"/>
 
             <EditText
                 android:id="@+id/quantity_edit_text"

@@ -6,5 +6,9 @@ data class AddProduct(
     val name: String,
     val supplier: String,
     @SerializedName("capital_price")
-    val capitalPrice: String
+    val capitalPrice: String,
+    @SerializedName("newest_capital_price")
+    val newestCapitalPrice: String,
+    @SerializedName("lowest_unit")
+    val lowesUnit: String
 )

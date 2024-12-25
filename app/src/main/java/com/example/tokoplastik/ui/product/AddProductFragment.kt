@@ -1,9 +1,11 @@
 package com.example.tokoplastik.ui.product
 
+import android.R
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.example.tokoplastik.data.network.AddProductApi
@@ -20,6 +22,9 @@ import kotlinx.coroutines.runBlocking
 
 class AddProductFragment : BaseFragment<AddProductViewModel, FragmentAddProductBinding, AddProductRepository> () {
 
+    private val units = listOf("pcs", "unit", "pack", "unit", "buah", "pasang", "kotak", "lusin", "lembar", "keping", "batang", "bungkus", "potong", "tablet", "ekor", "rim", "karat", "botol", "butir", "roll", "dus", "karung", "koli", "sak", "bal", "kaleng", "set", "slop", "gulung", "ton", "kg", "gram", "mg", "meter", "m2", "m3", "inch", "cc", "liter")
+    private var selectedUnit: String? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -34,14 +39,28 @@ class AddProductFragment : BaseFragment<AddProductViewModel, FragmentAddProductB
             val name = binding.productNameTextField.text.toString()
             val supplier = binding.supplierTextField.text.toString()
             val capitalPrice = binding.capitalPriceTextField.text.toString()
+            val lowesUnit = binding.unitDropdown.text.toString()
 
-            if (validateInputs(name, supplier, capitalPrice)) {
-                viewModel.addProduct(name, supplier, capitalPrice)
+            if (validateInputs(name, supplier, capitalPrice, lowesUnit)) {
+                viewModel.addProduct(name, supplier, capitalPrice, capitalPrice, lowesUnit)
             }
+        }
+
+        val adapter = ArrayAdapter(
+            requireContext(),
+            R.layout.simple_dropdown_item_1line,
+            units
+        )
+        binding.unitDropdown.setAdapter(adapter)
+        binding.unitDropdown.threshold = 1
+
+        binding.unitDropdown.setOnItemClickListener { _, _, position, _ ->
+            selectedUnit = adapter.getItem(position)
+            binding.unitDropdown.setText(selectedUnit, false)
         }
     }
 
-    private fun validateInputs(name: String, supplier: String, capitalPrice: String): Boolean {
+    private fun validateInputs(name: String, supplier: String, capitalPrice: String, lowesUnit: String): Boolean {
         var isValid = true
 
         if (name.isEmpty()) {
@@ -56,6 +75,11 @@ class AddProductFragment : BaseFragment<AddProductViewModel, FragmentAddProductB
 
         if (capitalPrice.isEmpty()) {
             binding.capitalPriceTextField.error = "Harga modal tidak boleh kosong"
+            isValid = false
+        }
+
+        if (lowesUnit.isEmpty()) {
+            binding.unitDropdown.error = "Satuan tidak boleh kosong"
             isValid = false
         }
 

@@ -1,5 +1,6 @@
 package com.example.tokoplastik.ui.product
 
+import android.R
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -32,6 +33,9 @@ class AddProductPricesFragment :
     private lateinit var pricesAdapter: ProductPricesAdapter
     private lateinit var getProductPrices: List<ProductPrice>
     private var productId: Int = -1
+
+    private val units = listOf("pcs", "unit", "pack", "unit", "buah", "pasang", "kotak", "lusin", "lembar", "keping", "batang", "bungkus", "potong", "tablet", "ekor", "rim", "karat", "botol", "butir", "roll", "dus", "karung", "koli", "sak", "bal", "kaleng", "set", "slop", "gulung", "ton", "kg", "gram", "mg", "meter", "m2", "m3", "inch", "cc", "liter")
+    private var selectedUnit: String? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -78,7 +82,7 @@ class AddProductPricesFragment :
         }
 
         binding.buttonAddPrice.setOnClickListener {
-            val unit = binding.unitSpinner.selectedItem.toString()
+            val unit = binding.unitDropdown.text.toString()
             val quantity = binding.quantityEditText.text.toString()
             val price = binding.priceEditText.text.toString().toIntOrNull() ?: 0
 
@@ -90,14 +94,18 @@ class AddProductPricesFragment :
     }
 
     private fun setupUnitSpinner() {
-        val units = arrayOf("Dus", "Ball", "Ikat", "Pack", "Pcs", "Roll")
         val adapter = ArrayAdapter(
             requireContext(),
-            android.R.layout.simple_spinner_item,
+            R.layout.simple_dropdown_item_1line,
             units
         )
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.unitSpinner.adapter = adapter
+        binding.unitDropdown.setAdapter(adapter)
+        binding.unitDropdown.threshold = 1
+
+        binding.unitDropdown.setOnItemClickListener { _, _, position, _ ->
+            selectedUnit = adapter.getItem(position)
+            binding.unitDropdown.setText(selectedUnit, false)
+        }
     }
 
     private fun validateInputs(quantity: String, price: Int, unit: String): Boolean {
@@ -165,7 +173,7 @@ class AddProductPricesFragment :
     private fun clearInputs() {
         binding.quantityEditText.text?.clear()
         binding.priceEditText.text?.clear()
-        binding.unitSpinner.setSelection(0)
+        binding.unitDropdown.text?.clear()
     }
 
 
