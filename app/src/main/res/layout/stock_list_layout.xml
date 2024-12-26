@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginTop="10dp"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="5dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp"
+        android:paddingBottom="20dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp" >
+
+        <TextView
+            android:id="@+id/date_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="19 Okt 2024"
+            style="@style/h4"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"/>
+
+        <TextView
+            android:id="@+id/clock_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="10:00"
+            style="@style/h4"
+            app:layout_constraintStart_toEndOf="@id/date_text"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"/>
+
+        <TextView
+            android:id="@+id/latestStockText"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:text="Stock Sebelumnya : "
+            style="@style/h4_bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/clock_text"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="10dp" />
+
+        <TextView
+            android:id="@+id/latestStockValue"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:text="100000 pcs"
+            style="@style/h4_bold"
+            app:layout_constraintTop_toBottomOf="@id/date_text"
+            app:layout_constraintStart_toEndOf="@id/latestStockText"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"/>
+
+        <TextView
+            android:id="@+id/typeText"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:text="transaction"
+            style="@style/h4_bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/latestStockText"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="10dp" />
+
+        <TextView
+            android:id="@+id/quantityText"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:text="100 pcs"
+            style="@style/h4_bold"
+            app:layout_constraintTop_toBottomOf="@id/latestStockValue"
+            app:layout_constraintStart_toEndOf="@id/typeText"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"/>
+
+        <TextView
+            android:id="@+id/currentStockText"
+            android:layout_width="170dp"
+            android:layout_height="wrap_content"
+            android:text="Stock Sekarang : "
+            style="@style/h3"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/typeText"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="10dp" />
+
+        <TextView
+            android:id="@+id/currentStockValue"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:text="1000 pcs"
+            style="@style/h3"
+            app:layout_constraintTop_toBottomOf="@id/quantityText"
+            app:layout_constraintStart_toEndOf="@id/typeText"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

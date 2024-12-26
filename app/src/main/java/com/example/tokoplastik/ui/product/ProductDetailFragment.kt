@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter
 import android.widget.Spinner
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.tokoplastik.R
@@ -54,7 +55,8 @@ class ProductDetailFragment : BaseFragment<ProductDetailViewModel, FragmentProdu
         }
 
         binding.stockCardButton.setOnClickListener {
-//            @TODO pindah ke fragment stock
+            val direction = ProductDetailFragmentDirections.actionDetailProductFragmentToStockFragment(productId)
+            findNavController().navigate(direction)
         }
 
         binding.goToProductPriceButton.setOnClickListener {

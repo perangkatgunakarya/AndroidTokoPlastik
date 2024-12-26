@@ -42,6 +42,10 @@
         <argument
             android:name="productId"
             app:argType="integer" />
+
+        <action
+            android:id="@+id/action_detailProductFragment_to_stockFragment"
+            app:destination="@id/stockFragment" />
     </fragment>
 
     <fragment
@@ -104,5 +108,14 @@
         <action
             android:id="@+id/action_updateCustomerFragment_to_transactionFragment"
             app:destination="@id/transactionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/stockFragment"
+        android:name="com.example.tokoplastik.ui.stock.StockFragment"
+        android:label="fragment_stock"
+        tools:layout="@layout/fragment_stock">
+        <argument
+            android:name="productId"
+            app:argType="integer"/>
     </fragment>
 </navigation>

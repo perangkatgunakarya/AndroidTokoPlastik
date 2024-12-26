@@ -10,6 +10,7 @@ import com.example.tokoplastik.data.repository.CheckoutRepository
 import com.example.tokoplastik.data.repository.CustomerRepository
 import com.example.tokoplastik.data.repository.DashboardRepository
 import com.example.tokoplastik.data.repository.ProductRepository
+import com.example.tokoplastik.data.repository.StockRepository
 
 class ViewModelFactory (
     private val repository: BaseRepository
@@ -27,6 +28,7 @@ class ViewModelFactory (
             modelClass.isAssignableFrom(CheckoutViewModel::class.java) -> CheckoutViewModel(repository as CheckoutRepository) as T
             modelClass.isAssignableFrom(CustomerViewModel::class.java) -> CustomerViewModel(repository as CustomerRepository) as T
             modelClass.isAssignableFrom(DashboardViewModel::class.java) -> DashboardViewModel(repository as DashboardRepository) as T
+            modelClass.isAssignableFrom(StockViewModel::class.java) -> StockViewModel(repository as StockRepository) as T
             else -> throw IllegalArgumentException("ViewModelClass not found")
         }
     }
