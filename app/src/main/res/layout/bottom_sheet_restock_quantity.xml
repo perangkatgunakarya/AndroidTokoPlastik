@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     app:layout_behavior="@string/bottom_sheet_behavior"
-    tools:context=".ui.product.ProductSortBottomSheet">
+    tools:context=".ui.stock.RestockQuantityBottomSheet">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -17,7 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="Sort Product"
+            android:text="Jumlah Restock"
             android:textColor="@color/black"
             android:textSize="18sp"
             android:textStyle="bold"/>
@@ -33,51 +33,41 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
         android:layout_marginTop="15dp"
-        android:text="Urutkan berdasarkan :"
+        android:text="Masukkan jumlah restock dalam satuan terkecil"
         android:textColor="@color/black"
-        android:textSize="18sp" />
+        android:textSize="15sp" />
 
-    <RadioGroup
-        android:id="@+id/sortRadioGroup"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="15dp">
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp"
+        android:layout_marginHorizontal="15dp">
 
-        <RadioButton
-            android:id="@+id/sortByName"
-            android:layout_width="match_parent"
+        <EditText
+            android:id="@+id/restockQuantity"
+            android:layout_width="250dp"
+            android:layout_height="@dimen/edit_text_height"
+            style="@style/editText"
+            android:hint="Jumlah Restock"
+            android:inputType="number"/>
+
+        <TextView
+            android:id="@+id/restockUnit"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Nama Produk"/>
+            android:text="pcs"
+            android:textSize="20sp"
+            android:layout_marginStart="35dp"/>
 
-        <RadioButton
-            android:id="@+id/sortByCapital"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Harga Modal"/>
-    </RadioGroup>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Urutan"
-        android:textSize="18sp"
-        android:textColor="@color/black"
-        android:layout_marginStart="15dp" />
-
-    <androidx.appcompat.widget.SwitchCompat
-        android:id="@+id/sortOrderSwitch"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginEnd="100dp"
-        android:text="Descending Order"/>
+    </LinearLayout>
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/doneButton"
+        android:id="@+id/saveStockButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:text="Done"
+        android:text="Simpan"
         style="@style/blueButtonStyle"
         android:layout_marginEnd="35dp"
         android:layout_marginBottom="15dp"

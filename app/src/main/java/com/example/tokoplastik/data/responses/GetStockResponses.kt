@@ -11,3 +11,9 @@ data class DeleteStockResponses(
     val message: String,
     val success: Boolean
 )
+
+data class AddStockResponses(
+    val data: Stock,
+    val message: String,
+    val success: Boolean
+)

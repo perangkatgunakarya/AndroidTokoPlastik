@@ -123,5 +123,6 @@
         android:text="Done"
         style="@style/blueButtonStyle"
         android:layout_marginEnd="35dp"
+        android:layout_marginBottom="15dp"
         android:layout_gravity="end"/>
 </LinearLayout>

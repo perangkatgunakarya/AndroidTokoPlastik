@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.tokoplastik.data.repository.StockRepository
+import com.example.tokoplastik.data.responses.AddStockRequest
+import com.example.tokoplastik.data.responses.AddStockResponses
 import com.example.tokoplastik.data.responses.DeleteStockResponses
 import com.example.tokoplastik.data.responses.GetStockResponses
 import com.example.tokoplastik.ui.base.BaseViewModel
@@ -21,6 +23,14 @@ class StockViewModel (
     val stock: LiveData<Resource<GetStockResponses>>
         get() = _stock
 
+    private val _addStock = MutableLiveData<Resource<AddStockResponses>>()
+    val addStock: LiveData<Resource<AddStockResponses>>
+        get() = _addStock
+
+    private val _addStockStatus = MutableLiveData<Boolean>()
+    val addStockStatus : LiveData<Boolean>
+        get() = _addStockStatus
+
     private val _deleteStock = MutableLiveData<Resource<DeleteStockResponses>>()
     val deleteStock: LiveData<Resource<DeleteStockResponses>>
         get() = _deleteStock
@@ -28,6 +38,16 @@ class StockViewModel (
     fun getStockByProductId(productId: Int? = null, startDate: String? = null, endDate: String? = null) = viewModelScope.launch {
         _stock.value = Resource.Loading
         _stock.value = repository.getStockByProductId(productId, startDate, endDate)
+    }
+
+    fun addStock(productId: Int, type: String, quantity: Int) = viewModelScope.launch {
+        _addStock.value = Resource.Loading
+        val stock = AddStockRequest(productId, type, quantity)
+        _addStock.value = repository.addStock(stock)
+    }
+
+    fun addStockStatus(status: Boolean) {
+        _addStockStatus.value = status
     }
 
     fun deleteStock(id: Int) = viewModelScope.launch {

@@ -18,3 +18,10 @@ data class Stock(
     val updatedAt: String,
     val product: GetProduct
 )
+
+data class AddStockRequest(
+    @SerializedName("product_id")
+    val productId: Int,
+    val type: String,
+    val quantity: Int
+)

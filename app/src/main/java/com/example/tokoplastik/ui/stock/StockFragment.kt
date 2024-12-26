@@ -1,13 +1,16 @@
 package com.example.tokoplastik.ui.stock
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.tokoplastik.R
 import com.example.tokoplastik.adapter.StockAdapter
 import com.example.tokoplastik.data.network.StockApi
@@ -40,6 +43,27 @@ class StockFragment : BaseFragment<StockViewModel, FragmentStockBinding, StockRe
 
         binding.buttonBack.setOnClickListener {
             requireActivity().onBackPressed()
+        }
+
+        binding.buttonAddStock.setOnClickListener {
+            val bottomSheet = RestockQuantityBottomSheet()
+            bottomSheet.show(childFragmentManager, "RESTOCK_QUANTITY_BOTTOM_SHEET")
+        }
+
+        viewModel.addStockStatus.observe(viewLifecycleOwner) {
+            if (it == true) {
+                SweetAlertDialog(requireContext(), SweetAlertDialog.SUCCESS_TYPE).apply {
+                    titleText = "Success!"
+                    contentText = "Barang berhasil direstock"
+                    setCanceledOnTouchOutside(false)
+                    setConfirmButton("OK") {
+                        dismissWithAnimation()
+                    }
+                    show()
+                }
+                viewModel.addStockStatus(false)
+                observeStocks()
+            }
         }
 
         setupSwipeRefresh()
