@@ -45,7 +45,7 @@ class RestockQuantityBottomSheet : BottomSheetDialogFragment() {
                 viewModel.addStock.observe(viewLifecycleOwner) {
                     when (it) {
                         is Resource.Success -> {
-                            viewModel.addStockStatus(true)
+                            viewModel.setAddStockStatus(true)
                             dismiss()
                         }
                         is Resource.Failure -> {
@@ -61,6 +61,18 @@ class RestockQuantityBottomSheet : BottomSheetDialogFragment() {
             }
         }
 
-        restockUnit.text = viewModel.stock.value?.data?.data?.first()?.product?.lowestUnit
+        viewModel.product.observe(viewLifecycleOwner) {
+            when (it) {
+                is Resource.Success -> {
+                    restockUnit.text = it.data?.data?.product?.lowestUnit
+                }
+                is Resource.Failure -> {
+                    dismiss()
+                }
+                is Resource.Loading -> {
+                    dismiss()
+                }
+            }
+        }
     }
 }

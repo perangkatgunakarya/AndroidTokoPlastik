@@ -7,6 +7,10 @@ class StockRepository (
     private val api: StockApi
 ) : BaseRepository() {
 
+    suspend fun getProduct(productId: Int) = safeApiCall {
+        api.getProduct(productId)
+    }
+
     suspend fun getStockByProductId(productId: Int? = null, startDate: String? = null, endDate: String? = null) = safeApiCall {
         api.getStock(productId, startDate, endDate)
     }

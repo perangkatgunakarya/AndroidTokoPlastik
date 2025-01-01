@@ -7,6 +7,7 @@ import com.example.tokoplastik.data.repository.StockRepository
 import com.example.tokoplastik.data.responses.AddStockRequest
 import com.example.tokoplastik.data.responses.AddStockResponses
 import com.example.tokoplastik.data.responses.DeleteStockResponses
+import com.example.tokoplastik.data.responses.GetProductByIdResponses
 import com.example.tokoplastik.data.responses.GetStockResponses
 import com.example.tokoplastik.ui.base.BaseViewModel
 import com.example.tokoplastik.util.Resource
@@ -18,6 +19,10 @@ import java.util.Locale
 class StockViewModel (
     private val repository: StockRepository
 ) : BaseViewModel(repository) {
+
+    private val _product = MutableLiveData<Resource<GetProductByIdResponses>>()
+    val product: LiveData<Resource<GetProductByIdResponses>>
+        get() = _product
 
     private val _stock = MutableLiveData<Resource<GetStockResponses>>()
     val stock: LiveData<Resource<GetStockResponses>>
@@ -38,6 +43,11 @@ class StockViewModel (
     fun getStockByProductId(productId: Int? = null, startDate: String? = null, endDate: String? = null) = viewModelScope.launch {
         _stock.value = Resource.Loading
         _stock.value = repository.getStockByProductId(productId, startDate, endDate)
+    }
+
+    fun getProduct(productId: Int) = viewModelScope.launch {
+        _product.value = Resource.Loading
+        _product.value = repository.getProduct(productId)
     }
 
     fun addStock(productId: Int, type: String, quantity: Int) = viewModelScope.launch {

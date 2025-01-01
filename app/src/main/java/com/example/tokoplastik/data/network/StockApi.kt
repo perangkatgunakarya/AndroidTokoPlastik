@@ -3,6 +3,7 @@ package com.example.tokoplastik.data.network
 import com.example.tokoplastik.data.responses.AddStockRequest
 import com.example.tokoplastik.data.responses.AddStockResponses
 import com.example.tokoplastik.data.responses.DeleteStockResponses
+import com.example.tokoplastik.data.responses.GetProductByIdResponses
 import com.example.tokoplastik.data.responses.GetStockResponses
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -12,6 +13,11 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface StockApi {
+    @GET("product/{id}")
+    suspend fun getProduct(
+        @Path("id") productId: Int
+    ): GetProductByIdResponses
+
     @GET("stock-history")
     suspend fun getStock(
         @Query("product_id") productId: Int? = null,
