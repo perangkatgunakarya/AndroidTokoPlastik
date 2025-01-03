@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.tokoplastik.data.responses.CartItem
 import com.example.tokoplastik.data.responses.ProductPrice
 import com.example.tokoplastik.databinding.CartItemLayoutBinding
+import com.example.tokoplastik.util.setNumberFormatter
 
 class CartAdapter(
     private val onQuantityChanged: (CartItem, Int) -> Unit,
@@ -36,85 +37,89 @@ class CartAdapter(
     inner class CartViewHolder(private val binding: CartItemLayoutBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: CartItem) {
-            binding.apply {
-                productText.text = item.product?.data?.product?.name
+            init {
+                binding.priceEdit.setNumberFormatter()
+            }
 
-                val unitsAdapter = ArrayAdapter(
-                    itemView.context,
-                    android.R.layout.simple_spinner_item,
-                    item.productPrice.map { it.unit }
-                )
-                unitsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                unitsSpinner.adapter = unitsAdapter
+            fun bind(item: CartItem) {
+                binding.apply {
+                    productText.text = item.product?.data?.product?.name
 
-                binding.quantityText.text = item.quantity.toString()
-                val initialUnit = item.selectedPrice.unit
-                val position = item.productPrice.indexOfFirst { it.unit == initialUnit }
-                if (position != -1) {
-                    unitsSpinner.setSelection(position)
-                }
+                    val unitsAdapter = ArrayAdapter(
+                        itemView.context,
+                        android.R.layout.simple_spinner_item,
+                        item.productPrice.map { it.unit }
+                    )
+                    unitsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    unitsSpinner.adapter = unitsAdapter
 
-                if (!priceEdit.hasFocus()) {
-                    val price = tempPrices[adapterPosition] ?: item.customPrice
-                    priceEdit.setText(price.toString())
-                } else {
-                    onItemFocused(absoluteAdapterPosition)
-                }
+                    binding.quantityText.text = item.quantity.toString()
+                    val initialUnit = item.selectedPrice.unit
+                    val position = item.productPrice.indexOfFirst { it.unit == initialUnit }
+                    if (position != -1) {
+                        unitsSpinner.setSelection(position)
+                    }
 
-                priceEdit.imeOptions = EditorInfo.IME_ACTION_DONE
-                priceEdit.inputType = InputType.TYPE_CLASS_NUMBER
-
-                priceEdit.setOnEditorActionListener { _, actionId, _ ->
-                    if (actionId == EditorInfo.IME_ACTION_DONE) {
-                        tempPrices[adapterPosition]?.let { price ->
-                            onPriceChanged(item, price)
-                            tempPrices.remove(adapterPosition)
-                        }
-                        priceEdit.clearFocus()
-                        true
+                    if (!priceEdit.hasFocus()) {
+                        val price = tempPrices[adapterPosition] ?: item.customPrice
+                        priceEdit.setText(price.toString())
                     } else {
-                        false
+                        onItemFocused(absoluteAdapterPosition)
                     }
-                }
 
-                priceEdit.doOnTextChanged { text, _, _, _ ->
-                    if (priceEdit.hasFocus()) {
-                        text?.toString()?.toIntOrNull()?.let { price ->
-                            tempPrices[adapterPosition] = price
-                        }
-                    }
-                }
+                    priceEdit.imeOptions = EditorInfo.IME_ACTION_DONE
+                    priceEdit.inputType = InputType.TYPE_CLASS_NUMBER
 
-                btnPlus.setOnClickListener {
-                    onQuantityChanged(item, item.quantity + 1)
-                    binding.quantityText.text = (item.quantity + 1).toString()
-                }
-
-                btnMinus.setOnClickListener {
-                    if (item.quantity > 1) {
-                        onQuantityChanged(item, item.quantity - 1)
-                        binding.quantityText.text = (item.quantity - 1).toString()
-                    }
-                }
-
-                unitsSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(
-                        parent: AdapterView<*>?,
-                        view: View?,
-                        position: Int,
-                        id: Long
-                    ) {
-                        val selectedPrice = item.productPrice[position]
-                        if (selectedPrice != item.selectedPrice) {
-                            onUnitChanged(item, selectedPrice)
+                    priceEdit.setOnEditorActionListener { _, actionId, _ ->
+                        if (actionId == EditorInfo.IME_ACTION_DONE) {
+                            tempPrices[adapterPosition]?.let { price ->
+                                onPriceChanged(item, price)
+                                tempPrices.remove(adapterPosition)
+                            }
+                            priceEdit.clearFocus()
+                            true
+                        } else {
+                            false
                         }
                     }
 
-                    override fun onNothingSelected(parent: AdapterView<*>?) {}
+                    priceEdit.doOnTextChanged { text, _, _, _ ->
+                        if (priceEdit.hasFocus()) {
+                            text?.toString()?.toIntOrNull()?.let { price ->
+                                tempPrices[adapterPosition] = price
+                            }
+                        }
+                    }
+
+                    btnPlus.setOnClickListener {
+                        onQuantityChanged(item, item.quantity + 1)
+                        binding.quantityText.text = (item.quantity + 1).toString()
+                    }
+
+                    btnMinus.setOnClickListener {
+                        if (item.quantity > 1) {
+                            onQuantityChanged(item, item.quantity - 1)
+                            binding.quantityText.text = (item.quantity - 1).toString()
+                        }
+                    }
+
+                    unitsSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                        override fun onItemSelected(
+                            parent: AdapterView<*>?,
+                            view: View?,
+                            position: Int,
+                            id: Long
+                        ) {
+                            val selectedPrice = item.productPrice[position]
+                            if (selectedPrice != item.selectedPrice) {
+                                onUnitChanged(item, selectedPrice)
+                            }
+                        }
+
+                        override fun onNothingSelected(parent: AdapterView<*>?) {}
+                    }
                 }
             }
-        }
     }
 
     companion object {

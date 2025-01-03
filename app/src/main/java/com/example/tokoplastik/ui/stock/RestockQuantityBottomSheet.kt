@@ -45,7 +45,7 @@ class RestockQuantityBottomSheet : BottomSheetDialogFragment() {
                 viewModel.addStock.observe(viewLifecycleOwner) {
                     when (it) {
                         is Resource.Success -> {
-                            viewModel.setAddStockStatus(true)
+                            viewModel.addStockStatus(true)
                             dismiss()
                         }
                         is Resource.Failure -> {

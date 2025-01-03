@@ -9,6 +9,8 @@ import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
 import androidx.lifecycle.ViewModelProvider
 import com.example.tokoplastik.R
+import com.example.tokoplastik.util.getRawValue
+import com.example.tokoplastik.util.setNumberFormatter
 import com.example.tokoplastik.viewmodel.CheckoutViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
@@ -35,6 +37,8 @@ class PaidBottomSheet : BottomSheetDialogFragment() {
         paidInput = view.findViewById(R.id.paid_input)
         paidButton = view.findViewById(R.id.paid_button)
 
+        paidInput.setNumberFormatter()
+
         //observe cartItems
         viewModel.cartItems.observe(viewLifecycleOwner) { items ->
             val total = items.sumOf { it.customPrice * it.quantity }
@@ -43,7 +47,7 @@ class PaidBottomSheet : BottomSheetDialogFragment() {
 
         //klik bayar and proceed checkout in checkout fragment
         paidButton.setOnClickListener {
-            viewModel.setPaidAmount(paidInput.text.toString().toInt())
+            viewModel.setPaidAmount(paidInput.getRawValue())
         }
     }
 }
