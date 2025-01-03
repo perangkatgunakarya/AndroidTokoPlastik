@@ -103,7 +103,7 @@ class ProductDetailFragment : BaseFragment<ProductDetailViewModel, FragmentProdu
                     val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'")
                     parser.timeZone = TimeZone.getTimeZone("UTC")
                     val date = parser.parse(it.data?.data?.product?.updatedAt)
-                    binding.latestCapitalDate.text = SimpleDateFormat("dd MMM Y").format(date)
+                    binding.latestCapitalDate.text = "Terakhir diperbarui: ${SimpleDateFormat("dd MMM Y").format(date)}"
 
                     defaultPosition = units.indexOf(it.data?.data?.product?.lowestUnit)
                     spinner.setSelection(defaultPosition)

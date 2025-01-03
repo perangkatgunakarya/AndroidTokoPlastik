@@ -18,8 +18,10 @@ import com.example.tokoplastik.viewmodel.SortType
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.datepicker.MaterialDatePicker
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 class SortFilterBottomSheet : BottomSheetDialogFragment() {
     // Use activityViewModels to share ViewModel with the parent Fragment
@@ -80,12 +82,18 @@ class SortFilterBottomSheet : BottomSheetDialogFragment() {
                 )
                 .build()
 
-            // Handle date selection
             datePicker.addOnPositiveButtonClickListener { selection ->
-                // Set date range in ViewModel
-                viewModel.setDateRange(selection.first, selection.second)
+                val endDate = if (selection.first == selection.second) {
+                    Calendar.getInstance(TimeZone.getTimeZone("UTC")).apply {
+                        timeInMillis = selection.second
+                        add(Calendar.DATE, 1)
+                    }.timeInMillis
+                } else {
+                    selection.second
+                }
 
-                // Update EditText fields with selected dates
+                viewModel.setDateRange(selection.first, endDate)
+
                 startDateEditText.setText(formatDate(selection.first))
                 endDateEditText.setText(formatDate(selection.second))
             }

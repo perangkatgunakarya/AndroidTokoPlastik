@@ -18,8 +18,10 @@ import com.example.tokoplastik.viewmodel.StockViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.datepicker.MaterialDatePicker
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 class SortStockBottomSheet : BottomSheetDialogFragment() {
 
@@ -54,7 +56,7 @@ class SortStockBottomSheet : BottomSheetDialogFragment() {
 
         sortRadioGroup.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
-                R.id.sortByDate -> viewModel.setSortType(SortType.DATE)
+                R.id.sortStockByDate -> viewModel.setSortType(SortType.DATE)
             }
         }
 
@@ -74,7 +76,16 @@ class SortStockBottomSheet : BottomSheetDialogFragment() {
                 .build()
 
             datePicker.addOnPositiveButtonClickListener { selection ->
-                viewModel.setDateRange(selection.first, selection.second)
+                val endDate = if (selection.first == selection.second) {
+                    Calendar.getInstance(TimeZone.getTimeZone("UTC")).apply {
+                        timeInMillis = selection.second
+                        add(Calendar.DATE, 1)
+                    }.timeInMillis
+                } else {
+                    selection.second
+                }
+
+                viewModel.setDateRange(selection.first, endDate)
 
                 startDateEditText.setText(formatDate(selection.first))
                 endDateEditText.setText(formatDate(selection.second))
@@ -93,8 +104,8 @@ class SortStockBottomSheet : BottomSheetDialogFragment() {
 
     private fun restorePreviousState() {
         when (viewModel.sortType.value) {
-            SortType.DATE -> sortRadioGroup.check(R.id.sortByDate)
-            null -> sortRadioGroup.check(R.id.sortByDate) // Default
+            SortType.DATE -> sortRadioGroup.check(R.id.sortStockByDate)
+            null -> sortRadioGroup.check(R.id.sortStockByDate) // Default
             SortType.CAPITAL -> TODO()
             SortType.NAME -> TODO()
         }

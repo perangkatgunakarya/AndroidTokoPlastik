@@ -1,5 +1,6 @@
 package com.example.tokoplastik.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -13,6 +14,7 @@ import com.example.tokoplastik.ui.base.BaseViewModel
 import com.example.tokoplastik.util.Resource
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -71,10 +73,10 @@ class StockViewModel (
     private val _sortType = MutableLiveData(SortType.DATE)
     val sortType: LiveData<SortType> = _sortType
 
-    private val _sortOrder = MutableLiveData(SortOrder.ASCENDING)
+    private val _sortOrder = MutableLiveData(SortOrder.DESCENDING)
     val sortOrder: LiveData<SortOrder> = _sortOrder
 
-    private val _isDateSortAscending = MutableLiveData(true)
+    private val _isDateSortAscending = MutableLiveData(false)
     val isDateSortAscending: LiveData<Boolean> = _isDateSortAscending
 
     private val _startDate = MutableLiveData<Long>()

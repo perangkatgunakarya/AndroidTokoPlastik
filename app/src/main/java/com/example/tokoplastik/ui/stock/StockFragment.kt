@@ -120,6 +120,10 @@ class StockFragment : BaseFragment<StockViewModel, FragmentStockBinding, StockRe
                 }
             }
         }
+
+        viewModel.isDateSortAscending.observe(viewLifecycleOwner) { it ->
+            stockAdapter.sortByDate(it)
+        }
     }
 
     private fun setupSortingButton() {
