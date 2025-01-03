@@ -29,10 +29,10 @@ class ProductDetailViewModel(
         }
     }
 
-    fun updateProduct(productId: Int, name: String?, supplier: String?, capitalPrice: Int?, newestCapitalPrice: Int?, lowestUnit: String?) {
+    fun updateProduct(productId: Int, name: String?, supplier: String?, capitalPrice: Int?, newestCapitalPrice: Int?, lowestUnit: String?, notes: String?) {
         viewModelScope.launch {
             _updateProduct.value = Resource.Loading
-            val product = UpdateProductRequest(name, supplier, capitalPrice, newestCapitalPrice, lowestUnit)
+            val product = UpdateProductRequest(name, supplier, capitalPrice, newestCapitalPrice, lowestUnit, notes)
             _updateProduct.value = repository.updateProduct(productId, product)
         }
     }

@@ -8,6 +8,6 @@ class AddProductRepository (
 ) : BaseRepository() {
 
     suspend fun addProduct(product: AddProduct) = safeApiCall {
-        api.addProduct(AddProduct(product.name, product.supplier, product.capitalPrice, product.newestCapitalPrice, product.lowesUnit))
+        api.addProduct(AddProduct(product.name, product.supplier, product.capitalPrice, product.newestCapitalPrice, product.lowesUnit, product.notes))
     }
 }

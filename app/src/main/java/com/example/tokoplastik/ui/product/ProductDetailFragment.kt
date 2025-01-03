@@ -98,6 +98,7 @@ class ProductDetailFragment : BaseFragment<ProductDetailViewModel, FragmentProdu
                     binding.supplierName.setText(it.data?.data?.product?.supplier)
                     binding.latestCapital.setText(String.format("Rp %,d", it.data?.data?.product?.newestCapitalPrice))
                     binding.latestStock.setText("${it.data?.data?.product?.latestStock}")
+                    binding.notes.setText(it.data?.data?.product?.notes)
 
                     val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'")
                     parser.timeZone = TimeZone.getTimeZone("UTC")
@@ -124,6 +125,7 @@ class ProductDetailFragment : BaseFragment<ProductDetailViewModel, FragmentProdu
         binding.saveButton.setOnClickListener {
             val name = binding.productName.text.toString()
             val supplier = binding.supplierName.text.toString()
+            val notes = binding.notes.text.toString()
             var latest: Int? = null
             var newest: Int? = null
 
@@ -146,7 +148,7 @@ class ProductDetailFragment : BaseFragment<ProductDetailViewModel, FragmentProdu
 
             val lowestUnit = selectedUnit
 
-            viewModel.updateProduct(productId, name, supplier, latest, newest, lowestUnit)
+            viewModel.updateProduct(productId, name, supplier, latest, newest, lowestUnit, notes)
             viewModel.updateProduct.observe(viewLifecycleOwner, Observer {
                 when (it) {
                     is Resource.Success -> {

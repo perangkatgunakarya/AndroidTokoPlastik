@@ -232,6 +232,29 @@
             android:backgroundTint="@color/g_red"/>
     </LinearLayout>
 
+    <RelativeLayout
+        android:id="@+id/relativeLayout3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="@id/guideline_2"
+        app:layout_constraintStart_toStartOf="@id/guideline_1"
+        app:layout_constraintTop_toBottomOf="@id/linearLayout2">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Catatan"/>
+
+        <EditText
+            android:id="@+id/notes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:inputType="text|textMultiLine"
+            android:hint="Notes"/>
+    </RelativeLayout>
+
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/goToProductPriceButton"
         android:layout_width="0dp"
@@ -245,7 +268,7 @@
         android:textColor="@color/black"
         app:layout_constraintStart_toStartOf="@id/guideline_1"
         app:layout_constraintEnd_toStartOf="@id/saveButton"
-        app:layout_constraintTop_toBottomOf="@id/linearLayout2"/>
+        app:layout_constraintTop_toBottomOf="@id/relativeLayout3"/>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/saveButton"
@@ -257,7 +280,7 @@
         android:layout_gravity="center"
         app:layout_constraintStart_toEndOf="@id/goToProductPriceButton"
         app:layout_constraintEnd_toEndOf="@id/guideline_2"
-        app:layout_constraintTop_toBottomOf="@id/linearLayout2"/>
+        app:layout_constraintTop_toBottomOf="@id/relativeLayout3"/>
 
     <ProgressBar
         android:id="@+id/progressBar"

@@ -40,8 +40,17 @@
         style="@style/editText"
         android:layout_width="match_parent"
         android:layout_height="@dimen/edit_text_height"
-        android:layout_marginTop="16dp"
         android:hint="Satuan Terkecil (Cont. pcs, meter)"/>
+
+    <EditText
+        android:id="@+id/notes_text_field"
+        style="@style/editText"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginTop="20dp"
+        android:padding="10dp"
+        android:hint="Catatan"
+        android:inputType="text|textMultiLine" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button_add_product"

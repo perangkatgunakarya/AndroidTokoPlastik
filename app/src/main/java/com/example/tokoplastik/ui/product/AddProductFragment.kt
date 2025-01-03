@@ -40,9 +40,10 @@ class AddProductFragment : BaseFragment<AddProductViewModel, FragmentAddProductB
             val supplier = binding.supplierTextField.text.toString()
             val capitalPrice = binding.capitalPriceTextField.text.toString()
             val lowesUnit = binding.unitDropdown.text.toString()
+            val notes = binding.notesTextField.text.toString()
 
             if (validateInputs(name, supplier, capitalPrice, lowesUnit)) {
-                viewModel.addProduct(name, supplier, capitalPrice, capitalPrice, lowesUnit)
+                viewModel.addProduct(name, supplier, capitalPrice, capitalPrice, lowesUnit, notes)
             }
         }
 

@@ -9,6 +9,7 @@ data class GetProduct(
     val newestCapitalPrice: Int,
     @SerializedName("lowest_unit")
     val lowestUnit: String,
+    val notes: String,
     val latestStock: Int,
     @SerializedName("created_at")
     val createdAt: String,
@@ -27,5 +28,6 @@ data class UpdateProductRequest(
     @SerializedName("newest_capital_price")
     val newestCapitalPrice: Int?,
     @SerializedName("lowest_unit")
-    val lowestUnit: String?
+    val lowestUnit: String?,
+    val notes: String?
 )

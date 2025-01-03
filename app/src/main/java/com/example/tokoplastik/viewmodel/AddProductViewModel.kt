@@ -18,9 +18,9 @@ class AddProductViewModel(
     val addProduct: LiveData<Resource<AddProductResponse>>
         get() = _addProduct
 
-    fun addProduct(name: String, supplier: String, capitalPrice: String, newestCapitalPrice: String, lowesUnit: String) = viewModelScope.launch {
+    fun addProduct(name: String, supplier: String, capitalPrice: String, newestCapitalPrice: String, lowesUnit: String, notes: String?) = viewModelScope.launch {
         _addProduct.value = Resource.Loading
-        val product = AddProduct(name, supplier, capitalPrice, newestCapitalPrice, lowesUnit)
+        val product = AddProduct(name, supplier, capitalPrice, newestCapitalPrice, lowesUnit, notes)
         _addProduct.value = repository.addProduct(product)
     }
 }
