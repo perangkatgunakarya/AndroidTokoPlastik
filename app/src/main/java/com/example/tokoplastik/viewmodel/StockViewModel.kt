@@ -35,8 +35,7 @@ class StockViewModel (
         get() = _addStock
 
     private val _addStockStatus = MutableLiveData<Boolean>()
-    val addStockStatus : LiveData<Boolean>
-        get() = _addStockStatus
+    val addStockStatus : LiveData<Boolean> = _addStockStatus
 
     private val _deleteStock = MutableLiveData<Resource<DeleteStockResponses>>()
     val deleteStock: LiveData<Resource<DeleteStockResponses>>

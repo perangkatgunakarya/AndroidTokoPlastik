@@ -20,6 +20,7 @@ class RestockQuantityBottomSheet : BottomSheetDialogFragment() {
     private lateinit var restockQuantity: EditText
     private lateinit var restockUnit: TextView
     private lateinit var saveStockButton: Button
+    private var hasObservedAddStock = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,24 +41,28 @@ class RestockQuantityBottomSheet : BottomSheetDialogFragment() {
         saveStockButton.setOnClickListener {
             val quantity = restockQuantity.text.toString().toIntOrNull()
             if (quantity != null) {
-                viewModel.productId?.let { it1 -> viewModel.addStock(it1, "restock", quantity) }
-
-                viewModel.addStock.observe(viewLifecycleOwner) {
-                    when (it) {
-                        is Resource.Success -> {
-                            viewModel.addStockStatus(true)
-                            dismiss()
-                        }
-                        is Resource.Failure -> {
-                            dismiss()
-                        }
-                        is Resource.Loading -> {
-                            dismiss()
+                if (!hasObservedAddStock) {
+                    viewModel.addStock.observe(viewLifecycleOwner) { result ->
+                        when (result) {
+                            is Resource.Success -> {
+                                viewModel.addStockStatus(true)
+                                viewModel.getStockByProductId(viewModel.productId)
+                                dismiss()
+                            }
+                            is Resource.Failure -> {
+                                // Handle failure
+                            }
+                            is Resource.Loading -> {
+                                // Handle loading
+                            }
                         }
                     }
+                    hasObservedAddStock = true
                 }
 
-                dismiss()
+                viewModel.productId?.let { it1 ->
+                    viewModel.addStock(it1, "restock", quantity)
+                }
             }
         }
 
