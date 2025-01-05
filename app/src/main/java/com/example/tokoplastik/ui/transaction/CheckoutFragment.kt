@@ -105,19 +105,25 @@ class CheckoutFragment :
 
         viewModel.getProducts()
         viewModel.product.observe(viewLifecycleOwner, Observer { result ->
-            val productNames = result.data?.data?.map { it.name } ?: emptyList()
+            val productList = result.data?.data ?: emptyList()
+            val displayList = productList.map { "${it.supplier} - ${it.name}" to it.id }
+
             val productAdapter = ArrayAdapter(
                 requireContext(),
                 android.R.layout.simple_dropdown_item_1line,
-                productNames
+                displayList.map { it.first }
             )
 
             binding.productDropdown.setAdapter(productAdapter)
             binding.productDropdown.threshold = 1
 
             binding.productDropdown.setOnItemClickListener { _, _, position, _ ->
-                val selectedProductName = productAdapter.getItem(position)
-                val selectedProduct = result.data?.data?.find { it.name == selectedProductName }
+                val item = productAdapter.getItem(position)
+                val selectedItem = displayList.find { it.first == item }
+                val selectedProductId = selectedItem?.second
+
+                val selectedProduct = productList.find { it.id == selectedProductId }
+
                 if (selectedProduct != null) {
                     viewModel.selectProduct(selectedProduct.id)
                     if (viewModel.unsignedproductPrice != true) {

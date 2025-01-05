@@ -37,10 +37,6 @@ class CartAdapter(
     inner class CartViewHolder(private val binding: CartItemLayoutBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-            init {
-                binding.priceEdit.setNumberFormatter()
-            }
-
             fun bind(item: CartItem) {
                 binding.apply {
                     productText.text = item.product?.data?.product?.name
@@ -58,6 +54,11 @@ class CartAdapter(
                     val position = item.productPrice.indexOfFirst { it.unit == initialUnit }
                     if (position != -1) {
                         unitsSpinner.setSelection(position)
+                        if (item.customPrice != item.selectedPrice.price) {
+                            tempPrices[adapterPosition] = item.customPrice
+                        } else {
+                            tempPrices[adapterPosition] = item.selectedPrice.price
+                        }
                     }
 
                     if (!priceEdit.hasFocus()) {
@@ -72,10 +73,8 @@ class CartAdapter(
 
                     priceEdit.setOnEditorActionListener { _, actionId, _ ->
                         if (actionId == EditorInfo.IME_ACTION_DONE) {
-                            tempPrices[adapterPosition]?.let { price ->
-                                onPriceChanged(item, price)
-                                tempPrices.remove(adapterPosition)
-                            }
+                            tempPrices[adapterPosition] = priceEdit.text.toString().toIntOrNull() ?: item.customPrice
+                            onPriceChanged(item, tempPrices[adapterPosition] ?: item.customPrice)
                             priceEdit.clearFocus()
                             true
                         } else {
