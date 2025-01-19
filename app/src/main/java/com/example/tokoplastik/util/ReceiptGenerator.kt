@@ -102,8 +102,8 @@ class ReceiptGenerator(
                     "${++index}",
                     "${item.quantity} ${item.selectedPrice.unit}",
                     item.product?.data?.product?.name,
-                    String.format("Rp %,d", item.customPrice),
-                    String.format("Rp %,d", item.customPrice * item.quantity)
+                    String.format(Locale.GERMANY, "Rp %,d", item.customPrice),
+                    String.format(Locale.GERMANY, "Rp %,d", item.customPrice * item.quantity)
                 )
 
                 cells.forEach { content ->
@@ -122,7 +122,7 @@ class ReceiptGenerator(
             document.add(Paragraph("\n"))
 
             val totalPara = Paragraph(
-                "Total: ${String.format("Rp %,d", orderData.total.toLong())}",
+                "Total: ${String.format(Locale.GERMANY, "Rp %,d", orderData.total.toLong())}",
                 FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12f, blueHeader)
             )
             totalPara.alignment = Element.ALIGN_RIGHT
@@ -211,7 +211,7 @@ class ReceiptGenerator(
         // Items
         val itemsText = cartItems.flatMapIndexed { index, item ->
             val wrappedItemName = wrapText(item.product?.data?.product?.name.toString(), 24) // Wrap item name to 24 characters
-            val firstLine = "| ${(index + 1).toString().padEnd(3)} | ${(item.quantity.toString() + " " + item.selectedPrice.unit).padEnd(15)} | ${wrappedItemName[0].padEnd(24)} | ${item.customPrice.toString().padEnd(15)} | ${(item.customPrice * item.quantity).toString().padEnd(17)} |"
+            val firstLine = "| ${(index + 1).toString().padEnd(3)} | ${(item.quantity.toString() + " " + item.selectedPrice.unit).padEnd(15)} | ${wrappedItemName[0].padEnd(24)} | ${String.format(Locale.GERMANY, "Rp %,d", item.customPrice.toString()).padEnd(15)} | ${String.format(Locale.GERMANY, "Rp %,d", (item.customPrice * item.quantity).toString()).padEnd(17)} |"
             val descriptionLine = "|     | ${item.selectedPrice.quantityPerUnit.padEnd(15)} |                          |                 |                   |"
             val additionalLines = wrappedItemName.drop(1).map { "|     |                 | ${it.padEnd(24)} |                 |                   |" }
             listOf(firstLine, descriptionLine) + additionalLines
@@ -220,7 +220,7 @@ class ReceiptGenerator(
         // Footer
         val footer = """
         |-----|-----------------|--------------------------|-----------------|-------------------|
-        | 		                                                Total: ${String.format("Rp %,d", orderData.total.toLong()).padEnd(18)}|
+        | 		                                                Total: ${String.format(Locale.GERMANY, "Rp %,d", orderData.total.toLong()).padEnd(18)}|
         +----------------------------------------------------------------------------------------+
 
     """.trimIndent()

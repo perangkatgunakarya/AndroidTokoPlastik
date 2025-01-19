@@ -25,6 +25,7 @@ import com.example.tokoplastik.viewmodel.ProductDetailViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import java.text.SimpleDateFormat
+import java.util.Locale
 import java.util.TimeZone
 
 class ProductDetailFragment : BaseFragment<ProductDetailViewModel, FragmentProductDetailBinding, ProductRepository>() {
@@ -96,7 +97,7 @@ class ProductDetailFragment : BaseFragment<ProductDetailViewModel, FragmentProdu
                     binding.textProductDetail.text = it.data?.data?.product?.name
                     binding.productName.setText(it.data?.data?.product?.name)
                     binding.supplierName.setText(it.data?.data?.product?.supplier)
-                    binding.latestCapital.setText(String.format("Rp %,d", it.data?.data?.product?.newestCapitalPrice))
+                    binding.latestCapital.setText(String.format(Locale.GERMANY, "Rp %,d", it.data?.data?.product?.newestCapitalPrice))
                     binding.latestStock.setText("${it.data?.data?.product?.latestStock}")
                     binding.notes.setText(it.data?.data?.product?.notes)
 

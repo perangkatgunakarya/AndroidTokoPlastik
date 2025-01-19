@@ -117,8 +117,8 @@ class HistoryReceiptGenerator (
                     "${++index}",
                     "${item.quantity} ${item.productPrice.unit}",
                     item.productPrice.product.name,
-                    String.format("Rp %,d", item.priceAdjustment),
-                    String.format("Rp %,d", item.priceAdjustment * item.quantity)
+                    String.format(Locale.GERMANY, "Rp %,d", item.priceAdjustment),
+                    String.format(Locale.GERMANY, "Rp %,d", item.priceAdjustment * item.quantity)
                 )
 
                 cells.forEach { content ->
@@ -137,7 +137,7 @@ class HistoryReceiptGenerator (
             document.add(Paragraph("\n"))
 
             val totalPara = Paragraph(
-                "Total: ${String.format("Rp %,d", orderData.total.toLong())}",
+                "Total: ${String.format(Locale.GERMANY, "Rp %,d", orderData.total.toLong())}",
                 FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12f, blueHeader)
             )
             totalPara.alignment = Element.ALIGN_RIGHT
@@ -235,7 +235,7 @@ class HistoryReceiptGenerator (
         // Footer
         val footer = """
         |-----|-----------------|--------------------------|-----------------|-------------------|
-        | 		                                                Total: ${String.format("Rp %,d", orderData.total.toLong()).padEnd(18)}|
+        | 		                                                Total: ${String.format(Locale.GERMANY, "Rp %,d", orderData.total.toLong()).padEnd(18)}|
         +----------------------------------------------------------------------------------------+
 
     """.trimIndent()
