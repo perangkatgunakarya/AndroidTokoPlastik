@@ -3,6 +3,7 @@ package com.example.tokoplastik.util
 import android.content.Context
 import android.content.Intent
 import android.hardware.usb.UsbManager
+import android.net.Uri
 import android.os.Environment
 import androidx.core.content.FileProvider
 import com.example.tokoplastik.data.responses.TransactionDetail
@@ -177,97 +178,134 @@ class HistoryReceiptGenerator (
         context.startActivity(Intent.createChooser(shareIntent, "Share Invoice"))
     }
 
-    fun printReceipt(
+    fun generateInvoiceText(
         orderData: TransactionDetail,
         cartItems: List<TransactionDetailProduct>,
         orderId: String
-    ) {
-        val printerCommands = StringBuilder()
+    ): String {
+        // Centered Shop Name
+        val shopName = "TOKO PLASTIK H. ALI"
+        val centeredShopName = shopName.padStart((84 + shopName.length) / 2, ' ').padEnd(84, ' ')
 
-        printerCommands.append(byteArrayOf(0x1B, 0x40).toString()) // Initialize printer
-        printerCommands.append(byteArrayOf(0x1B, 0x33, 0x18).toString()) // Set line spacing
-        printerCommands.append(byteArrayOf(0x1B, 0x61, 0x01).toString()) // Center alignment
+        // Wrap the address if it exceeds 30 characters
+        val address = if (orderData.customer.address.length > 30) { orderData.customer.address.take(30) } else { orderData.customer.address }
+        val formattedRecipientInfo = """
+            ${"Yth.".padEnd(59)}
+            ${orderData.customer.name.padEnd(59)}
+            ${address}
+             
+        """.trimIndent()
 
-        printerCommands.append("PT PERANGKAT GUNA KARYA\n")
-        printerCommands.append(byteArrayOf(0x1B, 0x45, 0x01).toString()) // Bold ON
-        printerCommands.append("INVOICE\n")
-        printerCommands.append(byteArrayOf(0x1B, 0x45, 0x00).toString()) // Bold OFF
-        printerCommands.append(byteArrayOf(0x1B, 0x61, 0x00).toString()) // Left alignment
+        // Invoice Details (Right-Aligned)
+        val invoiceDetails = """
+        INVOICE
+        Referensi : TPHA-${orderId}
+        ${"Tanggal   : ".padStart(31) + try {
+            SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
+                .format(SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", Locale.getDefault()).parse(orderData.createdAt))
+        } catch (e: Exception) {
+            "Invalid Date"
+        }}
+        ${"Status    : ".padStart(31) + orderData.paymentStatus.toUpperCase()}
+    """.trimIndent()
 
-        printerCommands.append("\n")
-        printerCommands.append("${orderData.customer.name}\n")
-        printerCommands.append("${orderData.customerId}\n")
-
-        printerCommands.append("\n")
-        printerCommands.append("Referensi   : INV-${orderId}\n")
-        printerCommands.append("Tanggal     : ${
-            SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(
-                Date()
-            )}\n")
-        printerCommands.append("STATUS      : ${orderData.paymentStatus}\n")
-        printerCommands.append("\n")
-
-        printerCommands.append("----------------------------------------\n")
-        printerCommands.append(
-            String.format(
-                "%-15s %-8s %-5s %-8s %8s\n",
-                "Produk", "Harga", "Qty", "Unit", "Jumlah"
-            )
-        )
-        printerCommands.append("----------------------------------------\n")
-
-        cartItems.forEach { item ->
-            printerCommands.append(String.format("%-15s\n", item.productPrice.product.name))
-            printerCommands.append(
-                String.format(
-                    "%8.0f x %-5d %8.0f%% %11.0f\n",
-                    item.priceAdjustment,
-                    item.quantity,
-                    item.productPrice.unit,
-                    item.priceAdjustment * item.quantity
-                )
-            )
+        // Combine Recipient Info and Invoice Details
+        val recipientLines = formattedRecipientInfo.lines()
+        val detailLines = invoiceDetails.lines()
+        val combinedInfo = recipientLines.zip(detailLines).joinToString("\n") { (recipient, detail) ->
+            recipient.padEnd(40) + detail
         }
 
-        printerCommands.append(String.format("Total %33.0f\n", orderData.total))
-        printerCommands.append("----------------------------------------\n")
+        // Table Header
+        val tableHeader = """
+        +----------------------------------------------------------------------------------------+
+        | NO  | BANYAKNYA       | NAMA PRODUK              | HARGA           | JUMLAH            |
+        |-----|-----------------|--------------------------|-----------------|-------------------|
+    """.trimIndent()
 
-        printerCommands.append("\n")
-        printerCommands.append(byteArrayOf(0x1B, 0x61, 0x01).toString()) // Center alignment
-        printerCommands.append("Dengan Hormat,\n\n\n")
-        printerCommands.append("Toko Plastik H. Ali\n")
-        printerCommands.append("Penjualan\n")
+        // Items
+        val itemsText = cartItems.flatMapIndexed { index, item ->
+            val wrappedItemName = wrapText(item.productPrice.product.name, 24) // Wrap item name to 24 characters
+            val firstLine = "| ${(index + 1).toString().padEnd(3)} | ${(item.quantity.toString() + " " + item.productPrice.unit).padEnd(15)} | ${wrappedItemName[0].padEnd(24)} | ${item.priceAdjustment.toString().padEnd(15)} | ${(item.priceAdjustment * item.quantity).toString().padEnd(17)} |"
+            val descriptionLine = "|     | ${item.productPrice.quantityPerUnit.padEnd(15)} |                          |                 |                   |"
+            val additionalLines = wrappedItemName.drop(1).map { "|     |                 | ${it.padEnd(24)} |                 |                   |" }
+            listOf(firstLine, descriptionLine) + additionalLines
+        }.joinToString("\n")
 
-        printerCommands.append("\n\n\n\n")
-        printerCommands.append(byteArrayOf(0x1D, 0x56, 0x41, 0x10).toString()) // Paper cut
+        // Footer
+        val footer = """
+        |-----|-----------------|--------------------------|-----------------|-------------------|
+        | 		                                                Total: ${String.format("Rp %,d", orderData.total.toLong()).padEnd(18)}|
+        +----------------------------------------------------------------------------------------+
 
-        Thread {
-            try {
-                val usbManager = context.getSystemService(Context.USB_SERVICE) as UsbManager
-                val deviceList = usbManager.deviceList
+    """.trimIndent()
 
-                val epsonDevice = deviceList.values.find { device ->
-                    device.vendorId == 0x04b8 // Epson vendor ID
-                }
+        val regard = "Dengan Hormat"
+        val centeredRegard = regard.padStart((84 + regard.length) / 2, ' ').padEnd(84, ' ')
 
-                epsonDevice?.let { device ->
-                    if (usbManager.hasPermission(device)) {
-                        val connection = usbManager.openDevice(device)
-                        val endpoint = device.getInterface(0).getEndpoint(0)
+        val footer2 = """
+            
+            
+            """.trimIndent()
+        val footer3 = """
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+        """.trimIndent()
+        return "$centeredShopName\n\n$combinedInfo\n\n$tableHeader\n$itemsText\n$footer\n$centeredRegard\n$footer2\n$centeredShopName\n$footer3"
+    }
 
-                        connection.bulkTransfer(
-                            endpoint,
-                            printerCommands.toString().toByteArray(),
-                            printerCommands.toString().length,
-                            5000
-                        )
+    // Helper function to wrap text
+    fun wrapText(text: String, width: Int): List<String> {
+        val words = text.split(" ")
+        val lines = mutableListOf<String>()
+        var currentLine = ""
 
-                        connection.close()
-                    }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
+        for (word in words) {
+            if (currentLine.length + word.length + 1 <= width) {
+                currentLine += "$word "
+            } else {
+                lines.add(currentLine.trim())
+                currentLine = "$word "
             }
-        }.start()
+        }
+        if (currentLine.isNotEmpty()) {
+            lines.add(currentLine.trim())
+        }
+        return lines
+    }
+
+    fun saveInvoiceToFile(context: Context, invoiceText: String, fileName: String): File {
+        // Get the app's external files directory
+        val directory = context.getExternalFilesDir(null)
+        val file = File(directory, fileName)
+
+        // Write the invoice text to the file
+        file.writeText(invoiceText)
+
+        return file
+    }
+
+    fun shareReceiptTxt(file: File) {
+        val uri = FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.provider",
+            file
+        )
+
+        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_STREAM, uri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+
+        context.startActivity(Intent.createChooser(shareIntent, "Print Invoice"))
     }
 }

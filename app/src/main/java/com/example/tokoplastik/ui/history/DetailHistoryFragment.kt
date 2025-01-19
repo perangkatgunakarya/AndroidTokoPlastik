@@ -21,6 +21,7 @@ import com.example.tokoplastik.util.handleApiError
 import com.example.tokoplastik.viewmodel.CheckoutViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import java.io.File
 
 class DetailHistoryFragment :
     BaseFragment<CheckoutViewModel, FragmentDetailHistoryBinding, CheckoutRepository>() {
@@ -85,11 +86,13 @@ class DetailHistoryFragment :
                         )
 
                         binding.buttonPrint.setOnClickListener {
-                            invoiceGenerator.printReceipt(
+                            val invoiceText = invoiceGenerator.generateInvoiceText(
                                 detailTransactions,
                                 detailTransactions.transactionProduct,
                                 response.data.id.toString()
                             )
+                            val file = invoiceGenerator.saveInvoiceToFile(requireContext(), invoiceText, "Invoice_${response.data.id}.txt")
+                            invoiceGenerator.shareReceiptTxt(file)
                         }
                         binding.buttonShare.setOnClickListener {
                             invoiceGenerator.shareReceipt(pdfFile)

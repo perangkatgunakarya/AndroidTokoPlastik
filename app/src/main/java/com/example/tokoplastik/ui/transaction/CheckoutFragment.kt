@@ -323,7 +323,9 @@ class CheckoutFragment :
 
             setConfirmButton("Print") {
                 dismissWithAnimation()
-                invoiceGenerator.printReceipt(transaction, cartItems, orderId)
+                val invoiceText = invoiceGenerator.generateInvoiceText(transaction, cartItems, orderId)
+                invoiceGenerator.saveInvoiceToFile(requireContext(), invoiceText, "Invoice_${orderId}.txt")
+                invoiceGenerator.shareReceiptTxt(File("Invoice_${orderId}.txt"))
                 findNavController().navigate(R.id.action_checkoutFragment_to_transactionFragment)
             }
 
