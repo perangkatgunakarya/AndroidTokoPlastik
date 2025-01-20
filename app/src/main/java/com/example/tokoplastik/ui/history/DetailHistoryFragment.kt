@@ -108,6 +108,21 @@ class DetailHistoryFragment :
             }
         }
 
+        viewModel.getAllProductPrices()
+        viewModel.productPrices.observe(viewLifecycleOwner) { result ->
+            when (result) {
+                is Resource.Success -> {
+                    result.data?.let { response ->
+                        invoiceGenerator.allProductPrices = response.data
+                    }
+                }
+                is Resource.Failure -> {
+                    handleApiError(result)
+                }
+                Resource.Loading -> {}
+            }
+        }
+
         viewModel.paidAmount.observe(viewLifecycleOwner) { amount ->
             Log.d("DetailHistoryFragment", "Paid amount: $amount")
             if (amount == 0) {

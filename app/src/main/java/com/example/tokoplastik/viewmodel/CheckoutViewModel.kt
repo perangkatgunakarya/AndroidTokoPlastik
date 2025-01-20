@@ -34,6 +34,10 @@ class CheckoutViewModel(
     val product: LiveData<Resource<GetProductResponses?>>
         get() = _product
 
+    private val _productPrices = MutableLiveData<Resource<ProductPricesResponses>>()
+    val productPrices: LiveData<Resource<ProductPricesResponses>>
+        get() = _productPrices
+
     private val _searchResults = MutableLiveData<List<GetProduct>>()
     val searchResults: LiveData<List<GetProduct>> = _searchResults
 
@@ -100,6 +104,11 @@ class CheckoutViewModel(
     fun getProducts() = viewModelScope.launch {
         _product.value = Resource.Loading
         _product.value = repository.getProduct()
+    }
+
+    fun getAllProductPrices() = viewModelScope.launch {
+        _productPrices.value = Resource.Loading
+        _productPrices.value = repository.getAllProductPrices()
     }
 
     fun selectProduct(position: Int) {

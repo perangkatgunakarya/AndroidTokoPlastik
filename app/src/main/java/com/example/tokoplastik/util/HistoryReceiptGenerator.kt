@@ -5,7 +5,9 @@ import android.content.Intent
 import android.hardware.usb.UsbManager
 import android.net.Uri
 import android.os.Environment
+import android.util.Log
 import androidx.core.content.FileProvider
+import com.example.tokoplastik.data.responses.ProductPrice
 import com.example.tokoplastik.data.responses.TransactionDetail
 import com.example.tokoplastik.data.responses.TransactionDetailProduct
 import com.itextpdf.text.BaseColor
@@ -28,6 +30,38 @@ import java.util.Locale
 class HistoryReceiptGenerator (
     private val context: Context
 ) {
+    public var allProductPrices: List<ProductPrice> = emptyList()
+    private lateinit var historyProductPrice: List<ProductPrice>
+
+    fun getProductPricesByProductId(productId: Int, productPrices: List<ProductPrice>): List<ProductPrice> {
+        return productPrices.filter { it.productId == productId }
+    }
+
+    fun generateTransactionDesc(unit: String, quantity: Int, productPrice: List<ProductPrice>): String {
+        val sortedProductPrice = productPrice.sortedByDescending { it.quantityPerUnit }
+        val selectedUnitIndex = sortedProductPrice.indexOfFirst { it.unit == unit }
+        if (selectedUnitIndex == -1) {
+            return "Unit tidak ditemukan"
+        }
+
+        val isLowestUnit = selectedUnitIndex == sortedProductPrice.size - 1
+        if (isLowestUnit) {
+            return "$quantity"
+        }
+
+        val result = StringBuilder("$quantity")
+
+        for (i in selectedUnitIndex until sortedProductPrice.size - 1) {
+            val currentUnit = sortedProductPrice[i]
+            val nextLowerUnit = sortedProductPrice[i + 1]
+            val ratio = currentUnit.quantityPerUnit.toInt() / nextLowerUnit.quantityPerUnit.toInt()
+
+            result.append("x$ratio")
+        }
+
+        return result.toString()
+    }
+
     fun generatedPdfReceipt(
         orderData: TransactionDetail,
         cartItems: List<TransactionDetailProduct>,
@@ -225,9 +259,12 @@ class HistoryReceiptGenerator (
 
         // Items
         val itemsText = cartItems.flatMapIndexed { index, item ->
+            historyProductPrice = allProductPrices.filter { it.productId == item.productPrice.product.id }
+            val description = generateTransactionDesc(item.productPrice.unit, item.quantity, historyProductPrice)
+
             val wrappedItemName = wrapText(item.productPrice.product.name, 24) // Wrap item name to 24 characters
             val firstLine = "| ${(index + 1).toString().padEnd(3)} | ${(item.quantity.toString() + " " + item.productPrice.unit).padEnd(15)} | ${wrappedItemName[0].padEnd(24)} | ${item.priceAdjustment.toString().padEnd(15)} | ${(item.priceAdjustment * item.quantity).toString().padEnd(17)} |"
-            val descriptionLine = "|     | ${item.productPrice.quantityPerUnit.padEnd(15)} |                          |                 |                   |"
+            val descriptionLine = "|     | ${description.padEnd(15)} |                          |                 |                   |"
             val additionalLines = wrappedItemName.drop(1).map { "|     |                 | ${it.padEnd(24)} |                 |                   |" }
             listOf(firstLine, descriptionLine) + additionalLines
         }.joinToString("\n")

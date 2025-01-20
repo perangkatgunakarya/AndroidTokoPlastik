@@ -17,6 +17,7 @@ data class ProductPrice(
     val id: Int,
     val price: Int,
     val product: GetProduct,
+    @SerializedName("product_id")
     val productId: Int,
     @SerializedName("quantity_per_lowest_unit")
     val quantityPerUnit: String,

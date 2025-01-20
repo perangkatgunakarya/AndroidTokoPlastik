@@ -16,6 +16,10 @@ class CheckoutRepository (
         api.getProductDetail(productId)
     }
 
+    suspend fun getAllProductPrices() = safeApiCall {
+        api.getAllProductPrices()
+    }
+
     suspend fun getProductPrices(productId: Int) = safeApiCall {
         api.getProductPrices(productId)
     }

@@ -27,6 +27,9 @@ interface CheckoutApi {
     ): GetProductByIdResponses
 
     @GET("product-price")
+    suspend fun getAllProductPrices(): ProductPricesResponses
+
+    @GET("product-price")
     suspend fun getProductPrices(
         @Query("product_id") productId: Int
     ): ProductPricesResponses
