@@ -6,6 +6,7 @@ import android.hardware.usb.UsbManager
 import android.os.Environment
 import androidx.core.content.FileProvider
 import com.example.tokoplastik.data.responses.CartItem
+import com.example.tokoplastik.data.responses.ProductPrice
 import com.example.tokoplastik.data.responses.Transaction
 import com.itextpdf.text.*
 import com.itextpdf.text.pdf.PdfPCell
@@ -18,6 +19,34 @@ import java.util.*
 class ReceiptGenerator(
     private val context: Context
 ) {
+    public var allProductPrices: List<ProductPrice> = emptyList()
+    private lateinit var historyProductPrice: List<ProductPrice>
+
+    fun generateTransactionDesc(unit: String, quantity: Int, productPrice: List<ProductPrice>): String {
+        val sortedProductPrice = productPrice.sortedByDescending { it.quantityPerUnit }
+        val selectedUnitIndex = sortedProductPrice.indexOfFirst { it.unit == unit }
+        if (selectedUnitIndex == -1) {
+            return "Unit tidak ditemukan"
+        }
+
+        val isLowestUnit = selectedUnitIndex == sortedProductPrice.size - 1
+        if (isLowestUnit) {
+            return "$quantity"
+        }
+
+        val result = StringBuilder("$quantity")
+
+        for (i in selectedUnitIndex until sortedProductPrice.size - 1) {
+            val currentUnit = sortedProductPrice[i]
+            val nextLowerUnit = sortedProductPrice[i + 1]
+            val ratio = currentUnit.quantityPerUnit.toInt() / nextLowerUnit.quantityPerUnit.toInt()
+
+            result.append("x$ratio")
+        }
+
+        return result.toString()
+    }
+
     fun generatedPdfReceipt(
         orderData: Transaction,
         cartItems: List<CartItem>,
@@ -53,12 +82,13 @@ class ReceiptGenerator(
             headerTable.widthPercentage = 100f
             headerTable.setWidths(floatArrayOf(5f, 5f))
 
+            val address = if (orderData.customer.address.length > 30) { orderData.customer.address.take(30) } else { orderData.customer.address }
             val customerInfoCell = PdfPCell().apply {
                 border = Rectangle.NO_BORDER
                 val customerFont = FontFactory.getFont(FontFactory.HELVETICA, 13f, BaseColor.BLACK)
                 val addressFont = FontFactory.getFont(FontFactory.HELVETICA, 12f, grayText)
                 addElement(Paragraph(orderData.customer.name, customerFont))
-                addElement(Paragraph(orderData.customer.address, addressFont))
+                addElement(Paragraph(address, addressFont))
             }
 
             val invoiceDetailsCell = PdfPCell().apply {
@@ -98,9 +128,12 @@ class ReceiptGenerator(
 
             var index: Int = 0
             cartItems.forEach { item ->
+                historyProductPrice = allProductPrices.filter { it.productId == item.product?.data?.product?.id }
+                val description = generateTransactionDesc(item.selectedPrice.unit, item.quantity, historyProductPrice)
+
                 val cells = arrayOf(
                     "${++index}",
-                    "${item.quantity} ${item.selectedPrice.unit}",
+                    "${item.quantity} ${item.selectedPrice.unit} \n ${description}",
                     item.product?.data?.product?.name,
                     String.format(Locale.GERMANY, "Rp %,d", item.customPrice),
                     String.format(Locale.GERMANY, "Rp %,d", item.customPrice * item.quantity)
@@ -130,12 +163,36 @@ class ReceiptGenerator(
 
             document.add(Paragraph("\n\n"))
 
-            val footer = Paragraph(
-                "Dengan Hormat,\n\n\n\nToko Plastik H. Ali\n",
-                FontFactory.getFont(FontFactory.HELVETICA, 11f)
-            )
-            footer.alignment = Element.ALIGN_CENTER
-            document.add(footer)
+            val footerTable = PdfPTable(3)
+            footerTable.widthPercentage = 100f
+            footerTable.setWidths(floatArrayOf(3f, 3f, 2f))
+
+            val penerimaCell = PdfPCell().apply {
+                border = Rectangle.NO_BORDER
+                val penerimaFont = FontFactory.getFont(FontFactory.HELVETICA, 11f)
+                addElement(Paragraph("Penerima\n\n\n", penerimaFont))
+                addElement(Paragraph("""(             )""".trimIndent(), penerimaFont))
+            }
+
+            val pengirimCell = PdfPCell().apply {
+                border = Rectangle.NO_BORDER
+                val pengirimFont = FontFactory.getFont(FontFactory.HELVETICA, 11f)
+                addElement(Paragraph("Pengirim\n\n\n", pengirimFont))
+                addElement(Paragraph("""(             )""".trimIndent(), pengirimFont))
+            }
+
+            val regardCell = PdfPCell().apply {
+                border = Rectangle.NO_BORDER
+                val regardFont = FontFactory.getFont(FontFactory.HELVETICA, 11f)
+                addElement(Paragraph("Dengan Hormat\n\n\n", regardFont))
+                addElement(Paragraph("Toko Plastik H. Ali", regardFont))
+            }
+
+            footerTable.addCell(penerimaCell)
+            footerTable.addCell(pengirimCell)
+            footerTable.addCell(regardCell)
+
+            document.add(footerTable)
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -210,9 +267,12 @@ class ReceiptGenerator(
 
         // Items
         val itemsText = cartItems.flatMapIndexed { index, item ->
+            historyProductPrice = allProductPrices.filter { it.productId == item.product?.data?.product?.id }
+            val description = generateTransactionDesc(item.selectedPrice.unit, item.quantity, historyProductPrice)
+
             val wrappedItemName = wrapText(item.product?.data?.product?.name.toString(), 24) // Wrap item name to 24 characters
-            val firstLine = "| ${(index + 1).toString().padEnd(3)} | ${(item.quantity.toString() + " " + item.selectedPrice.unit).padEnd(15)} | ${wrappedItemName[0].padEnd(24)} | ${String.format(Locale.GERMANY, "Rp %,d", item.customPrice.toString()).padEnd(15)} | ${String.format(Locale.GERMANY, "Rp %,d", (item.customPrice * item.quantity).toString()).padEnd(17)} |"
-            val descriptionLine = "|     | ${item.selectedPrice.quantityPerUnit.padEnd(15)} |                          |                 |                   |"
+            val firstLine = "| ${(index + 1).toString().padEnd(3)} | ${(item.quantity.toString() + " " + item.selectedPrice.unit).padEnd(15)} | ${wrappedItemName[0].padEnd(24)} | ${item.customPrice.toString().padEnd(15)} | ${(item.customPrice * item.quantity).toString().padEnd(17)} |"
+            val descriptionLine = "|     | ${description.padEnd(15)} |                          |                 |                   |"
             val additionalLines = wrappedItemName.drop(1).map { "|     |                 | ${it.padEnd(24)} |                 |                   |" }
             listOf(firstLine, descriptionLine) + additionalLines
         }.joinToString("\n")
@@ -225,26 +285,30 @@ class ReceiptGenerator(
 
     """.trimIndent()
 
-        val regard = "Dengan Hormat"
-        val centeredRegard = regard.padStart((84 + regard.length) / 2, ' ').padEnd(84, ' ')
+        val recipientSenderRegard = """
+            
+            
+       Penerima                        Pengirim                 Dengan Hormat
+    
+    
+    
+    (             )                 (              )            $shopName
+    """.trimIndent()
 
-        val footer2 = """
-            
-            
-            """.trimIndent()
         val footer3 = """
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-        """.trimIndent()
-        return "$centeredShopName\n\n$combinedInfo\n\n$tableHeader\n$itemsText\n$footer\n$centeredRegard\n$footer2\n$centeredShopName\n$footer3"
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    """.trimIndent()
+        return "$centeredShopName\n\n$combinedInfo\n\n$tableHeader\n$itemsText\n$footer\n$recipientSenderRegard\n$footer3"
     }
 
     // Helper function to wrap text

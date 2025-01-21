@@ -33,10 +33,6 @@ class HistoryReceiptGenerator (
     public var allProductPrices: List<ProductPrice> = emptyList()
     private lateinit var historyProductPrice: List<ProductPrice>
 
-    fun getProductPricesByProductId(productId: Int, productPrices: List<ProductPrice>): List<ProductPrice> {
-        return productPrices.filter { it.productId == productId }
-    }
-
     fun generateTransactionDesc(unit: String, quantity: Int, productPrice: List<ProductPrice>): String {
         val sortedProductPrice = productPrice.sortedByDescending { it.quantityPerUnit }
         val selectedUnitIndex = sortedProductPrice.indexOfFirst { it.unit == unit }
@@ -97,12 +93,13 @@ class HistoryReceiptGenerator (
             headerTable.widthPercentage = 100f
             headerTable.setWidths(floatArrayOf(5f, 5f))
 
+            val address = if (orderData.customer.address.length > 30) { orderData.customer.address.take(30) } else { orderData.customer.address }
             val customerInfoCell = PdfPCell().apply {
                 border = Rectangle.NO_BORDER
                 val customerFont = FontFactory.getFont(FontFactory.HELVETICA, 13f, BaseColor.BLACK)
                 val addressFont = FontFactory.getFont(FontFactory.HELVETICA, 12f, grayText)
                 addElement(Paragraph(orderData.customer.name, customerFont))
-                addElement(Paragraph(orderData.customer.address, addressFont))
+                addElement(Paragraph(address, addressFont))
             }
 
             val invoiceDetailsCell = PdfPCell().apply {
@@ -147,9 +144,12 @@ class HistoryReceiptGenerator (
 
             var index: Int = 0
             cartItems.forEach { item ->
+                historyProductPrice = allProductPrices.filter { it.productId == item.productPrice.product.id }
+                val description = generateTransactionDesc(item.productPrice.unit, item.quantity, historyProductPrice)
+
                 val cells = arrayOf(
                     "${++index}",
-                    "${item.quantity} ${item.productPrice.unit}",
+                    "${item.quantity} ${item.productPrice.unit} \n ${description}",
                     item.productPrice.product.name,
                     String.format(Locale.GERMANY, "Rp %,d", item.priceAdjustment),
                     String.format(Locale.GERMANY, "Rp %,d", item.priceAdjustment * item.quantity)
@@ -179,12 +179,36 @@ class HistoryReceiptGenerator (
 
             document.add(Paragraph("\n\n"))
 
-            val footer = Paragraph(
-                "Dengan Hormat,\n\n\n\nToko Plastik H. Ali\n",
-                FontFactory.getFont(FontFactory.HELVETICA, 11f)
-            )
-            footer.alignment = Element.ALIGN_CENTER
-            document.add(footer)
+            val footerTable = PdfPTable(3)
+            footerTable.widthPercentage = 100f
+            footerTable.setWidths(floatArrayOf(3f, 3f, 2f))
+
+            val penerimaCell = PdfPCell().apply {
+                border = Rectangle.NO_BORDER
+                val penerimaFont = FontFactory.getFont(FontFactory.HELVETICA, 11f)
+                addElement(Paragraph("Penerima\n\n\n", penerimaFont))
+                addElement(Paragraph("""(             )""".trimIndent(), penerimaFont))
+            }
+
+            val pengirimCell = PdfPCell().apply {
+                border = Rectangle.NO_BORDER
+                val pengirimFont = FontFactory.getFont(FontFactory.HELVETICA, 11f)
+                addElement(Paragraph("Pengirim\n\n\n", pengirimFont))
+                addElement(Paragraph("""(             )""".trimIndent(), pengirimFont))
+            }
+
+            val regardCell = PdfPCell().apply {
+                border = Rectangle.NO_BORDER
+                val regardFont = FontFactory.getFont(FontFactory.HELVETICA, 11f)
+                addElement(Paragraph("Dengan Hormat\n\n\n", regardFont))
+                addElement(Paragraph("Toko Plastik H. Ali", regardFont))
+            }
+
+            footerTable.addCell(penerimaCell)
+            footerTable.addCell(pengirimCell)
+            footerTable.addCell(regardCell)
+
+            document.add(footerTable)
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -277,26 +301,30 @@ class HistoryReceiptGenerator (
 
     """.trimIndent()
 
-        val regard = "Dengan Hormat"
-        val centeredRegard = regard.padStart((84 + regard.length) / 2, ' ').padEnd(84, ' ')
+        val recipientSenderRegard = """
+            
+            
+       Penerima                        Pengirim                 Dengan Hormat
+    
+    
+    
+    (             )                 (              )            $shopName
+    """.trimIndent()
 
-        val footer2 = """
-            
-            
-            """.trimIndent()
         val footer3 = """
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-        """.trimIndent()
-        return "$centeredShopName\n\n$combinedInfo\n\n$tableHeader\n$itemsText\n$footer\n$centeredRegard\n$footer2\n$centeredShopName\n$footer3"
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    """.trimIndent()
+        return "$centeredShopName\n\n$combinedInfo\n\n$tableHeader\n$itemsText\n$footer\n$recipientSenderRegard\n$footer3"
     }
 
     // Helper function to wrap text
