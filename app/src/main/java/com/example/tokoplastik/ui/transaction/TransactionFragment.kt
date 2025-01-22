@@ -19,6 +19,7 @@ import com.example.tokoplastik.data.repository.CustomerRepository
 import com.example.tokoplastik.data.responses.Customer
 import com.example.tokoplastik.databinding.FragmentTransactionBinding
 import com.example.tokoplastik.ui.base.BaseFragment
+import com.example.tokoplastik.util.enable
 import com.example.tokoplastik.viewmodel.TransactionViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -49,6 +50,10 @@ class TransactionFragment : BaseFragment<TransactionViewModel, FragmentTransacti
         hpEditText.inputType = TYPE_NULL
 
         setupCustomerAutocomplete()
+
+        if (nameEditText.text.isNullOrEmpty()) {
+            binding.buttonToCheckout.enable(false)
+        }
 
         binding.buttonToCheckout.setOnClickListener {
             val action = TransactionFragmentDirections.actionTransactionFragmentToCheckoutFragment(customer_id.toString())
@@ -93,6 +98,7 @@ class TransactionFragment : BaseFragment<TransactionViewModel, FragmentTransacti
             binding.customerHpText.setText(it.phone)
             customer_id = it.id
         }
+        binding.buttonToCheckout.enable(true)
     }
 
     private fun hideKeyboard() {
