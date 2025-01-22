@@ -220,6 +220,19 @@ class CheckoutFragment :
                 show()
             }
 
+            viewModel.getAllProductPrices()
+            viewModel.productPrices.observe(viewLifecycleOwner, {
+                when (it) {
+                    is Resource.Success -> {
+                        invoiceGenerator.allProductPrices = it.data?.data ?: emptyList()
+                    }
+                    is Resource.Failure -> {
+                        handleApiError(it)
+                    }
+                    is Resource.Loading -> {}
+                }
+            })
+
             viewModel.addTransaction.observe(viewLifecycleOwner, { result ->
                 if (!isAdded) {
                     loadingDialog.dismissWithAnimation()
@@ -302,8 +315,8 @@ class CheckoutFragment :
             setConfirmButton("Print") {
                 dismissWithAnimation()
                 val invoiceText = invoiceGenerator.generateInvoiceText(transaction, cartItems, orderId)
-                invoiceGenerator.saveInvoiceToFile(requireContext(), invoiceText, "Invoice_${orderId}.txt")
-                invoiceGenerator.shareReceiptTxt(File("Invoice_${orderId}.txt"))
+                val file = invoiceGenerator.saveInvoiceToFile(requireContext(), invoiceText, "Invoice_${orderId}.txt")
+                invoiceGenerator.shareReceiptTxt(file)
                 findNavController().navigate(R.id.action_checkoutFragment_to_transactionFragment)
             }
 

@@ -113,7 +113,8 @@ class HistoryReceiptGenerator (
                             Date()
                         )}", detailsFont)
                 )
-                addElement(Paragraph("Status        : ${orderData.paymentStatus}", detailsFont))
+                addElement(Paragraph("Status        : ${orderData.paymentStatus.toUpperCase()}", detailsFont))
+                addElement(Paragraph("Jatuh Tempo  : ${orderData.dueDate}", detailsFont))
             }
 
             headerTable.addCell(customerInfoCell)
@@ -144,6 +145,7 @@ class HistoryReceiptGenerator (
 
             var index: Int = 0
             cartItems.forEach { item ->
+                Log.d("DetailHistoryFragment", "Item: ${allProductPrices} - ${item.productPrice.product.id}")
                 historyProductPrice = allProductPrices.filter { it.productId == item.productPrice.product.id }
                 val description = generateTransactionDesc(item.productPrice.unit, item.quantity, historyProductPrice)
 
@@ -252,6 +254,7 @@ class HistoryReceiptGenerator (
             ${orderData.customer.name.padEnd(59)}
             ${address}
              
+             
         """.trimIndent()
 
         // Invoice Details (Right-Aligned)
@@ -265,6 +268,7 @@ class HistoryReceiptGenerator (
             "Invalid Date"
         }}
         ${"Status    : ".padStart(31) + orderData.paymentStatus.toUpperCase()}
+        ${"Jatuh Tempo : ".padStart(31) + orderData.dueDate}
     """.trimIndent()
 
         // Combine Recipient Info and Invoice Details

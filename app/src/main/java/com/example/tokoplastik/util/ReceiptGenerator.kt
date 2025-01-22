@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.hardware.usb.UsbManager
 import android.os.Environment
+import android.util.Log
+import androidx.compose.ui.text.toUpperCase
 import androidx.core.content.FileProvider
 import com.example.tokoplastik.data.responses.CartItem
 import com.example.tokoplastik.data.responses.ProductPrice
@@ -97,7 +99,8 @@ class ReceiptGenerator(
                 val detailsFont = FontFactory.getFont(FontFactory.HELVETICA, 11f)
                 addElement(Paragraph("Referensi    : TPHA-${orderId}", detailsFont))
                 addElement(Paragraph("Tanggal      : ${SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(Date())}", detailsFont))
-                addElement(Paragraph("Status        : ${orderData.paymentStatus}", detailsFont))
+                addElement(Paragraph("Status        : ${orderData.paymentStatus.toUpperCase()}", detailsFont))
+                addElement(Paragraph("Jatuh Tempo  : ${orderData.dueDate}", detailsFont))
             }
 
             headerTable.addCell(customerInfoCell)
@@ -128,7 +131,8 @@ class ReceiptGenerator(
 
             var index: Int = 0
             cartItems.forEach { item ->
-                historyProductPrice = allProductPrices.filter { it.productId == item.product?.data?.product?.id }
+                Log.d("HistoryReceiptGenerator", "Processing item: ${item.selectedPrice.productId} - ${allProductPrices}")
+                historyProductPrice = allProductPrices.filter { it.productId == item.selectedPrice.productId }
                 val description = generateTransactionDesc(item.selectedPrice.unit, item.quantity, historyProductPrice)
 
                 val cells = arrayOf(
@@ -236,6 +240,7 @@ class ReceiptGenerator(
             ${orderData.customer.name.padEnd(59)}
             ${address}
              
+             
         """.trimIndent()
 
         // Invoice Details (Right-Aligned)
@@ -249,6 +254,7 @@ class ReceiptGenerator(
             "Invalid Date"
         }}
         ${"Status    : ".padStart(31) + orderData.paymentStatus.toUpperCase()}
+        ${"Jatuh Tempo  : ".padStart(31) + orderData.dueDate}
     """.trimIndent()
 
         // Combine Recipient Info and Invoice Details

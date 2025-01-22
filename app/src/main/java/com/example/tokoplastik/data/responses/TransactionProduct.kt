@@ -26,6 +26,8 @@ data class Transaction(
     val paid: Int,
     @SerializedName("status")
     val paymentStatus: String,
+    @SerializedName("due_date")
+    val dueDate: String,
     @SerializedName("user_id")
     val userId: Int,
     @SerializedName("updated_at")
@@ -86,6 +88,8 @@ data class TransactionDetail(
     val paid: Int,
     @SerializedName("status")
     val paymentStatus: String,
+    @SerializedName("due_date")
+    val dueDate: String,
     @SerializedName("user_id")
     val userId: Int,
     @SerializedName("updated_at")
