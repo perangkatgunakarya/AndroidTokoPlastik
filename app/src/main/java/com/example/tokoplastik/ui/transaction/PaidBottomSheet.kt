@@ -48,6 +48,7 @@ class PaidBottomSheet : BottomSheetDialogFragment() {
         //klik bayar and proceed checkout in checkout fragment
         paidButton.setOnClickListener {
             viewModel.setPaidAmount(paidInput.getRawValue())
+            dismiss()
         }
     }
 }

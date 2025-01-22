@@ -91,6 +91,10 @@ class CheckoutViewModel(
     private val _filteredData = MutableLiveData<List<CartItem>>()
     val filteredData: LiveData<List<CartItem>> = _filteredData
 
+    private val _dueDate = MutableLiveData<String>()
+    val dueDate: LiveData<String>
+        get() = _dueDate
+
     fun getTransactions() = viewModelScope.launch {
         _transactions.value = Resource.Loading
         _transactions.value = repository.getTransactions()
@@ -109,6 +113,10 @@ class CheckoutViewModel(
     fun getAllProductPrices() = viewModelScope.launch {
         _productPrices.value = Resource.Loading
         _productPrices.value = repository.getAllProductPrices()
+    }
+
+    fun setDueDate(date: String) {
+        _dueDate.value = date
     }
 
     fun selectProduct(position: Int) {
@@ -168,7 +176,7 @@ class CheckoutViewModel(
         _paidAmount.value = amount
     }
 
-    fun checkout(paymentStatus: String) = viewModelScope.launch {
+    fun checkout(paymentStatus: String, dueDate: String) = viewModelScope.launch {
         val productPriceIds = currentCartItems.map { it.selectedPrice.id }
         val priceAdjustments = currentCartItems.map { it.customPrice }
         val quantity = currentCartItems.map { it.quantity }
@@ -181,6 +189,7 @@ class CheckoutViewModel(
                 productPriceIds,
                 priceAdjustments,
                 paymentStatus,
+                dueDate,
                 quantity
             )
             val transactionResult = repository.addTransaction(transaction)

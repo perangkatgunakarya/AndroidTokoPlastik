@@ -170,15 +170,29 @@ class CheckoutFragment :
             updateTotalAmount(items)
         }
 
+        var status = ""
         viewModel.paidAmount.observe(viewLifecycleOwner) { amount ->
             if (amount == 0) {
-                processCheckout("belum lunas")
+                status = "belum lunas"
+                val bottomSheet = DueDateBottomSheet()
+                bottomSheet.show(childFragmentManager, "DUE_DATE_BOTTOM_SHEET")
             }
             if (amount > 0 && amount < viewModel.cartItems.value?.sumOf { it.customPrice * it.quantity } ?: 0) {
-                processCheckout("dalam cicilan")
+                status = "dalam cicilan"
+                val bottomSheet = DueDateBottomSheet()
+                bottomSheet.show(childFragmentManager, "DUE_DATE_BOTTOM_SHEET")
             }
-            else {
-                processCheckout("lunas")
+            if (amount == viewModel.cartItems.value?.sumOf { it.customPrice * it.quantity } ?: 0) {
+                status = "lunas"
+                viewModel.setDueDate("-")
+            }
+
+            viewModel.dueDate.observe(viewLifecycleOwner) { date ->
+                if (date != "-") {
+                    processCheckout(status, date)
+                } else {
+                    processCheckout(status, "-")
+                }
             }
         }
     }
@@ -194,43 +208,7 @@ class CheckoutFragment :
         imm.hideSoftInputFromWindow(requireView().windowToken, 0)
     }
 
-    private fun showPaymentStatusDialog() {
-        if (!isAdded) return
-
-        context?.let { ctx ->
-            val dialog = SweetAlertDialog(ctx, SweetAlertDialog.NORMAL_TYPE)
-            dialog.apply {
-                titleText = "Pembayaran"
-                contentText = "Status Pembayaran"
-
-                confirmButtonBackgroundColor = ContextCompat.getColor(ctx, R.color.g_blue)
-                cancelButtonBackgroundColor = ContextCompat.getColor(ctx, R.color.g_orange_yellow)
-
-                confirmButtonTextColor = ContextCompat.getColor(ctx, android.R.color.white)
-                cancelButtonTextColor = ContextCompat.getColor(ctx, android.R.color.white)
-
-                setConfirmClickListener { sDialog ->
-                    sDialog.dismissWithAnimation()
-                    processCheckout("lunas")
-                }
-
-                setCancelClickListener { sDialog ->
-                    sDialog.dismissWithAnimation()
-                    processCheckout("belum lunas")
-                }
-
-                confirmText = "Lunas"
-                cancelText = "Belum Lunas"
-
-                setCancelable(true)
-                setCanceledOnTouchOutside(true)
-
-                show()
-            }
-        }
-    }
-
-    private fun processCheckout(paymentMethod: String) {
+    public fun processCheckout(status: String, tempo: String) {
         if (!isAdded) return
 
         context?.let { ctx ->
@@ -281,7 +259,7 @@ class CheckoutFragment :
                 }
             })
 
-            viewModel.checkout(paymentMethod)
+            viewModel.checkout(status, tempo)
         }
     }
 

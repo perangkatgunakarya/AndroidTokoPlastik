@@ -64,6 +64,8 @@ data class TransactionRequest (
     val priceAdjustment: List<Int>,
     @SerializedName("status")
     val paymentStatus: String,
+    @SerializedName("due_date")
+    val dueDate: String,
     val quantity: List<Int>
 )
 
