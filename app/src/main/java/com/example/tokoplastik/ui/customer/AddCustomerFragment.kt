@@ -1,9 +1,12 @@
 package com.example.tokoplastik.ui.customer
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.tokoplastik.data.network.CustomerApi
@@ -37,6 +40,27 @@ class AddCustomerFragment : BaseFragment<CustomerViewModel, FragmentAddCustomerB
             if (validateInputs(name, address, phoneNumber)) {
                 viewModel.addCustomer(name, address, phoneNumber)
             }
+        }
+
+        binding.btnWhatsApp.setOnClickListener {
+            val phoneNumber = binding.phoneTextField.text.toString().trim()
+
+            if (phoneNumber.isEmpty()) {
+                Toast.makeText(requireContext(), "Masukkan nomor telepon terlebih dahulu", Toast.LENGTH_SHORT).show()
+            } else {
+                openWhatsApp(phoneNumber)
+            }
+        }
+    }
+
+    private fun openWhatsApp(phoneNumber: String) {
+        val url = "https://api.whatsapp.com/send?phone=$phoneNumber"
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.data = Uri.parse(url)
+        if (intent.resolveActivity(requireActivity().packageManager) != null) {
+            startActivity(intent)
+        } else {
+            Toast.makeText(requireContext(), "WhatsApp Business tidak terinstall", Toast.LENGTH_SHORT).show()
         }
     }
 

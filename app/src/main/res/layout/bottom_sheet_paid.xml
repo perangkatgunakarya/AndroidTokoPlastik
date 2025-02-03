@@ -66,7 +66,6 @@
             android:id="@+id/paid_input"
             android:layout_width="250dp"
             android:layout_height="@dimen/edit_text_height"
-            style="@style/editText"
             android:layout_marginStart="25dp"
             android:inputType="number"
             android:hint="Rp. 0"/>
@@ -74,7 +73,7 @@
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/paid_button"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/medium_button_height"
             android:text="Bayar"
             style="@style/blueButtonStyle"
             android:layout_marginStart="25dp"/>

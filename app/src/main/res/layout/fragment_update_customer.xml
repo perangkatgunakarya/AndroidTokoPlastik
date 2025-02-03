@@ -3,13 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="30dp"
     tools:context=".ui.customer.UpdateCustomerFragment">
 
     <EditText
         android:id="@+id/customer_name_text_field"
-        style="@style/editText"
         android:layout_width="match_parent"
         android:layout_height="@dimen/edit_text_height"
         android:layout_marginBottom="20dp"
@@ -18,22 +18,36 @@
 
     <EditText
         android:id="@+id/address_text_field"
-        style="@style/editText"
         android:layout_width="match_parent"
         android:layout_height="@dimen/edit_text_height"
         android:layout_marginBottom="20dp"
         android:padding="10dp"
         android:hint="Alamat" />
 
-    <EditText
-        android:id="@+id/phone_text_field"
-        style="@style/editText"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/edit_text_height"
-        android:layout_marginBottom="20dp"
-        android:padding="10dp"
-        android:hint="Nomor HP"
-        android:inputType="number" />
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/phone_text_field"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/edit_text_height"
+            android:layout_marginBottom="20dp"
+            android:padding="10dp"
+            android:hint="Nomor HP"
+            android:inputType="number"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <ImageButton
+            android:id="@+id/btnWhatsApp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_call"
+            android:backgroundTint="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button_edit_customer"

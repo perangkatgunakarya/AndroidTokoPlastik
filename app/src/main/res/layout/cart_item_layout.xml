@@ -15,7 +15,7 @@
             android:layout_width="200dp"
             android:layout_height="40dp"
             android:text="Amplop Paperline Biru Kecil 200/80 blablablalbla blalb albla"
-            android:textSize="16dp"
+            android:style="@style/p"
             android:maxLines="2"
             android:ellipsize="end"
             app:layout_constraintTop_toTopOf="parent"
@@ -31,7 +31,7 @@
             app:layout_constraintTop_toBottomOf="@id/product_text"
             android:hint="Harga Produk"
             android:inputType="numberDecimal"
-            android:textColor="#ec5624"/>
+            android:textColor="@color/black"/>
 
         <Spinner
             android:id="@+id/unitsSpinner"

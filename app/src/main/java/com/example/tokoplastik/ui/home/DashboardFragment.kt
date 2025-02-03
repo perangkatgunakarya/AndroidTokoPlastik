@@ -47,7 +47,7 @@ class DashboardFragment : BaseFragment <DashboardViewModel, FragmentDashboardBin
         viewModel.getDashboardData()
         viewModel.getChart()
 
-        binding.buttonLogout.setOnClickListener { logout() }
+//        binding.buttonLogout.setOnClickListener { logout() }
     }
 
     private fun setupChipGroupListener() {

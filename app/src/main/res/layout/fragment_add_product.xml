@@ -9,7 +9,6 @@
 
     <EditText
         android:id="@+id/product_name_text_field"
-        style="@style/editText"
         android:layout_width="match_parent"
         android:layout_height="@dimen/edit_text_height"
         android:layout_marginBottom="20dp"
@@ -18,7 +17,6 @@
 
     <EditText
         android:id="@+id/supplier_text_field"
-        style="@style/editText"
         android:layout_width="match_parent"
         android:layout_height="@dimen/edit_text_height"
         android:layout_marginBottom="20dp"
@@ -27,7 +25,6 @@
 
     <EditText
         android:id="@+id/capital_price_text_field"
-        style="@style/editText"
         android:layout_width="match_parent"
         android:layout_height="@dimen/edit_text_height"
         android:layout_marginBottom="20dp"
@@ -37,14 +34,12 @@
 
     <AutoCompleteTextView
         android:id="@+id/unit_dropdown"
-        style="@style/editText"
         android:layout_width="match_parent"
         android:layout_height="@dimen/edit_text_height"
         android:hint="Satuan Terkecil (Cont. pcs, meter)"/>
 
     <EditText
         android:id="@+id/notes_text_field"
-        style="@style/editText"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:layout_marginTop="20dp"

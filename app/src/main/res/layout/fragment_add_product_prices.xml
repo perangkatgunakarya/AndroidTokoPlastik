@@ -20,7 +20,6 @@
 
             <AutoCompleteTextView
                 android:id="@+id/unit_dropdown"
-                style="@style/editText"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/edit_text_height"
                 android:layout_marginBottom="20dp"
@@ -32,8 +31,7 @@
                 android:layout_height="@dimen/edit_text_height"
                 android:hint="Isi per Unit"
                 android:inputType="number"
-                android:layout_marginBottom="20dp"
-                style="@style/editText"/>
+                android:layout_marginBottom="20dp"/>
 
             <EditText
                 android:id="@+id/price_edit_text"
@@ -41,8 +39,7 @@
                 android:layout_height="@dimen/edit_text_height"
                 android:hint="Price"
                 android:inputType="numberDecimal"
-                android:layout_marginBottom="20dp"
-                style="@style/editText"/>
+                android:layout_marginBottom="20dp"/>
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/button_add_price"
