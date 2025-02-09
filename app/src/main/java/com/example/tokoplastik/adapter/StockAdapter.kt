@@ -117,15 +117,6 @@ class StockAdapter (
     inner class ViewHolder(private val binding: StockListLayoutBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        init {
-            binding.root.setOnClickListener {
-                val position = bindingAdapterPosition
-                if (position != RecyclerView.NO_POSITION) {
-                    TODO("Click Listener")
-                }
-            }
-        }
-
         fun bind(stock: Stock) {
             binding.apply {
                 val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'")

@@ -101,7 +101,7 @@
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="@"
+            android:layout_height="wrap_content"
             android:text="sampai"
             android:layout_marginStart="15dp"
             android:layout_marginEnd="15dp" />

@@ -49,12 +49,39 @@ class ProductFragment : BaseFragment<ProductViewModel, FragmentProductBinding, P
         observeProducts()
 
         setupSearchView()
-        setupSortingButtons()
 
         binding.buttonAddProduct.setOnClickListener {
             val intent = Intent(requireContext(), AddProductActivity::class.java)
             startActivity(intent)
         }
+
+        binding.searchIcon.setOnClickListener {
+            binding.toolbarDetailProduct.visible(false)
+        }
+
+        binding.closeIcon.setOnClickListener {
+            binding.toolbarDetailProduct.visible(true)
+        }
+
+        binding.menuIcon.setOnClickListener {
+            showPopupMenu(it)
+        }
+    }
+
+    private fun showPopupMenu(view: View) {
+        val popupMenu = androidx.appcompat.widget.PopupMenu(requireContext(), view)
+        popupMenu.inflate(R.menu.product_fragment_menu)
+        popupMenu.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.action_filter -> {
+                    val bottomSheet = ProductSortBottomSheet()
+                    bottomSheet.show(childFragmentManager, "PRODUCT_SORT_BOTTOM_SHEET")
+                    true
+                }
+                else -> false
+            }
+        }
+        popupMenu.show()
     }
 
     private fun setupSwipeRefresh() {
@@ -158,13 +185,6 @@ class ProductFragment : BaseFragment<ProductViewModel, FragmentProductBinding, P
             isIconified = false
             setIconifiedByDefault(false)
             clearFocus()
-        }
-    }
-
-    private fun setupSortingButtons() {
-        binding.sortFilterFab.setOnClickListener {
-            val bottomSheet = ProductSortBottomSheet()
-            bottomSheet.show(childFragmentManager, "PRODUCT_SORT_BOTTOM_SHEET")
         }
     }
 
