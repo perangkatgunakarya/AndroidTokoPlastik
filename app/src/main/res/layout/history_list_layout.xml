@@ -1,85 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_marginTop="10dp"
-    app:cardElevation="2dp">
+    android:layout_marginHorizontal="20dp"
+    app:cardCornerRadius="0dp"
+    app:cardElevation="0dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="10dp"
-        android:paddingBottom="20dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp" >
+        android:background="@drawable/card_bottom_border"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="16dp">
 
         <TextView
             android:id="@+id/customer_text"
-            android:layout_width="match_parent"
+            style="@style/p_bold"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="NAMA CUSTOMER"
-            style="@style/h3_bold"
-            android:maxLines="2"
-            android:ellipsize="end"
-            app:layout_constraintTop_toTopOf="parent"
+            android:paddingBottom="2dp"
+            android:text="Elham Syahrian Putra"
+            android:textColor="@color/text_primary"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toStartOf="@id/cap_lunas"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/date_text"
+            style="@style/p"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingBottom="2dp"
             android:text="19 Okt 2024"
-            style="@style/p"
-            app:layout_constraintTop_toBottomOf="@id/customer_text"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"/>
+            app:layout_constraintTop_toBottomOf="@id/customer_text" />
 
         <TextView
             android:id="@+id/clock_text"
+            style="@style/p"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
             android:text="10:00"
-            style="@style/p"
             app:layout_constraintStart_toEndOf="@id/date_text"
-            app:layout_constraintTop_toBottomOf="@id/customer_text"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"/>
+            app:layout_constraintTop_toBottomOf="@id/customer_text" />
 
         <TextView
-            android:id="@+id/total_title"
+            android:id="@+id/balance_text"
+            style="@style/p"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TOTAL : "
-            style="@style/h4_bold"
+            android:text="Sisa"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/clock_text"
-            android:layout_marginTop="10dp"
-            android:layout_marginStart="10dp" />
+            app:layout_constraintTop_toBottomOf="@id/date_text"/>
+
+        <TextView
+            android:id="@+id/balance_value"
+            style="@style/p_bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rp8.000"
+            android:layout_marginStart="4dp"
+            app:layout_constraintStart_toEndOf="@id/balance_text"
+            app:layout_constraintTop_toBottomOf="@id/date_text"/>
 
         <TextView
             android:id="@+id/total_text"
+            style="@style/p"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Rp. 100.000"
-            style="@style/h4_bold"
-            app:layout_constraintTop_toBottomOf="@id/date_text"
-            app:layout_constraintStart_toEndOf="@id/total_title"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"/>
+            android:text="dari total"
+            android:layout_marginStart="4dp"
+            app:layout_constraintStart_toEndOf="@id/balance_value"
+            app:layout_constraintTop_toBottomOf="@id/date_text"/>
 
-        <ImageView
+        <TextView
+            android:id="@+id/total_value"
+            style="@style/p_bold"
+            android:layout_marginStart="4dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rp100.000"
+            app:layout_constraintStart_toEndOf="@id/total_text"
+            app:layout_constraintTop_toBottomOf="@id/date_text" />
+
+        <TextView
             android:id="@+id/cap_lunas"
-            android:layout_width="100dp"
-            android:layout_height="70dp"
-            android:src="@drawable/cap_lunas"
-            app:layout_constraintStart_toEndOf="@id/clock_text"
-            app:layout_constraintTop_toBottomOf="@id/customer_text"
+            style="@style/h3_bold"
+            android:textColor="@color/g_red"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginStart="80dp"/>
+            app:layout_constraintTop_toTopOf="parent"
+            android:text="PAID"
+            />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

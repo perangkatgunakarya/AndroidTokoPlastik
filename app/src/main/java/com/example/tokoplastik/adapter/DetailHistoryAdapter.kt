@@ -3,9 +3,11 @@ package com.example.tokoplastik.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.tokoplastik.data.responses.TransactionDetail
 import com.example.tokoplastik.data.responses.TransactionDetailProduct
 import com.example.tokoplastik.databinding.DetailHistoryListLayoutBinding
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.util.Locale
 
 class DetailHistoryAdapter : RecyclerView.Adapter<DetailHistoryAdapter.ViewHolder>()  {
 
@@ -16,11 +18,20 @@ class DetailHistoryAdapter : RecyclerView.Adapter<DetailHistoryAdapter.ViewHolde
         RecyclerView.ViewHolder(binding.root) {
             fun bind(item: TransactionDetailProduct, total: String) {
                 binding.apply {
+                    val symbols = DecimalFormatSymbols(Locale.getDefault()).apply {
+                        groupingSeparator = '.'
+                    }
+                    val formatter = DecimalFormat("#,###", symbols)
+
                     productText.text = item.productPrice.product.name
                     quantityText.text = item.quantity.toString()
                     unitText.text = item.productPrice.unit
-                    adjustedPriceText.text = item.priceAdjustment.toString()
-                    totalText.text = total
+
+                    val formattedadjustedPrice = formatter.format(item.priceAdjustment)
+                    adjustedPriceText.text = "Rp$formattedadjustedPrice"
+
+                    val formattedTotal = formatter.format(total.toInt())
+                    totalValue.text = "Rp$formattedTotal"
                 }
             }
     }

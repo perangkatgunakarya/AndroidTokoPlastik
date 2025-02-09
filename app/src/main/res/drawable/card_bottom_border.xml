@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-
-</shape>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Layer untuk background -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/background" /> <!-- Warna background merah -->
+        </shape>
+    </item>
+    <!-- Layer untuk border bawah -->
+    <item android:gravity="bottom">
+        <shape android:shape="rectangle">
+            <size android:height="1dp" />
+            <solid android:color="@color/secondary" /> <!-- Warna border hitam -->
+        </shape>
+    </item>
+</layer-list>
