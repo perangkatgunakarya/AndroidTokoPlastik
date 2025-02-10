@@ -118,15 +118,15 @@ class CheckoutFragment :
             binding.productDropdown.threshold = 1
 
             binding.productDropdown.setOnItemClickListener { _, _, position, _ ->
-                val item = productAdapter.getItem(position)
-                val selectedItem = displayList.find { it.first == item }
-                val selectedProductId = selectedItem?.second
+                var item = productAdapter.getItem(position)
+                var selectedItem = displayList.find { it.first == item }
+                var selectedProductId = selectedItem?.second
 
                 val selectedProduct = productList.find { it.id == selectedProductId }
 
                 if (selectedProduct != null) {
                     viewModel.selectProduct(selectedProduct.id)
-                    if (viewModel.unsignedproductPrice != true) {
+                    if (viewModel.selectedProductPrices.isNotEmpty()) {
                         hideKeyboard()
                     } else {
                         SweetAlertDialog(requireContext(), SweetAlertDialog.ERROR_TYPE).apply {
@@ -142,6 +142,13 @@ class CheckoutFragment :
                         }
                     }
                 }
+                viewModel.selectedProduct = null
+                viewModel.selectedProductPrices = emptyList()
+                binding.productDropdown.text = null
+                binding.productDropdown.clearFocus()
+                item = null
+                selectedItem = null
+                selectedProductId = null
             }
 
             binding.buttonAddProduct.setOnClickListener {

@@ -20,6 +20,7 @@ import com.example.tokoplastik.data.responses.Customer
 import com.example.tokoplastik.databinding.FragmentTransactionBinding
 import com.example.tokoplastik.ui.base.BaseFragment
 import com.example.tokoplastik.util.enable
+import com.example.tokoplastik.util.visible
 import com.example.tokoplastik.viewmodel.TransactionViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -61,10 +62,12 @@ class TransactionFragment : BaseFragment<TransactionViewModel, FragmentTransacti
         }
 
         binding.buttonEditData.setOnClickListener {
-            val action = TransactionFragmentDirections.actionTransactionFragmentToUpdateCustomerFragment(
-                customer_id!!
-            )
-            findNavController().navigate(action)
+            if (customer_id != null) {
+                val action = TransactionFragmentDirections.actionTransactionFragmentToUpdateCustomerFragment(
+                    customer_id!!
+                )
+                findNavController().navigate(action)
+            }
         }
     }
 

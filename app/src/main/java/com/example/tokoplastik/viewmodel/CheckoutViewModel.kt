@@ -66,9 +66,9 @@ class CheckoutViewModel(
     val paymentStatus: LiveData<Resource<PaymentStatusUpdateResponses>>
         get() = _paymentStatus
 
-    private var selectedProduct: Resource<GetProductByIdResponses>? = null
+    var selectedProduct: Resource<GetProductByIdResponses>? = null
     private var selectedProductPriceProducts: Resource<ProductPricesResponses>? = null
-    private var selectedProductPrices: List<ProductPrice> = emptyList()
+    var selectedProductPrices: List<ProductPrice> = emptyList()
     var currentCartItems = mutableListOf<CartItem>()
     var unsignedproductPrice: Boolean = false
 

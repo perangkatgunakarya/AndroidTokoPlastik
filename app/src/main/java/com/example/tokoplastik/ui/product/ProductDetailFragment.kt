@@ -51,6 +51,15 @@ class ProductDetailFragment : BaseFragment<ProductDetailViewModel, FragmentProdu
     }
 
     private fun setupViews() {
+        binding.notes.setOnFocusChangeListener { view, hasFocus ->
+            if (hasFocus) {
+                view.post {
+                    val scrollY = view.top
+                    binding.root.scrollTo(0, scrollY)
+                }
+            }
+        }
+
         binding.buttonBack.setOnClickListener {
             requireActivity().onBackPressed()
         }
