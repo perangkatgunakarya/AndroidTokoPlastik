@@ -18,5 +18,5 @@
     <item
         android:id="@+id/historyFragment"
         android:title="History"
-        android:icon="@drawable/ic_print" />
+        android:icon="@drawable/ic_notes" />
 </menu>

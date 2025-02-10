@@ -26,11 +26,11 @@
 
         <TextView
             android:id="@+id/product_name_text"
-            style="@style/p_bold"
+            style="@style/h4_bold"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:text="Amplop "
+            android:text="Product"
             android:textColor="@color/text_primary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/product_image"
@@ -43,7 +43,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:maxLines="2"
-            android:text="(Elham Syahrian Putra)"
+            android:text="Supplier"
             app:layout_constraintStart_toStartOf="@id/product_name_text"
             app:layout_constraintTop_toBottomOf="@id/product_name_text" />
 
@@ -52,7 +52,7 @@
             style="@style/p_bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Rp2.500.000"
+            android:text="Rp0"
             android:textColor="@color/text_primary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />

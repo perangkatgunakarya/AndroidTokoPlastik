@@ -16,10 +16,10 @@
 
         <TextView
             android:id="@+id/product_text"
-            style="@style/p_bold"
+            style="@style/h4_bold"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Amplop Paperline Biru Ukuran 16x16 Kilometer di Atas Permukaan Laut"
+            android:text="Product"
             android:textColor="@color/text_primary"
             android:paddingBottom="10dp"
             app:layout_constraintStart_toStartOf="parent"
@@ -59,7 +59,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
-            android:text="10.000"
+            android:text="0"
             app:layout_constraintStart_toEndOf="@id/at_text"
             app:layout_constraintTop_toBottomOf="@id/product_text" />
 

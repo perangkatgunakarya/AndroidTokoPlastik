@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     tools:context=".ui.product.ProductDetailFragment">
 
     <androidx.constraintlayout.widget.Guideline
@@ -27,6 +27,7 @@
         app:cardElevation="5dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -53,234 +54,302 @@
                 android:contentDescription="Back"
                 android:src="@drawable/ic_back"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/text_product_detail"
                 style="@style/h4_bold"
-                android:textColor="@color/g_black"
                 android:layout_width="180dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
-                android:textAlignment="textStart"
-                android:text="NAMA PRODUCT"
-                android:maxLines="1"
                 android:ellipsize="end"
+                android:maxLines="1"
+                android:text="NAMA PRODUCT"
+                android:textAlignment="textStart"
+                android:textColor="@color/g_black"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/button_back"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
-    <RelativeLayout
-        android:id="@+id/relativeLayout1"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/productNameLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        app:layout_constraintEnd_toEndOf="@id/guideline_2"
-        app:layout_constraintStart_toStartOf="@id/guideline_1"
+        android:layout_marginTop="20dp"
+        app:layout_constraintLeft_toRightOf="@id/guideline_1"
+        app:layout_constraintRight_toLeftOf="@id/guideline_2"
         app:layout_constraintTop_toBottomOf="@id/toolbar_detail_product">
 
         <TextView
+            android:id="@+id/productNameLabel"
+            style="@style/p_bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Nama Produk"/>
+            android:text="Nama Produk"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
             android:id="@+id/productName"
+            style="@style/h4"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_height="40dp"
+            android:hint="Nama Produk"
             android:inputType="text"
             android:maxLines="1"
-            android:hint="Nama Produk"/>
-    </RelativeLayout>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/productNameLabel" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <RelativeLayout
-        android:id="@+id/relativeLayout2"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/supplierNameLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="@id/guideline_2"
         app:layout_constraintStart_toStartOf="@id/guideline_1"
-        app:layout_constraintTop_toBottomOf="@id/relativeLayout1">
+        app:layout_constraintTop_toBottomOf="@id/productNameLayout">
 
         <TextView
+            android:id="@+id/supplierNameLabel"
+            style="@style/p_bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Nama Supplier"/>
+            android:text="Nama Supplier"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
             android:id="@+id/supplierName"
+            style="@style/h4"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
+            android:layout_height="40dp"
+            android:hint="Nama Supplier"
             android:inputType="text"
             android:maxLines="1"
-            android:hint="Nama Supplier"/>
-    </RelativeLayout>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/supplierNameLabel" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <LinearLayout
-        android:id="@+id/linearLayout1"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/capitalLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_marginTop="20dp"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="@id/guideline_2"
         app:layout_constraintStart_toStartOf="@id/guideline_1"
-        app:layout_constraintTop_toBottomOf="@id/relativeLayout2">
+        app:layout_constraintTop_toBottomOf="@id/supplierNameLayout">
 
-        <RelativeLayout
-            android:layout_width="180dp"
-            android:layout_height="wrap_content">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/latestCapitalLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            app:layout_constraintEnd_toStartOf="@id/currentCapitalLayout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
+                android:id="@+id/latestCapitalLabel"
+                style="@style/p_bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Harga Modal Terakhir"/>
+                android:text="Harga Modal Terakhir"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <EditText
                 android:id="@+id/latestCapital"
-                android:layout_width="300dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
+                style="@style/h4"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:enabled="false"
+                android:hint="Modal Terakhir"
                 android:inputType="text"
                 android:maxLines="1"
-                android:hint="Modal Terakhir"
-                android:enabled="false"/>
+                app:layout_constraintEnd_toStartOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/latestCapitalLabel" />
 
             <TextView
                 android:id="@+id/latestCapitalDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="60dp"
+                android:text="Terakhir diperbarui : 24 Desember 2024"
                 android:textSize="10sp"
-                android:text="Terakhir diperbarui : 24 Desember 2024"/>
-        </RelativeLayout>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/latestCapital" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/currentCapitalLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/latestCapitalLayout"
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
+                android:id="@+id/currentCapitalLabel"
+                style="@style/p_bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Perbarui"/>
+                android:text="Perbarui"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <EditText
                 android:id="@+id/currentCapital"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
+                style="@style/h4"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:hint="Modal Terbaru"
                 android:inputType="number"
                 android:maxLines="1"
-                android:hint="Modal Terbaru"/>
-        </RelativeLayout>
-    </LinearLayout>
+                app:layout_constraintTop_toBottomOf="@id/currentCapitalLabel" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <LinearLayout
-        android:id="@+id/linearLayout2"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/stockLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_marginTop="20dp"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="@id/guideline_2"
         app:layout_constraintStart_toStartOf="@id/guideline_1"
-        app:layout_constraintTop_toBottomOf="@id/linearLayout1">
+        app:layout_constraintTop_toBottomOf="@id/capitalLayout">
 
-        <RelativeLayout
-            android:layout_width="250dp"
-            android:layout_height="wrap_content">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toStartOf="@id/stockCardButton"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/latestStockLayout"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Stock Terakhir"/>
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toStartOf="@id/lowestUnit"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/latestStockLabel"
+                    style="@style/p_bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Stock Terakhir"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <EditText
                     android:id="@+id/latestStock"
-                    android:layout_width="150dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
+                    style="@style/h4"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:enabled="false"
+                    android:hint="Stock Terakhir"
                     android:inputType="text"
                     android:maxLines="1"
-                    android:hint="Stock Terakhir"
-                    android:enabled="false"/>
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/latestStockLabel"
+                    />
 
-                <Spinner
-                    android:id="@+id/lowestUnit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"/>
-            </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </RelativeLayout>
+            <Spinner
+                android:id="@+id/lowestUnit"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/latestStockLayout" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/stockCardButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:backgroundTint="@color/black"
             android:text="Kartu Stok"
-            android:textSize="10sp"
-            android:layout_gravity="center"
             android:textColor="@color/white"
-            android:backgroundTint="@color/g_red"/>
-    </LinearLayout>
+            android:textSize="10sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <RelativeLayout
-        android:id="@+id/relativeLayout3"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/notesLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="@id/guideline_2"
         app:layout_constraintStart_toStartOf="@id/guideline_1"
-        app:layout_constraintTop_toBottomOf="@id/linearLayout2">
+        app:layout_constraintTop_toBottomOf="@id/stockLayout">
 
         <TextView
+            android:id="@+id/notesLabel"
+            style="@style/p_bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Catatan"/>
+            android:text="Catatan"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
             android:id="@+id/notes"
+            style="@style/h4"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_height="40dp"
+            android:hint="Catatan"
             android:inputType="text|textMultiLine"
-            android:hint="Notes"/>
-    </RelativeLayout>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/notesLabel" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/goToProductPriceButton"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Tambahkan Harga Jual"
-        style="@style/blueButtonStyle"
         android:layout_marginTop="30dp"
-        android:layout_gravity="center"
-        android:layout_marginEnd="10dp"
-        android:backgroundTint="@color/g_orange_yellow"
-        android:textColor="@color/black"
-        app:layout_constraintStart_toStartOf="@id/guideline_1"
-        app:layout_constraintEnd_toStartOf="@id/saveButton"
-        app:layout_constraintTop_toBottomOf="@id/relativeLayout3"/>
+        app:layout_constraintEnd_toStartOf="@id/guideline_2"
+        app:layout_constraintStart_toEndOf="@id/guideline_1"
+        app:layout_constraintTop_toBottomOf="@id/notesLayout">
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/saveButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Simpan"
-        style="@style/blueButtonStyle"
-        android:layout_marginTop="30dp"
-        android:layout_gravity="center"
-        app:layout_constraintStart_toEndOf="@id/goToProductPriceButton"
-        app:layout_constraintEnd_toEndOf="@id/guideline_2"
-        app:layout_constraintTop_toBottomOf="@id/relativeLayout3"/>
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/goToProductPriceButton"
+            style="@style/blueButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:backgroundTint="@color/secondary"
+            android:text="Tambahkan Harga Jual"
+            android:textColor="@color/black"
+            app:layout_constraintEnd_toStartOf="@id/saveButton"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/saveButton"
+            style="@style/blueButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Simpan"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/goToProductPriceButton"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ProgressBar
         android:id="@+id/progressBar"

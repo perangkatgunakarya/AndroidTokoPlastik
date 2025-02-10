@@ -1,28 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="30dp"
     tools:context=".ui.customer.AddCustomerFragment">
 
     <EditText
         android:id="@+id/customer_name_text_field"
+        style="@style/h4"
         android:layout_width="match_parent"
         android:layout_height="@dimen/edit_text_height"
         android:layout_marginBottom="20dp"
-        android:padding="10dp"
-        android:hint="Nama Customer" />
+        android:hint="Nama Customer"
+        android:padding="10dp" />
 
     <EditText
         android:id="@+id/address_text_field"
+        style="@style/h4"
         android:layout_width="match_parent"
         android:layout_height="@dimen/edit_text_height"
         android:layout_marginBottom="20dp"
-        android:padding="10dp"
-        android:hint="Alamat" />
+        android:hint="Alamat"
+        android:padding="10dp" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -30,39 +32,39 @@
 
         <EditText
             android:id="@+id/phone_text_field"
+            style="@style/h4"
             android:layout_width="match_parent"
             android:layout_height="@dimen/edit_text_height"
             android:layout_marginBottom="20dp"
-            android:padding="10dp"
             android:hint="Nomor HP"
             android:inputType="number"
+            android:padding="10dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
             android:id="@+id/btnWhatsApp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_call"
             android:backgroundTint="@color/white"
+            android:src="@drawable/ic_call"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button_add_customer"
-        android:layout_width="@dimen/medium_button_width"
-        android:layout_height="@dimen/medium_button_height"
         style="@style/blueButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_marginTop="30dp"
-        android:text="Tambah"
-        android:textSize="@dimen/h3TextSize" />
+        android:text="Tambah" />
 
     <ProgressBar
         android:id="@+id/add_customer_progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|center"/>
+        android:layout_gravity="top|center" />
 
 </LinearLayout>

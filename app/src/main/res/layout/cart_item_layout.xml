@@ -76,7 +76,7 @@
                 android:layout_height="15dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Increase quantity"
-                android:src="@drawable/ic_add" />
+                android:src="@drawable/ic_plus" />
 
         </LinearLayout>
 

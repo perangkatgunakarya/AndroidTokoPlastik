@@ -4,58 +4,65 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="30dp"
+    android:layout_marginTop="16dp"
+    android:layout_marginHorizontal="20dp"
     tools:context=".ui.product.AddProductFragment">
 
     <EditText
         android:id="@+id/product_name_text_field"
         android:layout_width="match_parent"
         android:layout_height="@dimen/edit_text_height"
-        android:layout_marginBottom="20dp"
-        android:padding="10dp"
+        android:layout_marginBottom="10dp"
+        android:paddingHorizontal="10dp"
+        style="@style/h4"
         android:hint="Nama Produk" />
 
     <EditText
+        style="@style/h4"
         android:id="@+id/supplier_text_field"
         android:layout_width="match_parent"
         android:layout_height="@dimen/edit_text_height"
-        android:layout_marginBottom="20dp"
-        android:padding="10dp"
+        android:layout_marginBottom="10dp"
+        android:paddingHorizontal="10dp"
         android:hint="Nama Supplier" />
 
     <EditText
+        style="@style/h4"
         android:id="@+id/capital_price_text_field"
         android:layout_width="match_parent"
         android:layout_height="@dimen/edit_text_height"
-        android:layout_marginBottom="20dp"
-        android:padding="10dp"
+        android:layout_marginBottom="10dp"
+        android:paddingHorizontal="10dp"
         android:hint="Harga Modal"
         android:inputType="number" />
 
     <AutoCompleteTextView
+        style="@style/h4"
         android:id="@+id/unit_dropdown"
         android:layout_width="match_parent"
         android:layout_height="@dimen/edit_text_height"
+        android:paddingHorizontal="10dp"
+        android:layout_marginBottom="10dp"
         android:hint="Satuan Terkecil (Cont. pcs, meter)"/>
 
     <EditText
+        style="@style/h4"
         android:id="@+id/notes_text_field"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_marginTop="20dp"
-        android:padding="10dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="0dp"
+        android:paddingHorizontal="10dp"
         android:hint="Catatan"
         android:inputType="text|textMultiLine" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button_add_product"
-        android:layout_width="@dimen/medium_button_width"
+        android:layout_width="match_parent"
         android:layout_height="@dimen/medium_button_height"
         style="@style/blueButtonStyle"
-        android:layout_gravity="bottom|end"
+        android:layout_gravity="bottom"
         android:layout_marginTop="30dp"
-        android:text="Tambah"
-        android:textSize="@dimen/h3TextSize" />
+        android:text="Tambah" />
 
     <ProgressBar
         android:id="@+id/add_product_progress_bar"

@@ -8,6 +8,9 @@ import androidx.recyclerview.widget.RecyclerView
 import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.tokoplastik.data.responses.GetProduct
 import com.example.tokoplastik.databinding.ProductListLayoutBinding
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.util.Locale
 
 class ProductAdapter(
     private val onDeleteItem: (GetProduct) -> Unit
@@ -153,7 +156,13 @@ class ProductAdapter(
             binding.apply {
                 supplierText.text = "(${product.supplier})"
                 productNameText.text = product.name
-                nominalText.text = "Rp ${product.capitalPrice}"
+
+                val symbols = DecimalFormatSymbols(Locale.getDefault()).apply {
+                    groupingSeparator = '.'
+                }
+                val formatter = DecimalFormat("#,###", symbols)
+                val formattedTotal = formatter.format(product.capitalPrice)
+                nominalText.text = "Rp$formattedTotal"
             }
         }
     }

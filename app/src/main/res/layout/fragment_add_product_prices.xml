@@ -20,33 +20,36 @@
 
             <AutoCompleteTextView
                 android:id="@+id/unit_dropdown"
+                style="@style/h4"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/edit_text_height"
-                android:layout_marginBottom="20dp"
-                android:hint="Satuan"/>
+                android:layout_marginBottom="12dp"
+                android:hint="Satuan" />
 
             <EditText
                 android:id="@+id/quantity_edit_text"
+                style="@style/h4"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/edit_text_height"
+                android:layout_marginBottom="12dp"
                 android:hint="Isi per Unit"
-                android:inputType="number"
-                android:layout_marginBottom="20dp"/>
+                android:inputType="number" />
 
             <EditText
                 android:id="@+id/price_edit_text"
+                style="@style/h4"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/edit_text_height"
+                android:layout_marginBottom="12dp"
                 android:hint="Price"
-                android:inputType="numberDecimal"
-                android:layout_marginBottom="20dp"/>
+                android:inputType="numberDecimal" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/button_add_price"
+                style="@style/blueButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/medium_button_height"
-                android:text="Tambahkan Harga"
-                style="@style/blueButtonStyle"/>
+                android:text="Tambahkan Harga" />
 
         </LinearLayout>
 
@@ -57,13 +60,13 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
     <ProgressBar
         android:id="@+id/product_prices_progressbar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
 </LinearLayout>
