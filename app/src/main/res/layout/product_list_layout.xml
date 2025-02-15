@@ -14,13 +14,15 @@
         android:paddingHorizontal="8dp"
         android:paddingVertical="16dp">
 
-
-        <ImageView
-            android:id="@+id/product_image"
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/product_initial"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:contentDescription="Product Image"
-            android:src="@drawable/image_placeholder"
+            android:background="@drawable/circle_background"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -33,7 +35,7 @@
             android:text="Product"
             android:textColor="@color/text_primary"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/product_image"
+            app:layout_constraintStart_toEndOf="@id/product_initial"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView

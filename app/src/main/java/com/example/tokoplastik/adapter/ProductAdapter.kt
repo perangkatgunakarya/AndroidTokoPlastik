@@ -20,6 +20,13 @@ class ProductAdapter(
     private var filteredList = mutableListOf<GetProduct>()
     private var onItemClickListener: ((GetProduct) -> Unit)? = null
 
+    private fun getInitials(productName: String): String {
+        return productName.split(" ")
+            .take(2)
+            .mapNotNull { it.firstOrNull()?.uppercase() }
+            .joinToString("")
+    }
+
     fun setOnItemClickListener(listener: (GetProduct) -> Unit) {
         onItemClickListener = listener
     }
@@ -154,6 +161,10 @@ class ProductAdapter(
 
         fun bind(product: GetProduct) {
             binding.apply {
+
+                val initial = getInitials(product.name)
+                productInitial.text = initial
+
                 supplierText.text = "(${product.supplier})"
                 productNameText.text = product.name
 
