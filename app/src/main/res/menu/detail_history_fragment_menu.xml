@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_filter"
+        android:title="Urutkan &amp; Filter" />
+    <item
+        android:id="@+id/button_share"
+        android:title="Share" />
+    <item
+        android:id="@+id/button_print"
+        android:title="Print" />
+</menu>
