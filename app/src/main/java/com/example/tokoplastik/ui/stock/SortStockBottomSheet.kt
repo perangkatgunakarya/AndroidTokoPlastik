@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.RadioGroup
-import androidx.appcompat.widget.SwitchCompat
 import androidx.core.util.Pair
 import androidx.lifecycle.ViewModelProvider
 import com.example.tokoplastik.R
@@ -26,9 +25,7 @@ import java.util.TimeZone
 class SortStockBottomSheet : BottomSheetDialogFragment() {
 
     private lateinit var viewModel: StockViewModel
-
     private lateinit var sortRadioGroup: RadioGroup
-    private lateinit var sortOrderSwitch: SwitchCompat
     private lateinit var dateRangeButton: Button
     private lateinit var startDateEditText: EditText
     private lateinit var endDateEditText: EditText
@@ -47,8 +44,7 @@ class SortStockBottomSheet : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        sortRadioGroup = view.findViewById(R.id.sortStockRadioGroup)
-        sortOrderSwitch = view.findViewById(R.id.sortStockOrderSwitch)
+        sortRadioGroup = view.findViewById(R.id.sortStockByRadioGroup)
         dateRangeButton = view.findViewById(R.id.dateStockRangeButton)
         startDateEditText = view.findViewById(R.id.startStockDateEditText)
         endDateEditText = view.findViewById(R.id.endStockDateEditText)
@@ -56,20 +52,22 @@ class SortStockBottomSheet : BottomSheetDialogFragment() {
 
         sortRadioGroup.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
-                R.id.sortStockByDate -> viewModel.setSortType(SortType.DATE)
+                R.id.newestDateStockSortButton -> viewModel.setSortOrder(SortOrder.DESCENDING)
+                R.id.oldestDateStockSortButton -> viewModel.setSortOrder(SortOrder.ASCENDING)
             }
         }
 
-        sortOrderSwitch.setOnCheckedChangeListener { _, isChecked ->
-            viewModel.setSortOrder(if (isChecked) SortOrder.DESCENDING else SortOrder.ASCENDING)
-        }
+        viewModel.setSortType(SortType.DATE)
+
 
         dateRangeButton.setOnClickListener {
             val datePicker = MaterialDatePicker.Builder.dateRangePicker()
                 .setTitleText("Select Date Range")
                 .setSelection(
                     Pair(
-                        viewModel.startDate.value ?: MaterialDatePicker.thisMonthInUtcMilliseconds(),
+                        viewModel.startDate.value
+                            ?: MaterialDatePicker.thisMonthInUtcMilliseconds(),
+
                         viewModel.endDate.value ?: MaterialDatePicker.todayInUtcMilliseconds()
                     )
                 )
@@ -103,14 +101,11 @@ class SortStockBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun restorePreviousState() {
-        when (viewModel.sortType.value) {
-            SortType.DATE -> sortRadioGroup.check(R.id.sortStockByDate)
-            null -> sortRadioGroup.check(R.id.sortStockByDate) // Default
-            SortType.CAPITAL -> TODO()
-            SortType.NAME -> TODO()
+        when (viewModel.sortOrder.value) {
+            SortOrder.DESCENDING -> sortRadioGroup.check(R.id.newestDateStockSortButton)
+            SortOrder.ASCENDING -> sortRadioGroup.check(R.id.oldestDateStockSortButton)
+            null -> sortRadioGroup.check(R.id.newestDateHistorySortButton) // Default
         }
-
-        sortOrderSwitch.isChecked = viewModel.sortOrder.value == SortOrder.DESCENDING
 
         viewModel.startDate.value?.let { start ->
             startDateEditText.setText(formatDate(start))

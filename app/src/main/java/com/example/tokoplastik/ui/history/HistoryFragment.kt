@@ -16,6 +16,7 @@ import com.example.tokoplastik.data.repository.CheckoutRepository
 import com.example.tokoplastik.data.responses.AllTransaction
 import com.example.tokoplastik.databinding.FragmentHistoryBinding
 import com.example.tokoplastik.ui.base.BaseFragment
+import com.example.tokoplastik.ui.product.ProductSortBottomSheet
 import com.example.tokoplastik.util.Resource
 import com.example.tokoplastik.util.handleApiError
 import com.example.tokoplastik.util.visible
@@ -45,9 +46,35 @@ class HistoryFragment :
         setupRecyclerView()
         setupSwipeRefresh()
         observeTransactions()
-
         setupSearchView()
-        setupSortingButtons()
+
+        binding.searchIcon.setOnClickListener {
+            binding.toolbarHistory.visible(false)
+        }
+
+        binding.closeIcon.setOnClickListener {
+            binding.toolbarHistory.visible(true)
+        }
+
+        binding.menuIcon.setOnClickListener {
+            showPopupMenu(it)
+        }
+    }
+
+    private fun showPopupMenu(view: View) {
+        val popupMenu = androidx.appcompat.widget.PopupMenu(requireContext(), view)
+        popupMenu.inflate(R.menu.history_fragment_menu)
+        popupMenu.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.action_filter_history -> {
+                    val bottomSheet = SortFilterBottomSheet()
+                    bottomSheet.show(childFragmentManager, "HISTORY_SORT_BOTTOM_SHEET")
+                    true
+                }
+                else -> false
+            }
+        }
+        popupMenu.show()
     }
 
     private fun setupRecyclerView() {
@@ -121,13 +148,6 @@ class HistoryFragment :
             isIconified = false
             setIconifiedByDefault(false)
             clearFocus()
-        }
-    }
-
-    private fun setupSortingButtons() {
-        binding.sortFilterFab.setOnClickListener {
-            val bottomSheet = SortFilterBottomSheet()
-            bottomSheet.show(childFragmentManager, "SORT_FILTER_BOTTOM_SHEET")
         }
     }
 

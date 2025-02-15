@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.RadioButton
 import android.widget.RadioGroup
 import androidx.appcompat.widget.SwitchCompat
 import androidx.lifecycle.ViewModelProvider
@@ -17,12 +18,13 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class ProductSortBottomSheet : BottomSheetDialogFragment() {
 
-    private lateinit var viewModel : ProductViewModel
-
-    private lateinit var sortRadioGroup : RadioGroup
-    private lateinit var sortOrderSwitch : SwitchCompat
-    private lateinit var doneButton : Button
-    private lateinit var sortType : SortType
+    private lateinit var viewModel: ProductViewModel
+    private lateinit var ascendingButton: RadioButton
+    private lateinit var descendingButton: RadioButton
+    private lateinit var highestPriceButton: RadioButton
+    private lateinit var lowestPriceButton: RadioButton
+    private lateinit var doneButton: Button
+    private lateinit var sortType: SortType
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,39 +38,80 @@ class ProductSortBottomSheet : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        sortRadioGroup = view.findViewById(R.id.sortRadioGroup)
-        sortOrderSwitch = view.findViewById(R.id.sortOrderSwitch)
+        ascendingButton = view.findViewById(R.id.ascending_product_name_sort_button)
+        descendingButton = view.findViewById(R.id.descending_product_name_sort_button)
+        highestPriceButton = view.findViewById(R.id.highest_price_modal_sort_button)
+        lowestPriceButton = view.findViewById(R.id.lowest_price_modal_sort_button)
         doneButton = view.findViewById(R.id.doneButton)
 
-        sortRadioGroup.setOnCheckedChangeListener { _, checkedId ->
-            when (checkedId) {
-                R.id.sortByName -> sortType = SortType.NAME
-                R.id.sortByCapital -> sortType = SortType.CAPITAL
-            }
-        }
-
-        sortOrderSwitch.setOnCheckedChangeListener { _, isChecked ->
-            viewModel.setSortOrder(if (isChecked) SortOrder.DESCENDING else SortOrder.ASCENDING)
-        }
-
         doneButton.setOnClickListener {
+            if (ascendingButton.isChecked) {
+                sortType = SortType.NAME
+                viewModel.setSortOrder(SortOrder.ASCENDING)
+            } else if (descendingButton.isChecked) {
+                sortType = SortType.NAME
+                viewModel.setSortOrder(SortOrder.DESCENDING)
+            } else if (highestPriceButton.isChecked) {
+                sortType = SortType.CAPITAL
+                viewModel.setSortOrder(SortOrder.DESCENDING)
+            } else if (lowestPriceButton.isChecked) {
+                sortType = SortType.CAPITAL
+                viewModel.setSortOrder(SortOrder.ASCENDING)
+            }
+
             viewModel.applySort(sortType)
-            Log.d("ProductSortBottomSheet", "sortType: $sortType, sortOrder: ${viewModel.sortOrder.value}")
+            Log.d(
+                "ProductSortBottomSheet",
+                "sortType: $sortType, sortOrder: ${viewModel.sortOrder.value}"
+            )
             dismiss()
         }
 
+        setRadioButtonListeners()
         restorePreviousState()
     }
 
-    private fun restorePreviousState() {
-        when (viewModel.sortType.value) {
-            SortType.NAME -> sortRadioGroup.check(R.id.sortByName)
-            SortType.CAPITAL -> sortRadioGroup.check(R.id.sortByCapital)
-            SortType.DATE -> TODO()
-            null -> sortRadioGroup.check(R.id.sortByDate)
-        }
+    private fun setRadioButtonListeners() {
+        val radioButtons = listOf(
+            ascendingButton,
+            descendingButton,
+            highestPriceButton,
+            lowestPriceButton
+        )
 
-        sortOrderSwitch.isChecked = viewModel.sortOrder.value == SortOrder.DESCENDING
+        radioButtons.forEach { radioButton ->
+            radioButton.setOnCheckedChangeListener { buttonView, isChecked ->
+                if (isChecked) {
+                    radioButtons.forEach { otherButton ->
+                        if (otherButton != buttonView) {
+                            otherButton.isChecked = false
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun restorePreviousState() {
+        when {
+            viewModel.sortOrder.value == SortOrder.ASCENDING && viewModel.sortType.value == SortType.NAME -> {
+                ascendingButton.isChecked = true
+            }
+
+            viewModel.sortOrder.value == SortOrder.DESCENDING && viewModel.sortType.value == SortType.NAME -> {
+                descendingButton.isChecked = true
+            }
+
+            viewModel.sortOrder.value == SortOrder.DESCENDING && viewModel.sortType.value == SortType.CAPITAL -> {
+                highestPriceButton.isChecked = true
+            }
+
+            viewModel.sortOrder.value == SortOrder.ASCENDING && viewModel.sortType.value == SortType.CAPITAL -> {
+                lowestPriceButton.isChecked = true
+            }
+
+            else -> ascendingButton.isChecked = true
+        }
     }
 
     companion object {

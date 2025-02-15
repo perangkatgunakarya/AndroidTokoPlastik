@@ -51,9 +51,9 @@
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardViewTop"
                 android:layout_width="0dp"
-                android:layout_marginTop="4dp"
                 android:layout_height="110dp"
                 android:layout_marginHorizontal="4dp"
+                android:layout_marginTop="4dp"
                 android:background="@color/primary"
                 app:cardBackgroundColor="@color/black"
                 app:cardCornerRadius="8dp"
@@ -69,7 +69,7 @@
                     android:layout_gravity="start|top"
                     android:layout_marginStart="12dp"
                     android:layout_marginTop="12dp"
-                    android:text="Total Transaksi \nHari ini"
+                    android:text="Produk Terlaris"
                     android:textColor="@color/white"
                     android:textSize="14sp" />
 
@@ -80,17 +80,20 @@
                     android:layout_gravity="start|bottom"
                     android:layout_marginHorizontal="12dp"
                     android:layout_marginBottom="16dp"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:text=""
                     android:textColor="@color/white"
-                    android:textSize="20dp"
+                    android:textSize="16dp"
                     android:textStyle="bold" />
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardViewUnpaid"
-                android:layout_marginTop="4dp"
                 android:layout_width="0dp"
                 android:layout_height="110dp"
                 android:layout_marginHorizontal="4dp"
+                android:layout_marginTop="4dp"
                 app:cardCornerRadius="8dp"
                 app:cardElevation="2dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -123,15 +126,15 @@
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardViewOmzet"
                 android:layout_width="0dp"
-                android:layout_marginBottom="4dp"
                 android:layout_height="110dp"
-                android:layout_marginTop="8dp"
                 android:layout_marginHorizontal="4dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp"
                 app:cardCornerRadius="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/cardViewProfit"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/cardViewTop"
-                app:layout_constraintBottom_toBottomOf="parent">
+                app:layout_constraintTop_toBottomOf="@id/cardViewTop">
 
 
                 <TextView
@@ -166,10 +169,10 @@
                 android:layout_marginBottom="4dp"
                 app:cardCornerRadius="8dp"
                 app:cardElevation="2dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/cardViewOmzet"
-                app:layout_constraintTop_toBottomOf="@id/cardViewUnpaid"
-                app:layout_constraintBottom_toBottomOf="parent">
+                app:layout_constraintTop_toBottomOf="@id/cardViewUnpaid">
 
                 <TextView
                     android:id="@+id/profitTitle"
@@ -203,8 +206,8 @@
             android:layout_marginBottom="4dp"
             app:cardCornerRadius="8dp"
             app:cardElevation="2dp"
-            app:layout_constraintTop_toBottomOf="@id/constraintLayout2"
-            app:layout_constraintBottom_toBottomOf="parent">
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/constraintLayout2">
 
             <LinearLayout
                 android:layout_width="match_parent"

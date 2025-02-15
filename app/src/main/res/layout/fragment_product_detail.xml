@@ -23,7 +23,7 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/toolbar_detail_product"
         android:layout_width="match_parent"
-        android:layout_height="55dp"
+        android:layout_height="50dp"
         app:cardElevation="5dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -48,8 +48,8 @@
 
             <ImageButton
                 android:id="@+id/button_back"
-                android:layout_width="55dp"
-                android:layout_height="55dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Back"
                 android:src="@drawable/ic_back"
@@ -59,16 +59,17 @@
             <TextView
                 android:id="@+id/text_product_detail"
                 style="@style/h4_bold"
-                android:layout_width="180dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
+                android:layout_marginHorizontal="12dp"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:text="NAMA PRODUCT"
+                android:text="Product Name"
                 android:textAlignment="textStart"
                 android:textColor="@color/g_black"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/button_back"
+                app:layout_constraintEnd_toEndOf="@id/guideline_inside_2"
+                app:layout_constraintStart_toEndOf="@id/guideline_inside_1"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
@@ -180,7 +181,7 @@
                 android:id="@+id/latestCapitalDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Terakhir diperbarui : 24 Desember 2024"
+                android:text="Terakhir diperbarui : "
                 android:textSize="10sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/latestCapital" />
@@ -261,8 +262,7 @@
                     android:inputType="text"
                     android:maxLines="1"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/latestStockLabel"
-                    />
+                    app:layout_constraintTop_toBottomOf="@id/latestStockLabel" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -331,7 +331,7 @@
             android:id="@+id/goToProductPriceButton"
             style="@style/blueButtonStyle"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/medium_button_height"
             android:layout_marginEnd="10dp"
             android:backgroundTint="@color/secondary"
             android:text="Tambahkan Harga Jual"
@@ -344,7 +344,7 @@
             android:id="@+id/saveButton"
             style="@style/blueButtonStyle"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/medium_button_height"
             android:text="Simpan"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/goToProductPriceButton"

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,78 +8,136 @@
     app:layout_behavior="@string/bottom_sheet_behavior"
     tools:context=".ui.product.ProductSortBottomSheet">
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/bottom_sheet_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:layout_marginVertical="10dp"
             android:text="Sort Product"
             android:textColor="@color/black"
             android:textSize="18sp"
-            android:textStyle="bold"/>
-    </RelativeLayout>
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/black"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="15dp"
-        android:text="Urutkan berdasarkan :"
-        android:textColor="@color/black"
-        android:textSize="18sp" />
 
-    <RadioGroup
-        android:id="@+id/sortRadioGroup"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="15dp">
+        android:layout_marginHorizontal="20dp"
+        android:paddingVertical="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/bottom_sheet_title">
 
-        <RadioButton
-            android:id="@+id/sortByName"
+        <TextView
+            android:id="@+id/sort_by_text"
+            style="@style/h4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Urutkan berdasarkan :"
+            android:textColor="@color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/sort_radio_group_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Nama Produk"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/sort_by_text">
 
-        <RadioButton
-            android:id="@+id/sortByCapital"
+
+            <RadioButton
+                android:id="@+id/ascending_product_name_sort_button"
+                style="@style/h4"
+                android:layout_width="0dp"
+                android:layout_height="35dp"
+                android:layout_marginEnd="4dp"
+                android:background="@drawable/radio_selector"
+                android:button="@null"
+                android:gravity="center"
+                android:text="Nama Produk A-Z"
+                android:textColor="@drawable/radio_text_selector"
+                app:layout_constraintBottom_toTopOf="@id/descending_product_name_sort_button"
+                app:layout_constraintEnd_toStartOf="@id/highest_price_modal_sort_button"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <RadioButton
+                android:id="@+id/descending_product_name_sort_button"
+                style="@style/h4"
+                android:layout_width="0dp"
+                android:layout_height="35dp"
+                android:background="@drawable/radio_selector"
+                android:button="@null"
+                android:gravity="center"
+                android:text="Nama Product Z-A"
+                android:textColor="@drawable/radio_text_selector"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/ascending_product_name_sort_button"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/ascending_product_name_sort_button" />
+
+            <RadioButton
+                android:id="@+id/highest_price_modal_sort_button"
+                style="@style/h4"
+                android:layout_width="0dp"
+                android:layout_height="35dp"
+                android:background="@drawable/radio_selector"
+                android:button="@null"
+                android:gravity="center"
+                android:text="Harga Tertinggi"
+                android:textColor="@drawable/radio_text_selector"
+                app:layout_constraintBottom_toBottomOf="@id/ascending_product_name_sort_button"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/ascending_product_name_sort_button"
+                app:layout_constraintTop_toTopOf="@id/ascending_product_name_sort_button" />
+
+            <RadioButton
+                android:id="@+id/lowest_price_modal_sort_button"
+                style="@style/h4"
+                android:layout_width="0dp"
+                android:layout_height="35dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/radio_selector"
+                android:button="@null"
+                android:gravity="center"
+                android:text="Harga Terendah"
+                android:textColor="@drawable/radio_text_selector"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/highest_price_modal_sort_button"
+                app:layout_constraintTop_toTopOf="@id/descending_product_name_sort_button" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/doneButton"
+            style="@style/blueButtonStyle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Harga Modal"/>
-    </RadioGroup>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Urutan"
-        android:textSize="18sp"
-        android:textColor="@color/black"
-        android:layout_marginStart="15dp" />
-
-    <androidx.appcompat.widget.SwitchCompat
-        android:id="@+id/sortOrderSwitch"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginEnd="100dp"
-        android:text="Descending Order"/>
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/doneButton"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/medium_button_height"
-        android:layout_marginTop="20dp"
-        android:text="Done"
-        style="@style/blueButtonStyle"
-        android:layout_marginEnd="35dp"
-        android:layout_marginBottom="15dp"
-        android:layout_gravity="end"/>
-</LinearLayout>
+            android:layout_height="@dimen/medium_button_height"
+            android:layout_marginTop="16dp"
+            android:text="Sort"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/sort_radio_group_layout" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

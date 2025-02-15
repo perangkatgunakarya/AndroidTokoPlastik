@@ -1,69 +1,138 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="30dp"
-    tools:context=".ui.customer.UpdateCustomerFragment">
+    android:layout_height="match_parent">
 
-    <EditText
-        android:id="@+id/customer_name_text_field"
-        style="@style/h4"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/toolbar_update_customer"
         android:layout_width="match_parent"
-        android:layout_height="58dp"
-        android:layout_marginBottom="8dp"
-        android:hint="Nama Customer"
-        android:padding="10dp" />
+        android:layout_height="55dp"
+        app:cardElevation="5dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <EditText
-        android:id="@+id/address_text_field"
-        style="@style/h4"
-        android:layout_width="match_parent"
-        android:layout_height="58dp"
-        android:layout_marginBottom="8dp"
-        android:hint="Alamat"
-        android:padding="10dp" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_inside_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.09" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_inside_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.91" />
+
+            <ImageButton
+                android:id="@+id/button_back"
+                android:layout_width="55dp"
+                android:layout_height="55dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Back"
+                android:src="@drawable/ic_back"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/customer_name_toolbar"
+                style="@style/h4_bold"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="NAMA CUSTOMER"
+                android:textAlignment="textStart"
+                android:textColor="@color/g_black"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/button_back"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_update_customer">
 
         <EditText
-            android:id="@+id/phone_text_field"
+            android:id="@+id/customer_name_text_field"
             style="@style/h4"
             android:layout_width="match_parent"
             android:layout_height="58dp"
-            android:hint="Nomor HP"
-            android:inputType="number"
+            android:layout_marginBottom="8dp"
+            android:hint="Nama Customer"
             android:padding="10dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
-            android:id="@+id/btnWhatsApp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/white"
-            android:src="@drawable/ic_call"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <EditText
+            android:id="@+id/address_text_field"
+            style="@style/h4"
+            android:layout_width="match_parent"
+            android:layout_height="58dp"
+            android:layout_marginBottom="8dp"
+            android:hint="Alamat"
+            android:padding="10dp"
+            app:layout_constraintTop_toBottomOf="@id/customer_name_text_field" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/button_edit_customer"
-        style="@style/blueButtonStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginTop="30dp"
-        android:text="Update" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/phone_text_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/address_text_field">
+
+            <EditText
+                android:id="@+id/phone_text_field"
+                style="@style/h4"
+                android:layout_width="match_parent"
+                android:layout_height="58dp"
+                android:hint="Nomor HP"
+                android:inputType="number"
+                android:padding="10dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/btnWhatsApp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/white"
+                android:src="@drawable/ic_call"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/button_edit_customer"
+            style="@style/blueButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/medium_button_height"
+            android:layout_gravity="bottom|end"
+            android:layout_marginTop="30dp"
+            android:text="Update"
+            app:layout_constraintTop_toBottomOf="@id/phone_text_layout" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ProgressBar
         android:id="@+id/update_customer_progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|center" />
+        android:layout_gravity="top|center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

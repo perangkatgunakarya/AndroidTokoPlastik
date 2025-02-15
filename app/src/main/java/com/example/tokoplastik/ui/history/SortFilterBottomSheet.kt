@@ -29,7 +29,6 @@ class SortFilterBottomSheet : BottomSheetDialogFragment() {
 
     // UI Components
     private lateinit var sortRadioGroup: RadioGroup
-    private lateinit var sortOrderSwitch: SwitchCompat
     private lateinit var dateRangeButton: Button
     private lateinit var startDateEditText: EditText
     private lateinit var endDateEditText: EditText
@@ -50,24 +49,21 @@ class SortFilterBottomSheet : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Initialize UI components
-        sortRadioGroup = view.findViewById(R.id.sortRadioGroup)
-        sortOrderSwitch = view.findViewById(R.id.sortOrderSwitch)
-        dateRangeButton = view.findViewById(R.id.dateRangeButton)
-        startDateEditText = view.findViewById(R.id.startDateEditText)
-        endDateEditText = view.findViewById(R.id.endDateEditText)
-        doneButton = view.findViewById(R.id.doneButton)
+        sortRadioGroup = view.findViewById(R.id.sortHistoryByRadioGroup)
+        dateRangeButton = view.findViewById(R.id.dateHistoryRangeButton)
+        startDateEditText = view.findViewById(R.id.startHistoryDateEditText)
+        endDateEditText = view.findViewById(R.id.endHistoryDateEditText)
+        doneButton = view.findViewById(R.id.doneHistoryButton)
 
         // Setup sort type radio group
         sortRadioGroup.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
-                R.id.sortByDate -> viewModel.setSortType(SortType.DATE)
+                R.id.newestDateHistorySortButton -> viewModel.setSortOrder(SortOrder.DESCENDING)
+                R.id.oldestDateHistorySortButton -> viewModel.setSortOrder(SortOrder.ASCENDING)
             }
         }
 
-        // Setup sort order switch
-        sortOrderSwitch.setOnCheckedChangeListener { _, isChecked ->
-            viewModel.setSortOrder(if (isChecked) SortOrder.DESCENDING else SortOrder.ASCENDING)
-        }
+        viewModel.setSortType(SortType.DATE)
 
         // Date range picker setup
         dateRangeButton.setOnClickListener {
@@ -76,7 +72,8 @@ class SortFilterBottomSheet : BottomSheetDialogFragment() {
                 .setTitleText("Select Date Range")
                 .setSelection(
                     Pair(
-                        viewModel.startDate.value ?: MaterialDatePicker.thisMonthInUtcMilliseconds(),
+                        viewModel.startDate.value
+                            ?: MaterialDatePicker.thisMonthInUtcMilliseconds(),
                         viewModel.endDate.value ?: MaterialDatePicker.todayInUtcMilliseconds()
                     )
                 )
@@ -106,7 +103,10 @@ class SortFilterBottomSheet : BottomSheetDialogFragment() {
         doneButton.setOnClickListener {
             // Apply filters through ViewModel
             viewModel.applyFilters()
-            Log.d("SortFilterBottomSheet", viewModel.startDate.value.toString() + viewModel.endDate.value.toString() + viewModel.sortType.value.toString() + viewModel.sortOrder.value.toString() + viewModel.transactions.value)
+            Log.d(
+                "SortFilterBottomSheet",
+                viewModel.startDate.value.toString() + viewModel.endDate.value.toString() + viewModel.sortType.value.toString() + viewModel.sortOrder.value.toString() + viewModel.transactions.value
+            )
 
             // Dismiss bottom sheet
             dismiss()
@@ -119,15 +119,11 @@ class SortFilterBottomSheet : BottomSheetDialogFragment() {
     // Helper method to restore previous filter state
     private fun restorePreviousState() {
         // Restore sort type
-        when (viewModel.sortType.value) {
-            SortType.DATE -> sortRadioGroup.check(R.id.sortByDate)
-            null -> sortRadioGroup.check(R.id.sortByDate) // Default
-            SortType.CAPITAL -> TODO()
-            SortType.NAME -> TODO()
+        when (viewModel.sortOrder.value) {
+            SortOrder.DESCENDING -> sortRadioGroup.check(R.id.newestDateHistorySortButton)
+            SortOrder.ASCENDING -> sortRadioGroup.check(R.id.oldestDateHistorySortButton)
+            null -> sortRadioGroup.check(R.id.oldestDateStockSortButton) // Default
         }
-
-        // Restore sort order
-        sortOrderSwitch.isChecked = viewModel.sortOrder.value == SortOrder.DESCENDING
 
         // Restore date range
         viewModel.startDate.value?.let { start ->

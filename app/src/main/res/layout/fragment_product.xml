@@ -1,34 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_product"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ui.product.ProductFragment"
-    android:id="@+id/layout_product">
+    tools:context=".ui.product.ProductFragment">
 
     <androidx.appcompat.widget.SearchView
         android:id="@+id/searchView"
         android:layout_width="0dp"
         android:layout_height="50dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         android:layout_marginStart="8dp"
-        app:iconifiedByDefault="false"
         android:focusable="false"
         android:focusableInTouchMode="false"
+        android:theme="@style/SearchViewStyle"
+        app:iconifiedByDefault="false"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:queryHint="Cari Nama Produk / Supplier..." />
 
     <ImageView
         android:id="@+id/close_icon"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:src="@drawable/ic_close"
-        android:contentDescription="Menu"
         android:layout_margin="8dp"
-        android:padding="8dp"
         android:clickable="true"
+        android:contentDescription="Menu"
         android:focusable="true"
+        android:padding="8dp"
+        android:src="@drawable/ic_close"
         app:layout_constraintStart_toEndOf="@id/searchView"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -39,6 +40,7 @@
         app:cardElevation="5dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -60,45 +62,45 @@
             <TextView
                 android:id="@+id/text_product_detail"
                 style="@style/h4_bold"
-                android:textColor="@color/g_black"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
-                android:textAlignment="textStart"
-                android:text="Daftar Produk"
-                android:maxLines="1"
                 android:ellipsize="end"
-                app:layout_constraintStart_toStartOf="parent"
+                android:maxLines="1"
+                android:text="Daftar Produk"
+                android:textAlignment="textStart"
+                android:textColor="@color/g_black"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
                 android:id="@+id/search_icon"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:src="@drawable/ic_search"
-                android:contentDescription="Menu"
-                android:padding="8dp"
                 android:clickable="true"
+                android:contentDescription="Menu"
                 android:focusable="true"
+                android:padding="8dp"
+                android:src="@drawable/ic_search"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/menu_icon"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
                 android:id="@+id/menu_icon"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_marginEnd="8dp"
-                android:src="@drawable/ic_more_vert"
-                android:contentDescription="Menu"
-                android:padding="8dp"
                 android:clickable="true"
+                android:contentDescription="Menu"
                 android:focusable="true"
+                android:padding="8dp"
+                android:src="@drawable/ic_more_vert"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent" />
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
@@ -107,41 +109,41 @@
         android:id="@+id/swipe_refresh_product"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/searchView"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/searchView">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/product_recycler"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            tools:listitem="@layout/product_list_layout"
+            android:clipToPadding="false"
             android:paddingBottom="8dp"
-            app:layout_constraintTop_toBottomOf="@id/searchView"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:clipToPadding="false"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/searchView"
+            tools:listitem="@layout/product_list_layout" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/button_add_product"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginEnd="30dp"
         android:layout_marginBottom="50dp"
         android:backgroundTint="@color/black"
-        app:tint="@color/white"
         android:contentDescription="Tambah Produk"
-        android:src="@drawable/ic_plus"/>
+        android:src="@drawable/ic_plus"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:tint="@color/white" />
 
     <ProgressBar
         android:id="@+id/product_progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -64,6 +64,15 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="customSpinner" parent="Widget.AppCompat.Spinner">
+        <item name="android:textSize">8sp</item>
+        <item name="android:textColor">@color/text_red</item>
+    </style>
+
+    <style name="SearchViewStyle" parent="Widget.AppCompat.Light.SearchView">
+        <item name="android:textSize">14sp</item>
+    </style>
+
 
     <dimen name="h2TextSize">32sp</dimen>
     <dimen name="h3TextSize">19sp</dimen>

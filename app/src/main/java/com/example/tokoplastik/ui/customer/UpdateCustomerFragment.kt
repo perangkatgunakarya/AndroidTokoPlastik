@@ -22,7 +22,8 @@ import com.example.tokoplastik.viewmodel.CustomerViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
-class UpdateCustomerFragment : BaseFragment<CustomerViewModel, FragmentUpdateCustomerBinding, CustomerRepository>() {
+class UpdateCustomerFragment :
+    BaseFragment<CustomerViewModel, FragmentUpdateCustomerBinding, CustomerRepository>() {
 
     private val args: UpdateCustomerFragmentArgs by navArgs()
 
@@ -35,11 +36,16 @@ class UpdateCustomerFragment : BaseFragment<CustomerViewModel, FragmentUpdateCus
         setupObserver()
     }
 
-    private fun setupViews () {
+    private fun setupViews() {
         val customerId = args.customerId
+
+        binding.buttonBack.setOnClickListener {
+            requireActivity().onBackPressed()
+        }
 
         viewModel.getCustomerById(customerId)
         viewModel.getCustomer.observe(viewLifecycleOwner, { result ->
+            binding.customerNameToolbar.setText(result.data?.data?.name)
             binding.customerNameTextField.setText(result.data?.data?.name)
             binding.addressTextField.setText(result.data?.data?.address)
             binding.phoneTextField.setText(result.data?.data?.phone)
@@ -57,7 +63,11 @@ class UpdateCustomerFragment : BaseFragment<CustomerViewModel, FragmentUpdateCus
             val phoneNumber = binding.phoneTextField.text.toString().trim()
 
             if (phoneNumber.isEmpty()) {
-                Toast.makeText(requireContext(), "Masukkan nomor telepon terlebih dahulu", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    "Masukkan nomor telepon terlebih dahulu",
+                    Toast.LENGTH_SHORT
+                ).show()
             } else {
                 openWhatsApp(phoneNumber)
             }
@@ -71,15 +81,19 @@ class UpdateCustomerFragment : BaseFragment<CustomerViewModel, FragmentUpdateCus
         if (intent.resolveActivity(requireActivity().packageManager) != null) {
             startActivity(intent)
         } else {
-            Toast.makeText(requireContext(), "WhatsApp Business tidak terinstall", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(),
+                "WhatsApp Business tidak terinstall",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
-    private fun setupObserver () {
+    private fun setupObserver() {
         viewModel.updateCustomer.observe(viewLifecycleOwner, { result ->
             binding.updateCustomerProgressBar.visible(result is Resource.Loading)
 
-            when(result) {
+            when (result) {
                 is Resource.Success -> {
                     binding.updateCustomerProgressBar.visible(false)
                     SweetAlertDialog(requireContext(), SweetAlertDialog.SUCCESS_TYPE).apply {
@@ -87,16 +101,19 @@ class UpdateCustomerFragment : BaseFragment<CustomerViewModel, FragmentUpdateCus
                         contentText = "Data customer berhasil dirubah"
                         setConfirmButton("OK") {
                             it.dismissWithAnimation()
-                            val directions = UpdateCustomerFragmentDirections.actionUpdateCustomerFragmentToTransactionFragment()
+                            val directions =
+                                UpdateCustomerFragmentDirections.actionUpdateCustomerFragmentToTransactionFragment()
                             findNavController().navigate(directions)
                         }
                         show()
                     }
                 }
+
                 is Resource.Failure -> {
                     binding.updateCustomerProgressBar.visible(false)
                     handleApiError(result)
                 }
+
                 is Resource.Loading -> {
                     binding.updateCustomerProgressBar.visible(true)
                 }

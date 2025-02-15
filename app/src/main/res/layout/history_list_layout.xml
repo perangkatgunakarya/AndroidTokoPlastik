@@ -89,7 +89,7 @@
         <TextView
             android:id="@+id/cap_lunas"
             style="@style/h3_bold"
-            android:textColor="@color/g_red"
+            android:textColor="@color/text_red"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"

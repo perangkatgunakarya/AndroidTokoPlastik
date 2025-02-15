@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import cn.pedant.SweetAlert.SweetAlertDialog
+import com.example.tokoplastik.R
 import com.example.tokoplastik.adapter.DetailHistoryAdapter
 import com.example.tokoplastik.data.network.CheckoutApi
 import com.example.tokoplastik.data.repository.CheckoutRepository
@@ -30,8 +31,8 @@ class DetailHistoryFragment :
     private var transactionId: Int = -1
     private lateinit var detailTransactions: TransactionDetail
     private lateinit var invoiceGenerator: HistoryReceiptGenerator
-    private lateinit var statusPayment : String
-    private var totalPaid : Int = 0
+    private lateinit var statusPayment: String
+    private var totalPaid: Int = 0
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -41,6 +42,50 @@ class DetailHistoryFragment :
 
         setupViews()
         setupObservers()
+        binding.menuIcon.setOnClickListener {
+            showPopupMenu(it)
+        }
+    }
+
+    private fun showPopupMenu(view: View) {
+        val popupMenu = androidx.appcompat.widget.PopupMenu(requireContext(), view)
+        popupMenu.inflate(R.menu.detail_history_fragment_menu)
+
+        popupMenu.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.button_print -> {
+                    if (::detailTransactions.isInitialized) {
+                        val invoiceText = invoiceGenerator.generateInvoiceText(
+                            detailTransactions,
+                            detailTransactions.transactionProduct,
+                            detailTransactions.id.toString()
+                        )
+                        val file = invoiceGenerator.saveInvoiceToFile(
+                            requireContext(),
+                            invoiceText,
+                            "Invoice_${detailTransactions.id}.txt"
+                        )
+                        invoiceGenerator.shareReceiptTxt(file)
+                    }
+                    true
+                }
+
+                R.id.button_share -> {
+                    if (::detailTransactions.isInitialized) {
+                        val pdfFile = invoiceGenerator.generatedPdfReceipt(
+                            detailTransactions,
+                            detailTransactions.transactionProduct,
+                            detailTransactions.id.toString()
+                        )
+                        invoiceGenerator.shareReceipt(pdfFile)
+                    }
+                    true
+                }
+
+                else -> false
+            }
+        }
+        popupMenu.show()
     }
 
     private fun setupViews() {
@@ -85,18 +130,22 @@ class DetailHistoryFragment :
                             response.data.id.toString()
                         )
 
-                        binding.buttonPrint.setOnClickListener {
-                            val invoiceText = invoiceGenerator.generateInvoiceText(
-                                detailTransactions,
-                                detailTransactions.transactionProduct,
-                                response.data.id.toString()
-                            )
-                            val file = invoiceGenerator.saveInvoiceToFile(requireContext(), invoiceText, "Invoice_${response.data.id}.txt")
-                            invoiceGenerator.shareReceiptTxt(file)
-                        }
-                        binding.buttonShare.setOnClickListener {
-                            invoiceGenerator.shareReceipt(pdfFile)
-                        }
+//                        binding.buttonPrint.setOnClickListener {
+//                            val invoiceText = invoiceGenerator.generateInvoiceText(
+//                                detailTransactions,
+//                                detailTransactions.transactionProduct,
+//                                response.data.id.toString()
+//                            )
+//                            val file = invoiceGenerator.saveInvoiceToFile(
+//                                requireContext(),
+//                                invoiceText,
+//                                "Invoice_${response.data.id}.txt"
+//                            )
+//                            invoiceGenerator.shareReceiptTxt(file)
+//                        }
+//                        binding.buttonShare.setOnClickListener {
+//                            invoiceGenerator.shareReceipt(pdfFile)
+//                        }
                     }
                 }
 
@@ -116,9 +165,11 @@ class DetailHistoryFragment :
                         invoiceGenerator.allProductPrices = response.data
                     }
                 }
+
                 is Resource.Failure -> {
                     handleApiError(result)
                 }
+
                 Resource.Loading -> {}
             }
         }
@@ -134,8 +185,7 @@ class DetailHistoryFragment :
                 statusPayment = "dalam cicilan"
                 totalPaid = amount
                 setPaymentStatus(transactionId, statusPayment, totalPaid)
-            }
-            else {
+            } else {
                 statusPayment = "lunas"
                 totalPaid = amount
                 setPaymentStatus(transactionId, statusPayment, totalPaid)

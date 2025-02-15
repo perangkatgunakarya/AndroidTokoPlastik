@@ -7,6 +7,8 @@
 
     <color name="text_primary">#21292b</color>
     <color name="text_secondary">#7f7f7f</color>
+    <color name="text_green">#027b19</color>
+    <color name="text_red">#b81b1b</color>
 
 
     <color name="black">#111111</color>

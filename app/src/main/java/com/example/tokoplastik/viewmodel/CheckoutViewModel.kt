@@ -76,7 +76,7 @@ class CheckoutViewModel(
     private val _sortType = MutableLiveData(SortType.DATE)
     val sortType: LiveData<SortType> = _sortType
 
-    private val _sortOrder = MutableLiveData(SortOrder.ASCENDING)
+    private val _sortOrder = MutableLiveData(SortOrder.DESCENDING)
     val sortOrder: LiveData<SortOrder> = _sortOrder
 
     private val _isDateSortAscending = MutableLiveData(true)

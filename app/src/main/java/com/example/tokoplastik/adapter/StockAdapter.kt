@@ -4,9 +4,11 @@ import android.content.Context
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import cn.pedant.SweetAlert.SweetAlertDialog
+import com.example.tokoplastik.R
 import com.example.tokoplastik.data.responses.GetProduct
 import com.example.tokoplastik.data.responses.Stock
 import com.example.tokoplastik.databinding.StockListLayoutBinding
@@ -128,15 +130,16 @@ class StockAdapter (
                 latestStockValue.text = stock.latestStock.toString()
 
                 if (stock.type == "restock") {
-                    typeText.text = stock.type
-                    typeText.setTextColor(Color.GREEN)
-                    quantityText.text = stock.quantity.toString()
-                    quantityText.setTextColor(Color.GREEN)
+                    typeText.text = stock.type.replaceFirstChar { it.uppercase() }
+                    typeText.setTextColor(ContextCompat.getColor(binding.root.context, R.color.text_green))
+                    quantityText.text = "+" + stock.quantity.toString()
+                    quantityText.setTextColor(ContextCompat.getColor(binding.root.context, R.color.text_green))
                 } else {
-                    typeText.text = stock.type
+                    typeText.text = stock.type.replaceFirstChar { it.uppercase() }
                     typeText.setTextColor(Color.RED)
-                    quantityText.text = stock.quantity.toString()
-                    quantityText.setTextColor(Color.RED)
+                    typeText.setTextColor(ContextCompat.getColor(binding.root.context, R.color.text_red))
+                    quantityText.text = "-" + stock.quantity.toString()
+                    quantityText.setTextColor(ContextCompat.getColor(binding.root.context, R.color.text_red))
                 }
 
                 currentStockValue.text = stock.currentStock.toString()

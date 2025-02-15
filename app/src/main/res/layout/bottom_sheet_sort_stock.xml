@@ -1,128 +1,172 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    app:layout_behavior="@string/bottom_sheet_behavior"
-    tools:context=".ui.stock.SortStockBottomSheet">
+    app:layout_behavior="@string/bottom_sheet_behavior">
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/sortStockTitleLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:layout_marginVertical="10dp"
             android:text="Sort &amp; Filter"
             android:textColor="@color/black"
             android:textSize="18sp"
-            android:textStyle="bold"/>
-    </RelativeLayout>
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/black"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="15dp"
-        android:text="Urutkan berdasarkan :"
-        android:textColor="@color/black"
-        android:textSize="18sp" />
-
-    <RadioGroup
-        android:id="@+id/sortStockRadioGroup"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp">
-
-        <RadioButton
-            android:id="@+id/sortStockByDate"
+        <View
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Tanggal"/>
-    </RadioGroup>
+            android:layout_height="1dp"
+            android:background="@color/black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <TextView
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Urutkan dari terdahulu"
-        android:textSize="18sp"
-        android:textColor="@color/black"
-        android:layout_marginStart="15dp" />
-
-    <androidx.appcompat.widget.SwitchCompat
-        android:id="@+id/sortStockOrderSwitch"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginEnd="100dp"
-        android:text="Descending Order"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="15dp"
-        android:text="Filter tanggal :"
-        android:textColor="@color/black"
-        android:textSize="18sp" />
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/dateStockRangeButton"
-        style="@style/blueButtonStyle"
-        android:layout_width="200dp"
-        android:layout_height="@dimen/medium_button_height"
-        android:text="Pilih tanggal"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="10dp"/>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_height="match_parent"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="16dp">
-
-        <EditText
-            android:id="@+id/startStockDateEditText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="Start Date"
-            android:focusable="false"/>
+        android:paddingVertical="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sortStockTitleLayout">
 
         <TextView
+            android:id="@+id/sortByText"
+            style="@style/h4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="sampai"
-            android:layout_marginStart="15dp"
-            android:layout_marginEnd="15dp" />
+            android:text="Urutkan berdasarkan"
+            android:textColor="@color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <EditText
-            android:id="@+id/endStockDateEditText"
-            android:layout_width="0dp"
+        <RadioGroup
+            android:id="@+id/sortStockByRadioGroup"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="End Date"
-            android:focusable="false"/>
-    </LinearLayout>
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/sortByText">
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/doneStockButton"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/medium_button_height"
-        android:layout_marginTop="20dp"
-        android:text="Done"
-        style="@style/blueButtonStyle"
-        android:layout_marginEnd="35dp"
-        android:layout_marginBottom="15dp"
-        android:layout_gravity="end"/>
-</LinearLayout>
+            <RadioButton
+                android:id="@+id/newestDateStockSortButton"
+                android:layout_width="0dp"
+                android:layout_height="35dp"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:background="@drawable/radio_selector"
+                android:button="@null"
+                android:gravity="center"
+                android:text="Data Terbaru"
+                android:textColor="@drawable/radio_text_selector" />
+
+            <RadioButton
+                android:id="@+id/oldestDateStockSortButton"
+                android:layout_width="0dp"
+                android:layout_height="35dp"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:background="@drawable/radio_selector"
+                android:button="@null"
+                android:gravity="center"
+                android:text="Data Terlama"
+                android:textColor="@drawable/radio_text_selector" />
+        </RadioGroup>
+
+
+        <TextView
+            android:id="@+id/filterStockDateTitle"
+            style="@style/h4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Filter tanggal"
+            android:textColor="@color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/sortStockByRadioGroup" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/filterStockDateLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/filterStockDateTitle">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/dateStockRangeButton"
+                style="@style/blueButtonStyle"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/ic_date"
+                android:drawableTint="@color/white"
+                android:textColor="@drawable/radio_text_selector"
+                app:layout_constraintEnd_toStartOf="@id/startStockDateEditText"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+                android:id="@+id/startStockDateEditText"
+                style="@style/h4"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:hint="Start Date"
+                app:layout_constraintEnd_toStartOf="@id/stockRangeText"
+                app:layout_constraintStart_toEndOf="@id/dateStockRangeButton"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/stockRangeText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="12dp"
+                android:text="s/d"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/endStockDateEditText"
+                app:layout_constraintStart_toEndOf="@id/startStockDateEditText"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+                android:id="@+id/endStockDateEditText"
+                style="@style/h4"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:focusable="false"
+                android:hint="End Date"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/stockRangeText"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/doneStockButton"
+            style="@style/blueButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/medium_button_height"
+            android:layout_gravity="end"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="15dp"
+            android:text="Done"
+            app:layout_constraintTop_toBottomOf="@id/filterStockDateLayout" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

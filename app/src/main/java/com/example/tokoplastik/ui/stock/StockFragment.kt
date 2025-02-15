@@ -18,6 +18,7 @@ import com.example.tokoplastik.data.repository.StockRepository
 import com.example.tokoplastik.data.responses.Stock
 import com.example.tokoplastik.databinding.FragmentStockBinding
 import com.example.tokoplastik.ui.base.BaseFragment
+import com.example.tokoplastik.ui.product.ProductSortBottomSheet
 import com.example.tokoplastik.util.Resource
 import com.example.tokoplastik.util.handleApiError
 import com.example.tokoplastik.util.visible
@@ -50,6 +51,10 @@ class StockFragment : BaseFragment<StockViewModel, FragmentStockBinding, StockRe
             bottomSheet.show(childFragmentManager, "RESTOCK_QUANTITY_BOTTOM_SHEET")
         }
 
+        binding.menuIcon.setOnClickListener {
+            showPopupMenu(it)
+        }
+
         viewModel.addStockStatus.observe(viewLifecycleOwner) {
             if (it == true) {
                 SweetAlertDialog(requireContext(), SweetAlertDialog.SUCCESS_TYPE).apply {
@@ -69,7 +74,23 @@ class StockFragment : BaseFragment<StockViewModel, FragmentStockBinding, StockRe
         setupSwipeRefresh()
         setupRecyclerView()
         observeStocks()
-        setupSortingButton()
+    }
+
+    private fun showPopupMenu(view: View) {
+        val popupMenu = androidx.appcompat.widget.PopupMenu(requireContext(), view)
+        popupMenu.inflate(R.menu.stock_fragment_menu)
+        popupMenu.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.action_filter -> {
+                    val bottomSheet = SortStockBottomSheet()
+                    bottomSheet.show(childFragmentManager, "STOCK_SORT_BOTTOM_SHEET")
+                    true
+                }
+
+                else -> false
+            }
+        }
+        popupMenu.show()
     }
 
     private fun setupSwipeRefresh() {
@@ -111,10 +132,12 @@ class StockFragment : BaseFragment<StockViewModel, FragmentStockBinding, StockRe
                         stockAdapter.updateList(stocks)
                     }
                 }
+
                 is Resource.Failure -> {
                     binding.stockProgressBar.visible(false)
                     handleApiError(result)
                 }
+
                 Resource.Loading -> {
                     binding.stockProgressBar.visible(true)
                 }
@@ -123,13 +146,6 @@ class StockFragment : BaseFragment<StockViewModel, FragmentStockBinding, StockRe
 
         viewModel.isDateSortAscending.observe(viewLifecycleOwner) { it ->
             stockAdapter.sortByDate(it)
-        }
-    }
-
-    private fun setupSortingButton() {
-        binding.sortFilterFab.setOnClickListener {
-            val bottomSheet = SortStockBottomSheet()
-            bottomSheet.show(childFragmentManager, "SORT_STOCK_BOTTOM_SHEET")
         }
     }
 
