@@ -126,6 +126,7 @@ class CheckoutFragment :
 
                 if (selectedProduct != null) {
                     viewModel.selectProduct(selectedProduct.id)
+                    Log.d("selected product price", viewModel.selectedProductPrices.toString())
                     if (viewModel.selectedProductPrices.isNotEmpty()) {
                         hideKeyboard()
                     } else {

@@ -4,6 +4,7 @@ import android.R
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,12 +41,15 @@ class CartAdapter(
             fun bind(item: CartItem) {
                 binding.apply {
                     productText.text = item.product?.data?.product?.name
+                    modalPrice.text = "Modal : ${item.product?.data?.product?.newestCapitalPrice.toString()}"
+                    supplierText.text = item.product?.data?.product?.supplier
 
                     val unitsAdapter = ArrayAdapter(
                         itemView.context,
                         android.R.layout.simple_spinner_item,
                         item.productPrice.map { it.unit }
                     )
+                    Log.d("product unit", "${item.productPrice.map { it.unit }}")
                     unitsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                     unitsSpinner.adapter = unitsAdapter
 

@@ -130,6 +130,8 @@ class StockFragment : BaseFragment<StockViewModel, FragmentStockBinding, StockRe
                     result.data?.let { response ->
                         stocks = response.data
                         stockAdapter.updateList(stocks)
+                        binding.textStock.text = "Stock of ${response.data[0].product?.name}"
+                        binding.textSupplier.text = "(${response.data[0].product?.supplier})"
                     }
                 }
 
