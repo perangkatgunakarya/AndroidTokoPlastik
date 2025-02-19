@@ -6,4 +6,12 @@
     <item
         android:id="@+id/button_print"
         android:title="Print" />
+
+    <item
+        android:id="@+id/button_lunas"
+        android:title="Angsuran" />
+
+    <item
+        android:id="@+id/button_due_date"
+        android:title="Edit Jatuh Tempo" />
 </menu>

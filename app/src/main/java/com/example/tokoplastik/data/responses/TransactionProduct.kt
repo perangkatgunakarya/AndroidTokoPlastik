@@ -121,5 +121,7 @@ data class TransactionDetailProduct(
 
 data class PaymentStatusUpdateRequest(
     val paid : Int?,
+    @SerializedName("due_date")
+    val dueDate: String?,
     val status: String
 )

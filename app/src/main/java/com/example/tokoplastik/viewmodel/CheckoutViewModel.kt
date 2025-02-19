@@ -208,9 +208,9 @@ class CheckoutViewModel(
         }
     }
 
-    fun updatePaymentStatus(transactionId: Int, status: String, paid: Int?) = viewModelScope.launch {
+    fun updatePaymentStatus(transactionId: Int, status: String, paid: Int?, dueDate: String?) = viewModelScope.launch {
         _paymentStatus.value = Resource.Loading
-        val statusUpdateRequest = PaymentStatusUpdateRequest(paid, status)
+        val statusUpdateRequest = PaymentStatusUpdateRequest(paid, dueDate, status)
         _paymentStatus.value = repository.setPaymentStatus(transactionId, statusUpdateRequest)
     }
 

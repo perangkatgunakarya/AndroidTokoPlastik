@@ -15,6 +15,7 @@ import com.example.tokoplastik.data.repository.CheckoutRepository
 import com.example.tokoplastik.data.responses.TransactionDetail
 import com.example.tokoplastik.databinding.FragmentDetailHistoryBinding
 import com.example.tokoplastik.ui.base.BaseFragment
+import com.example.tokoplastik.ui.transaction.DueDateBottomSheet
 import com.example.tokoplastik.ui.transaction.PaidBottomSheet
 import com.example.tokoplastik.util.HistoryReceiptGenerator
 import com.example.tokoplastik.util.Resource
@@ -82,6 +83,33 @@ class DetailHistoryFragment :
                     true
                 }
 
+                R.id.button_lunas -> {
+                    if (::detailTransactions.isInitialized) {
+                        if (detailTransactions.paymentStatus != "lunas") {
+                            val bottomSheet = CreditBottomSheet()
+                            bottomSheet.show(childFragmentManager, "CREDIT_BOTTOM_SHEET")
+                        }
+                    }
+                    true
+                }
+
+                R.id.button_due_date -> {
+                    if (::detailTransactions.isInitialized) {
+                        if (detailTransactions.paymentStatus != "lunas") {
+                            val bottomSheet = DueDateBottomSheet()
+                            bottomSheet.show(childFragmentManager, "DUE_DATE_BOTTOM_SHEET")
+
+                            viewModel.dueDate.observe(viewLifecycleOwner) { date ->
+                                if (date != viewModel.transactionDetail.value?.data?.data?.dueDate) {
+                                    setPaymentStatus(transactionId, detailTransactions.paymentStatus, totalPaid, date)
+                                }
+                            }
+                        }
+                    }
+
+                    true
+                }
+
                 else -> false
             }
         }
@@ -97,11 +125,6 @@ class DetailHistoryFragment :
         binding.buttonBack.setOnClickListener {
             requireActivity().onBackPressed()
         }
-
-        binding.buttonLunas.setOnClickListener {
-            val bottomSheet = CreditBottomSheet()
-            bottomSheet.show(childFragmentManager, "CREDIT_BOTTOM_SHEET")
-        }
     }
 
     private fun setupObservers() {
@@ -112,11 +135,11 @@ class DetailHistoryFragment :
                     result.data?.let { response ->
                         detailTransactions = response.data
 
-                        if (detailTransactions.paymentStatus == "lunas") {
-                            binding.buttonLunas.visibility = View.GONE
-                        } else {
-                            binding.buttonLunas.visibility = View.VISIBLE
-                        }
+//                        if (detailTransactions.paymentStatus == "lunas") {
+//                            binding.buttonLunas.visibility = View.GONE
+//                        } else {
+//                            binding.buttonLunas.visibility = View.VISIBLE
+//                        }
 
                         (binding.historyDetailRecycler.adapter as DetailHistoryAdapter).updateList(
                             detailTransactions.transactionProduct,
@@ -179,16 +202,16 @@ class DetailHistoryFragment :
             if (amount == 0) {
                 statusPayment = "belum lunas"
                 totalPaid = 0
-                setPaymentStatus(transactionId, statusPayment, totalPaid)
+                setPaymentStatus(transactionId, statusPayment, totalPaid, viewModel.transactionDetail.value?.data?.data?.dueDate)
             }
             if (amount > 0 && amount < detailTransactions.total) {
                 statusPayment = "dalam cicilan"
                 totalPaid = amount
-                setPaymentStatus(transactionId, statusPayment, totalPaid)
+                setPaymentStatus(transactionId, statusPayment, totalPaid, viewModel.transactionDetail.value?.data?.data?.dueDate)
             } else {
                 statusPayment = "lunas"
                 totalPaid = amount
-                setPaymentStatus(transactionId, statusPayment, totalPaid)
+                setPaymentStatus(transactionId, statusPayment, totalPaid, viewModel.transactionDetail.value?.data?.data?.dueDate)
             }
         }
     }
@@ -203,7 +226,7 @@ class DetailHistoryFragment :
 
                 setConfirmButton("LUNAS") {
                     dismissWithAnimation()
-                    setPaymentStatus(transactionId, "lunas", 0)
+                    setPaymentStatus(transactionId, "lunas", 0, null)
                 }
 
                 setCancelButton("Cancel") {
@@ -215,7 +238,7 @@ class DetailHistoryFragment :
         }
     }
 
-    private fun setPaymentStatus(transactionId: Int, status: String, paid: Int) {
+    private fun setPaymentStatus(transactionId: Int, status: String, paid: Int, dueDate: String?) {
         if (!isAdded) return
 
         context?.let { ctx ->
@@ -227,7 +250,7 @@ class DetailHistoryFragment :
                 show()
             }
 
-            viewModel.updatePaymentStatus(transactionId, status, paid)
+            viewModel.updatePaymentStatus(transactionId, status, paid, dueDate)
 
             viewModel.paymentStatus.observe(viewLifecycleOwner) { result ->
                 if (!isAdded) {
@@ -261,7 +284,7 @@ class DetailHistoryFragment :
                 SweetAlertDialog.SUCCESS_TYPE
             ).apply {
                 titleText = "Berhasil"
-                contentText = "Status pembayaran berhasil diperbarui."
+                contentText = "Berhasil diperbarui."
 
                 setConfirmButton("OK") {
                     dismissWithAnimation()
