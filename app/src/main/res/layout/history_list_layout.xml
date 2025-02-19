@@ -14,27 +14,42 @@
         android:paddingHorizontal="8dp"
         android:paddingVertical="16dp">
 
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/history_initial"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/circle_background"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <TextView
             android:id="@+id/customer_text"
             style="@style/h4_bold"
             android:layout_width="0dp"
+            android:layout_marginStart="10dp"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
             android:paddingBottom="2dp"
             android:text="Customer"
             android:textColor="@color/text_primary"
-            android:layout_marginEnd="8dp"
             app:layout_constraintEnd_toStartOf="@id/cap_lunas"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/history_initial"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/date_text"
             style="@style/p"
+            android:layout_marginStart="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingBottom="2dp"
             android:text="19 Okt 2024"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/history_initial"
             app:layout_constraintTop_toBottomOf="@id/customer_text" />
 
         <TextView
@@ -50,38 +65,39 @@
         <TextView
             android:id="@+id/balance_text"
             style="@style/p"
+            android:layout_marginStart="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Sisa"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/date_text"/>
+            app:layout_constraintStart_toEndOf="@id/history_initial"
+            app:layout_constraintTop_toBottomOf="@id/date_text" />
 
         <TextView
             android:id="@+id/balance_value"
             style="@style/p_bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Rp0"
             android:layout_marginStart="4dp"
+            android:text="Rp0"
             app:layout_constraintStart_toEndOf="@id/balance_text"
-            app:layout_constraintTop_toBottomOf="@id/date_text"/>
+            app:layout_constraintTop_toBottomOf="@id/date_text" />
 
         <TextView
             android:id="@+id/total_text"
             style="@style/p"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="dari total"
             android:layout_marginStart="4dp"
+            android:text="dari total"
             app:layout_constraintStart_toEndOf="@id/balance_value"
-            app:layout_constraintTop_toBottomOf="@id/date_text"/>
+            app:layout_constraintTop_toBottomOf="@id/date_text" />
 
         <TextView
             android:id="@+id/total_value"
             style="@style/p_bold"
-            android:layout_marginStart="4dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
             android:text="Rp0"
             app:layout_constraintStart_toEndOf="@id/total_text"
             app:layout_constraintTop_toBottomOf="@id/date_text" />
@@ -89,13 +105,12 @@
         <TextView
             android:id="@+id/cap_lunas"
             style="@style/h3_bold"
-            android:textColor="@color/text_red"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             android:text="PAID"
-            />
+            android:textColor="@color/text_red"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
