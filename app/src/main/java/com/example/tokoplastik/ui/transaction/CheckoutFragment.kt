@@ -126,29 +126,33 @@ class CheckoutFragment :
 
                 if (selectedProduct != null) {
                     viewModel.selectProduct(selectedProduct.id)
-                    if (viewModel.selectedProductPrices.isNotEmpty()) {
-                        hideKeyboard()
-                    } else {
-                        SweetAlertDialog(requireContext(), SweetAlertDialog.ERROR_TYPE).apply {
-                            titleText = "No Price Found"
-                            contentText = "Produk ini belum memiliki data harga. Silakan tambahkan harga terlebih dahulu."
-                            setConfirmButton("OK") {
-                                dismissWithAnimation()
-                                binding.productDropdown.text = null
+
+                    // Observe the loading state
+                    viewModel.selectedProductPricesLoaded.observe(viewLifecycleOwner) { loaded ->
+                        if (loaded) {
+                            if (viewModel.selectedProductPrices.isNotEmpty()) {
+                                hideKeyboard()
+                                binding.productDropdown.clearFocus()
+                            } else {
+                                SweetAlertDialog(requireContext(), SweetAlertDialog.ERROR_TYPE).apply {
+                                    titleText = "No Price Found"
+                                    contentText = "Produk ini belum memiliki data harga. Silakan tambahkan harga terlebih dahulu."
+                                    setConfirmButton("OK") {
+                                        dismissWithAnimation()
+                                        binding.productDropdown.text = null
+                                        viewModel.selectedProduct = null
+                                        viewModel.selectedProductPrices = emptyList()
+                                    }
+                                    setCancelable(false)
+                                    setCanceledOnTouchOutside(false)
+                                    show()
+                                }
                             }
-                            setCancelable(false)
-                            setCanceledOnTouchOutside(false)
-                            show()
+                            // Reset the loading state for next selection
+                            viewModel.resetProductPricesLoadedState()
                         }
                     }
                 }
-                viewModel.selectedProduct = null
-                viewModel.selectedProductPrices = emptyList()
-                binding.productDropdown.text = null
-                binding.productDropdown.clearFocus()
-                item = null
-                selectedItem = null
-                selectedProductId = null
             }
 
             binding.buttonAddProduct.setOnClickListener {

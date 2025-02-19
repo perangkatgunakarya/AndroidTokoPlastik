@@ -66,6 +66,9 @@ class CheckoutViewModel(
     val paymentStatus: LiveData<Resource<PaymentStatusUpdateResponses>>
         get() = _paymentStatus
 
+    private val _selectedProductPricesLoaded = MutableLiveData<Boolean>()
+    val selectedProductPricesLoaded: LiveData<Boolean> = _selectedProductPricesLoaded
+
     var selectedProduct: Resource<GetProductByIdResponses>? = null
     private var selectedProductPriceProducts: Resource<ProductPricesResponses>? = null
     var selectedProductPrices: List<ProductPrice> = emptyList()
@@ -124,7 +127,12 @@ class CheckoutViewModel(
             selectedProduct = repository.getProductDetail(position)
             selectedProductPriceProducts = repository.getProductPrices(position)
             selectedProductPrices = selectedProductPriceProducts?.data?.data ?: emptyList()
+            _selectedProductPricesLoaded.value = true
         }
+    }
+
+    fun resetProductPricesLoadedState() {
+        _selectedProductPricesLoaded.value = false
     }
 
     fun addSelectedProductToCart() {
