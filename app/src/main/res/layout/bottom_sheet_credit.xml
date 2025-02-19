@@ -38,74 +38,73 @@
         android:layout_marginStart="25dp"
         android:layout_marginTop="15dp"
         android:text="Total Transaksi"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/count_total"
+        style="@style/h3_bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="25dp"
-        android:text="Rp. 150,000"
-        style="@style/h3_bold"
+        android:text="Rp"
         android:textColor="#7F7C7B7B" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_marginHorizontal="25dp">
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:orientation="vertical">
+
             <TextView
                 android:id="@+id/paid_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="25dp"
                 android:layout_marginTop="15dp"
-                android:text="Telah Terbayar"/>
+                android:text="Telah Terbayar" />
 
             <TextView
                 android:id="@+id/paid_total"
+                style="@style/h3_bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="25dp"
-                android:text="Rp. 150,000"
-                style="@style/h3_bold"
+                android:text="Rp"
                 android:textColor="#7C7B7B7F" />
 
             <TextView
                 android:id="@+id/paid_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="25dp"
                 android:layout_marginTop="5dp"
-                android:text="Terakhir bayar : 12 Oktober 2023"
-                android:textSize="10dp"/>
+                android:text="Terakhir bayar : "
+                android:textSize="10dp" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginStart="45dp">
+            android:layout_weight="1"
+            android:orientation="vertical">
+
             <TextView
                 android:id="@+id/remaining_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="25dp"
                 android:layout_marginTop="15dp"
                 android:text="Kekurangan"
-                app:layout_constraintTop_toTopOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/remaining_total"
+                style="@style/h3_bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="25dp"
-                android:text="Rp. 150,000"
-                style="@style/h3_bold"
+                android:text="Rp"
                 android:textColor="#ec5624" />
         </LinearLayout>
     </LinearLayout>
@@ -116,29 +115,35 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="25dp"
         android:layout_marginTop="20dp"
-        android:text="Masukkan Nominal Pembayaran"
-        app:layout_constraintTop_toTopOf="parent"/>
+        android:text="Nominal Pembayaran"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
+
         <EditText
-            style="@style/h4"
             android:id="@+id/paid_input"
-            android:layout_width="250dp"
+            style="@style/h4"
+            android:layout_width="match_parent"
             android:layout_height="@dimen/edit_text_height"
-            android:layout_marginStart="25dp"
+            android:layout_marginHorizontal="25dp"
+            android:hint="Masukkan Nominal Pembayaran"
             android:inputType="number"
-            android:hint="Rp. 0"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/paid_button"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/medium_button_height"
-            android:text="Bayar"
             style="@style/blueButtonStyle"
-            android:layout_marginStart="25dp"/>
-    </LinearLayout>
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/medium_button_height"
+            android:layout_marginHorizontal="25dp"
+            android:layout_marginTop="16dp"
+            android:text="Bayar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/paid_input" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>

@@ -18,6 +18,13 @@ class HistoryAdapter : RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
     private var filteredList = mutableListOf<AllTransaction>()
     private var onItemClickListener: ((AllTransaction) -> Unit)? = null
 
+    private fun getInitials(customerName: String): String {
+        return customerName.split(" ")
+            .take(2)
+            .mapNotNull { it.firstOrNull()?.uppercase() }
+            .joinToString("")
+    }
+
     fun setOnItemClickListener(listener: (AllTransaction) -> Unit) {
         onItemClickListener = listener
     }
@@ -81,6 +88,9 @@ class HistoryAdapter : RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
             binding.apply {
                 customerText.text = "${transaction.customer.name}"
 
+                val initial = getInitials(transaction.customer.name)
+                historyInitial.text = initial
+
                 val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'")
                 parser.timeZone = TimeZone.getTimeZone("UTC")
                 val date = parser.parse(transaction.createdAt)
@@ -91,6 +101,10 @@ class HistoryAdapter : RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
                     groupingSeparator = '.'
                 }
                 val formatter = DecimalFormat("#,###", symbols)
+
+                val formattedBalance = formatter.format(transaction.total - transaction.paid)
+                balanceValue.text = "Rp$formattedBalance"
+
                 val formattedTotal = formatter.format(transaction.total)
                 totalValue.text = "Rp$formattedTotal"
 
