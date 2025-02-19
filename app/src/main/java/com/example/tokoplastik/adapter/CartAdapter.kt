@@ -49,7 +49,6 @@ class CartAdapter(
                         android.R.layout.simple_spinner_item,
                         item.productPrice.map { it.unit }
                     )
-                    Log.d("product unit", "${item.productPrice.map { it.unit }}")
                     unitsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                     unitsSpinner.adapter = unitsAdapter
 
