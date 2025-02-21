@@ -4,6 +4,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
 import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 
 fun EditText.setNumberFormatter() {
     this.addTextChangedListener(object : TextWatcher {
@@ -15,10 +16,13 @@ fun EditText.setNumberFormatter() {
             this@setNumberFormatter.removeTextChangedListener(this)
 
             try {
-                val value = s.toString().replace(",", "")
+                val value = s.toString().replace(".", "")
 
                 if (value.isNotEmpty()) {
-                    val formatter = DecimalFormat("#,###")
+                    val symbols = DecimalFormatSymbols().apply {
+                        groupingSeparator = '.'
+                    }
+                    val formatter = DecimalFormat("#,###", symbols)
                     val formattedString = formatter.format(value.toLong())
 
                     this@setNumberFormatter.setText(formattedString)
@@ -34,5 +38,5 @@ fun EditText.setNumberFormatter() {
 }
 
 fun EditText.getRawValue(): Int {
-    return this.text.toString().replace(",", "").toIntOrNull() ?: 0
+    return this.text.toString().replace(".", "").toIntOrNull() ?: 0
 }

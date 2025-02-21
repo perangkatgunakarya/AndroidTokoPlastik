@@ -38,15 +38,15 @@
         android:layout_marginStart="25dp"
         android:layout_marginTop="15dp"
         android:text="Perlu dibayar"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/count_total"
+        style="@style/h3_bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="25dp"
         android:text="Rp. 150,000"
-        style="@style/h3_bold"
         android:textColor="#ec5624" />
 
     <TextView
@@ -54,29 +54,30 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="25dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="16dp"
         android:text="Masukkan Nominal Pembayaran"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_marginHorizontal="25dp"
+        android:orientation="vertical">
+
         <EditText
             android:id="@+id/paid_input"
-            android:layout_width="250dp"
+            android:layout_width="match_parent"
             android:layout_height="@dimen/edit_text_height"
-            android:layout_marginStart="25dp"
-            android:inputType="number"
-            android:hint="Rp. 0"/>
+            android:hint="Rp"
+            android:inputType="number" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/paid_button"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/medium_button_height"
-            android:text="Bayar"
             style="@style/blueButtonStyle"
-            android:layout_marginStart="25dp"/>
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/medium_button_height"
+            android:layout_marginTop="16dp"
+            android:text="Bayar" />
     </LinearLayout>
 
 </LinearLayout>

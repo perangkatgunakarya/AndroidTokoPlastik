@@ -8,67 +8,92 @@
     app:layout_behavior="@string/bottom_sheet_behavior"
     tools:context=".ui.stock.RestockQuantityBottomSheet">
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/sortHistoryTitleLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="Jumlah Restock"
+            android:layout_marginVertical="10dp"
+            android:text="Restock Barang"
             android:textColor="@color/black"
             android:textSize="18sp"
-            android:textStyle="bold"/>
-    </RelativeLayout>
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/black"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="15dp"
-        android:text="Masukkan jumlah restock dalam satuan terkecil"
-        android:textColor="@color/black"
-        android:textSize="15sp" />
-
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="20dp"
-        android:layout_marginHorizontal="15dp">
-
-        <EditText
-            android:id="@+id/restockQuantity"
-            android:layout_width="250dp"
-            android:layout_height="@dimen/edit_text_height"
-            android:hint="Jumlah Restock"
-            android:inputType="number"/>
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginVertical="24dp">
 
         <TextView
-            android:id="@+id/restockUnit"
+            android:id="@+id/restock_title"
+            style="@style/h4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="pcs"
-            android:textSize="20sp"
-            android:layout_marginStart="35dp"/>
+            android:text="Masukkan jumlah restock barang \n(satuan terkecil)"
+            android:textColor="@color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    </LinearLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/restock_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/restock_title">
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/saveStockButton"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/medium_button_height"
-        android:layout_marginTop="20dp"
-        android:text="Simpan"
-        style="@style/blueButtonStyle"
-        android:layout_marginEnd="35dp"
-        android:layout_marginBottom="15dp"
-        android:layout_gravity="end"/>
+            <EditText
+                android:id="@+id/restockQuantity"
+                style="@style/h4"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/edit_text_height"
+                android:layout_marginEnd="12dp"
+                android:hint="Jumlah Restock Barang"
+                android:inputType="number"
+                app:layout_constraintEnd_toStartOf="@id/restockUnit"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/restockUnit"
+                style="@style/h3_bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:text="pcs"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/saveStockButton"
+            style="@style/blueButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/medium_button_height"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:text="Restock Barang"
+            app:layout_constraintTop_toBottomOf="@id/restock_layout" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>

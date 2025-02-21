@@ -11,9 +11,12 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.tokoplastik.R
 import com.example.tokoplastik.viewmodel.CheckoutViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import java.util.TimeZone
 
 class DueDateBottomSheet : BottomSheetDialogFragment() {
     private lateinit var viewModel: CheckoutViewModel
@@ -39,6 +42,10 @@ class DueDateBottomSheet : BottomSheetDialogFragment() {
         dateButton = view.findViewById(R.id.dateButton)
         dateEditText = view.findViewById(R.id.dateEditText)
         doneButton = view.findViewById(R.id.doneButton)
+
+        viewModel.transactionDetail.observe(viewLifecycleOwner) { transactionDetail ->
+            dateEditText.setText(transactionDetail.data?.data?.dueDate)
+        }
 
         dateButton.setOnClickListener {
             val year = calendar.get(Calendar.YEAR)

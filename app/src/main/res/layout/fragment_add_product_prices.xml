@@ -32,7 +32,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/edit_text_height"
                 android:layout_marginBottom="12dp"
-                android:hint="Isi per Unit"
+                android:hint="Isi Unit Terkecil per Satuan"
                 android:inputType="number" />
 
             <EditText
@@ -41,7 +41,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/edit_text_height"
                 android:layout_marginBottom="12dp"
-                android:hint="Price"
+                android:hint="Harga per Satuan"
                 android:inputType="numberDecimal" />
 
             <androidx.appcompat.widget.AppCompatButton

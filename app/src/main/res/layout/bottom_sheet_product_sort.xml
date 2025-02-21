@@ -19,7 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginVertical="10dp"
-            android:text="Sort Product"
+            android:text="Urutkan Produk"
             android:textColor="@color/black"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -136,7 +136,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/medium_button_height"
             android:layout_marginTop="16dp"
-            android:text="Sort"
+            android:text="Urutkan"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/sort_radio_group_layout" />
     </androidx.constraintlayout.widget.ConstraintLayout>

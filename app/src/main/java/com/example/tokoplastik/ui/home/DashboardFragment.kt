@@ -26,11 +26,15 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.math.abs
 
-class DashboardFragment : BaseFragment <DashboardViewModel, FragmentDashboardBinding, DashboardRepository> () {
+class DashboardFragment :
+    BaseFragment<DashboardViewModel, FragmentDashboardBinding, DashboardRepository>() {
 
     private lateinit var lineChart: LineChart
 
@@ -38,7 +42,8 @@ class DashboardFragment : BaseFragment <DashboardViewModel, FragmentDashboardBin
         super.onViewCreated(view, savedInstanceState)
 
         binding.homeProgressBar.visible(false)
-        binding.todayDate.text = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(Date())
+        binding.todayDate.text =
+            SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(Date())
         binding.userName.text = "Hello, ${runBlocking { userPreferences.username.first() }}"
 
         lineChart = binding.chart
@@ -57,10 +62,12 @@ class DashboardFragment : BaseFragment <DashboardViewModel, FragmentDashboardBin
                     viewModel.getChart()
                     binding.TitleTextView.text = "Grafik Penjualan Harian"
                 }
+
                 binding.radioButtonMonthly.id -> {
                     viewModel.getChartMonthly()
                     binding.TitleTextView.text = "Grafik Penjualan Bulanan"
                 }
+
                 else -> {
                     Log.d("DashboardFragment", "No radio button selected")
                 }
@@ -88,16 +95,40 @@ class DashboardFragment : BaseFragment <DashboardViewModel, FragmentDashboardBin
         viewModel.dashboardData.observe(viewLifecycleOwner) {
             when (it) {
                 is Resource.Success -> {
+                    val symbols = DecimalFormatSymbols(Locale.getDefault()).apply {
+                        groupingSeparator = '.'
+                    }
+                    val formatter = DecimalFormat("#,###", symbols)
+
                     binding.homeProgressBar.visible(false)
                     binding.topText.text = it.data?.data?.topProduct?.product?.name
-                    binding.omzetText.text = it.data?.data?.todayIncome.toString()
-                    binding.profitText.text = it.data?.data?.monthlyProfit.toString()
                     binding.unpaidText.text = it.data?.data?.unpaidOrder.toString()
+
+                    if (it.data?.data?.todayIncome!! < 0) {
+                        val formattedOmzet = formatter.format(abs(it.data.data.todayIncome))
+                        binding.omzetText.text = "-Rp$formattedOmzet"
+                    } else {
+                        val formattedOmzet = formatter.format(it.data.data.todayIncome)
+                        binding.omzetText.text = "Rp$formattedOmzet"
+                    }
+
+
+
+                    if (it.data?.data?.monthlyProfit!! < 0) {
+                        val formattedProfit = formatter.format(abs(it.data.data.monthlyProfit))
+                        binding.profitText.text = "-Rp${formattedProfit}"
+                    } else {
+                        val formattedProfit = formatter.format(it.data.data.monthlyProfit)
+                        binding.profitText.text = "Rp$formattedProfit"
+                    }
+
                 }
+
                 is Resource.Failure -> {
                     binding.homeProgressBar.visible(false)
                     handleApiError(it)
                 }
+
                 is Resource.Loading -> {}
             }
         }
@@ -121,6 +152,7 @@ class DashboardFragment : BaseFragment <DashboardViewModel, FragmentDashboardBin
                         }
                     }
                 }
+
                 "Cost" -> {
                     series.points.forEach { point ->
                         if (range.toString() == "daily") {
@@ -144,7 +176,7 @@ class DashboardFragment : BaseFragment <DashboardViewModel, FragmentDashboardBin
         return date.time.toFloat()
     }
 
-    private fun dateValueFormatter() : ValueFormatter {
+    private fun dateValueFormatter(): ValueFormatter {
         val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         return object : ValueFormatter() {
             override fun getFormattedValue(value: Float): String {
@@ -160,7 +192,7 @@ class DashboardFragment : BaseFragment <DashboardViewModel, FragmentDashboardBin
         return date.time.toFloat()
     }
 
-    private fun dateValueFormatterMonthly() : ValueFormatter {
+    private fun dateValueFormatterMonthly(): ValueFormatter {
         val sdf = SimpleDateFormat("yyyy-MM", Locale.getDefault())
         return object : ValueFormatter() {
             override fun getFormattedValue(value: Float): String {
@@ -170,7 +202,12 @@ class DashboardFragment : BaseFragment <DashboardViewModel, FragmentDashboardBin
         }
     }
 
-    private fun setupLineChart(chart: LineChart, omzet: List<Entry>, cost: List<Entry>, range: String) {
+    private fun setupLineChart(
+        chart: LineChart,
+        omzet: List<Entry>,
+        cost: List<Entry>,
+        range: String
+    ) {
         val omzetDataSet = LineDataSet(omzet, "Omzet").apply {
             color = android.graphics.Color.BLUE
             valueTextColor = android.graphics.Color.BLACK

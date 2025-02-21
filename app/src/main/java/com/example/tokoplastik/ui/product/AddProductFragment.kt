@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.EditText
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.example.tokoplastik.data.network.AddProductApi
@@ -13,7 +14,9 @@ import com.example.tokoplastik.data.repository.AddProductRepository
 import com.example.tokoplastik.databinding.FragmentAddProductBinding
 import com.example.tokoplastik.ui.base.BaseFragment
 import com.example.tokoplastik.util.Resource
+import com.example.tokoplastik.util.getRawValue
 import com.example.tokoplastik.util.handleApiError
+import com.example.tokoplastik.util.setNumberFormatter
 import com.example.tokoplastik.util.visible
 import com.example.tokoplastik.viewmodel.AddProductViewModel
 import com.example.tokoplastik.viewmodel.ProductViewModel
@@ -25,8 +28,13 @@ class AddProductFragment : BaseFragment<AddProductViewModel, FragmentAddProductB
     private val units = listOf("pcs", "unit", "pack", "unit", "buah", "pasang", "kotak", "lusin", "lembar", "keping", "batang", "bungkus", "potong", "tablet", "ekor", "rim", "karat", "botol", "butir", "roll", "dus", "karung", "koli", "sak", "bal", "kaleng", "set", "slop", "gulung", "ton", "kg", "gram", "mg", "meter", "m2", "m3", "inch", "cc", "liter")
     private var selectedUnit: String? = null
 
+    private lateinit var capitalPriceInput: EditText
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        capitalPriceInput = view.findViewById(com.example.tokoplastik.R.id.capital_price_text_field)
+        capitalPriceInput.setNumberFormatter()
 
         binding.addProductProgressBar.visible(false)
 
@@ -38,7 +46,7 @@ class AddProductFragment : BaseFragment<AddProductViewModel, FragmentAddProductB
         binding.buttonAddProduct.setOnClickListener {
             val name = binding.productNameTextField.text.toString()
             val supplier = binding.supplierTextField.text.toString()
-            val capitalPrice = binding.capitalPriceTextField.text.toString()
+            val capitalPrice = binding.capitalPriceTextField.getRawValue().toString()
             val lowesUnit = binding.unitDropdown.text.toString()
             val notes = binding.notesTextField.text.toString()
 

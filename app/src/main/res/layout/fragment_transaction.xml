@@ -20,21 +20,60 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.91" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.09" />
+    <androidx.cardview.widget.CardView
+        android:id="@+id/toolbar_transaction"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        app:cardElevation="5dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_inside_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.09" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_inside_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.91" />
+
+            <TextView
+                android:id="@+id/text_product_detail"
+                style="@style/h4_bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="Buat Transaksi"
+                android:textAlignment="textStart"
+                android:textColor="@color/g_black"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
 
     <TextView
         android:id="@+id/transaction_fragment_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:text="@string/transaction_fragment_title"
         android:textSize="@dimen/pTextSize"
         app:layout_constraintStart_toStartOf="@id/guideline"
-        app:layout_constraintTop_toTopOf="@id/guideline3" />
+        app:layout_constraintTop_toBottomOf="@id/toolbar_transaction" />
 
     <AutoCompleteTextView
         android:id="@+id/customer_dropdown"
@@ -50,12 +89,12 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button_add_customer"
-        android:layout_width="44dp"
-        android:layout_height="46dp"
+        android:layout_width="36dp"
+        android:layout_height="40dp"
         android:layout_marginTop="16dp"
-        android:drawableTop="@drawable/ic_plus"
+        android:drawableTop="@drawable/ic_plus_button"
         android:drawableTint="@color/black"
-        android:paddingTop="11dp"
+        android:paddingTop="10dp"
         app:layout_constraintEnd_toStartOf="@id/guideline2"
         app:layout_constraintTop_toBottomOf="@id/transaction_fragment_title" />
 

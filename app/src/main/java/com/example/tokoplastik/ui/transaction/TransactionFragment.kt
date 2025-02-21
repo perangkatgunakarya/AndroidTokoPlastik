@@ -29,6 +29,16 @@ class TransactionFragment : BaseFragment<TransactionViewModel, FragmentTransacti
 
     private var customer_id: Int? = null
 
+    override fun onResume() {
+        super.onResume()
+
+        binding.customerNameText.setText("")
+        binding.customerAddressText.setText("")
+        binding.customerHpText.setText("")
+        binding.buttonToCheckout.enable(false)
+        customer_id = null
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

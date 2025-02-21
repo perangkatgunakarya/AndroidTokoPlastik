@@ -35,6 +35,9 @@ import com.example.tokoplastik.viewmodel.CheckoutViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import java.io.File
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.util.Locale
 
 class CheckoutFragment :
     BaseFragment<CheckoutViewModel, FragmentCheckoutBinding, CheckoutRepository>() {
@@ -134,9 +137,13 @@ class CheckoutFragment :
                                 hideKeyboard()
                                 binding.productDropdown.clearFocus()
                             } else {
-                                SweetAlertDialog(requireContext(), SweetAlertDialog.ERROR_TYPE).apply {
+                                SweetAlertDialog(
+                                    requireContext(),
+                                    SweetAlertDialog.ERROR_TYPE
+                                ).apply {
                                     titleText = "No Price Found"
-                                    contentText = "Produk ini belum memiliki data harga. Silakan tambahkan harga terlebih dahulu."
+                                    contentText =
+                                        "Produk ini belum memiliki data harga. Silakan tambahkan harga terlebih dahulu."
                                     setConfirmButton("OK") {
                                         dismissWithAnimation()
                                         binding.productDropdown.text = null
@@ -153,6 +160,10 @@ class CheckoutFragment :
                         }
                     }
                 }
+            }
+
+            binding.buttonBack.setOnClickListener {
+                requireActivity().onBackPressed()
             }
 
             binding.buttonAddProduct.setOnClickListener {
@@ -210,7 +221,13 @@ class CheckoutFragment :
 
     private fun updateTotalAmount(items: List<CartItem>) {
         val total = items.sumOf { it.customPrice * it.quantity }
-        binding.countTotal.text = getString(R.string.price_format, total.toDouble())
+
+        val symbols = DecimalFormatSymbols(Locale.getDefault()).apply {
+            groupingSeparator = '.'
+        }
+        val formatter = DecimalFormat("#,###", symbols)
+        val formattedTotal = formatter.format(total.toDouble())
+        binding.countTotal.text = "Rp$formattedTotal"
     }
 
     private fun hideKeyboard() {
@@ -237,9 +254,11 @@ class CheckoutFragment :
                     is Resource.Success -> {
                         invoiceGenerator.allProductPrices = it.data?.data ?: emptyList()
                     }
+
                     is Resource.Failure -> {
                         handleApiError(it)
                     }
+
                     is Resource.Loading -> {}
                 }
             })
@@ -262,7 +281,12 @@ class CheckoutFragment :
                                         cartItems,
                                         response.data.id.toString()
                                     )
-                                    showSuccessDialog(pdfFile, response.data, cartItems, response.data.id.toString())
+                                    showSuccessDialog(
+                                        pdfFile,
+                                        response.data,
+                                        cartItems,
+                                        response.data.id.toString()
+                                    )
                                 } catch (e: Exception) {
                                     handleReceiptError(e)
                                 }
@@ -274,10 +298,12 @@ class CheckoutFragment :
                             }
                         }
                     }
+
                     is Resource.Failure -> {
                         loadingDialog.dismissWithAnimation()
                         handleApiError(result)
                     }
+
                     is Resource.Loading -> {
                     }
                 }
@@ -294,7 +320,7 @@ class CheckoutFragment :
         orderId: String
     ) {
         if (!isAdded) return
-        context?.let { ctx->
+        context?.let { ctx ->
             SweetAlertDialog(requireContext(), SweetAlertDialog.SUCCESS_TYPE).apply {
                 titleText = "Success!"
                 contentText = "Order completed successfully"
@@ -325,8 +351,13 @@ class CheckoutFragment :
 
             setConfirmButton("Print") {
                 dismissWithAnimation()
-                val invoiceText = invoiceGenerator.generateInvoiceText(transaction, cartItems, orderId)
-                val file = invoiceGenerator.saveInvoiceToFile(requireContext(), invoiceText, "Invoice_${orderId}.txt")
+                val invoiceText =
+                    invoiceGenerator.generateInvoiceText(transaction, cartItems, orderId)
+                val file = invoiceGenerator.saveInvoiceToFile(
+                    requireContext(),
+                    invoiceText,
+                    "Invoice_${orderId}.txt"
+                )
                 invoiceGenerator.shareReceiptTxt(file)
                 findNavController().navigate(R.id.action_checkoutFragment_to_transactionFragment)
             }

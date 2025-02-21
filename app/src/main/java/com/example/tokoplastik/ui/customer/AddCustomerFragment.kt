@@ -27,6 +27,10 @@ class AddCustomerFragment : BaseFragment<CustomerViewModel, FragmentAddCustomerB
 
         binding.addCustomerProgressBar.visible(false)
 
+        binding.buttonBack.setOnClickListener {
+            requireActivity().onBackPressed()
+        }
+
         setupViews()
         setupObserver()
     }

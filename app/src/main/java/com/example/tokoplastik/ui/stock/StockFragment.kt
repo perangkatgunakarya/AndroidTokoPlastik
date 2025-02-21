@@ -1,5 +1,6 @@
 package com.example.tokoplastik.ui.stock
 
+import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -130,8 +131,17 @@ class StockFragment : BaseFragment<StockViewModel, FragmentStockBinding, StockRe
                     result.data?.let { response ->
                         stocks = response.data
                         stockAdapter.updateList(stocks)
-                        binding.textStock.text = "Stock of ${response.data[0].product?.name}"
-                        binding.textSupplier.text = "(${response.data[0].product?.supplier})"
+                        if (response.data.isNotEmpty()) {
+                            binding.textStock.textAlignment = View.TEXT_ALIGNMENT_TEXT_START
+                            binding.textSupplier.visible(true)
+                            binding.textStock.text = "Stock of ${response.data[0].product?.name}"
+                            binding.textSupplier.text = "(${response.data[0].product?.supplier})"
+                        } else {
+                            binding.textSupplier.visible(false)
+                            binding.textStock.textAlignment = View.TEXT_ALIGNMENT_CENTER
+                            binding.textStock.textSize = 16F
+                            binding.textStock.text = "Data stock masih kosong"
+                        }
                     }
                 }
 

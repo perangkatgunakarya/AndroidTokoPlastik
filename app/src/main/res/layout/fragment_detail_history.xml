@@ -30,7 +30,7 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/toolbar_detail_history"
         android:layout_width="match_parent"
-        android:layout_height="55dp"
+        android:layout_height="50dp"
         app:cardElevation="5dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -56,7 +56,7 @@
             <ImageButton
                 android:id="@+id/button_back"
                 android:layout_width="55dp"
-                android:layout_height="55dp"
+                android:layout_height="50dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Back"
                 android:src="@drawable/ic_back"
@@ -75,22 +75,9 @@
                 android:text=""
                 android:textAlignment="textStart"
                 android:textColor="@color/g_black"
-                app:layout_constraintEnd_toStartOf="@id/button_lunas"
+                app:layout_constraintEnd_toStartOf="@id/menu_icon"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/button_back"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/button_lunas"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/black"
-                android:layout_marginEnd="8dp"
-                android:text="Angsuran"
-                android:textColor="@color/white"
-                android:textSize="10sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@id/guideline_inside_2"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
@@ -130,59 +117,5 @@
         app:cardElevation="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent">
-
-<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:padding="15dp">-->
-
-<!--            <androidx.constraintlayout.widget.Guideline-->
-<!--                android:id="@+id/guideline4"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:orientation="vertical"-->
-<!--                app:layout_constraintGuide_percent="0.06" />-->
-
-<!--            <androidx.constraintlayout.widget.Guideline-->
-<!--                android:id="@+id/guideline5"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:orientation="vertical"-->
-<!--                app:layout_constraintGuide_percent="0.94" />-->
-
-<!--            <androidx.appcompat.widget.AppCompatButton-->
-<!--                android:id="@+id/button_share"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:drawableEnd="@drawable/ic_share"-->
-<!--                android:drawablePadding="8dp"-->
-<!--                android:drawableTint="@color/black"-->
-<!--                android:paddingHorizontal="30dp"-->
-<!--                android:paddingVertical="16dp"-->
-<!--                android:text="Share"-->
-<!--                android:textAllCaps="false"-->
-<!--                android:textColor="@color/black"-->
-<!--                app:layout_constraintEnd_toStartOf="@id/button_print"-->
-<!--                app:layout_constraintStart_toStartOf="@id/guideline4"-->
-<!--                app:layout_constraintTop_toTopOf="parent" />-->
-
-<!--            <androidx.appcompat.widget.AppCompatButton-->
-<!--                android:id="@+id/button_print"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:backgroundTint="@color/black"-->
-<!--                android:drawableEnd="@drawable/ic_print"-->
-<!--                android:drawablePadding="8dp"-->
-<!--                android:drawableTint="@color/white"-->
-<!--                android:paddingHorizontal="30dp"-->
-<!--                android:paddingVertical="16dp"-->
-<!--                android:text="Print"-->
-<!--                android:textAllCaps="false"-->
-<!--                android:textColor="@color/white"-->
-<!--                app:layout_constraintEnd_toEndOf="@id/guideline5"-->
-<!--                app:layout_constraintStart_toEndOf="@id/button_share"-->
-<!--                app:layout_constraintTop_toTopOf="parent" />-->
-
-<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

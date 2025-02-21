@@ -27,14 +27,14 @@
         android:hint="Nama Supplier" />
 
     <EditText
-        style="@style/h4"
         android:id="@+id/capital_price_text_field"
+        style="@style/h4"
         android:layout_width="match_parent"
         android:layout_height="@dimen/edit_text_height"
         android:layout_marginBottom="10dp"
-        android:paddingHorizontal="10dp"
         android:hint="Harga Modal"
-        android:inputType="number" />
+        android:inputType="number"
+        android:paddingHorizontal="10dp" />
 
     <AutoCompleteTextView
         style="@style/h4"
@@ -62,7 +62,7 @@
         style="@style/blueButtonStyle"
         android:layout_gravity="bottom"
         android:layout_marginTop="30dp"
-        android:text="Tambah" />
+        android:text="Tambah Produk" />
 
     <ProgressBar
         android:id="@+id/add_product_progress_bar"

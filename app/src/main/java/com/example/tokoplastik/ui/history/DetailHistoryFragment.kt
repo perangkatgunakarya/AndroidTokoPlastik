@@ -1,10 +1,12 @@
 package com.example.tokoplastik.ui.history
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.FileProvider
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import cn.pedant.SweetAlert.SweetAlertDialog
@@ -101,15 +103,18 @@ class DetailHistoryFragment :
 
                             viewModel.dueDate.observe(viewLifecycleOwner) { date ->
                                 if (date != viewModel.transactionDetail.value?.data?.data?.dueDate) {
-                                    setPaymentStatus(transactionId, detailTransactions.paymentStatus, totalPaid, date)
+                                    setPaymentStatus(
+                                        transactionId,
+                                        detailTransactions.paymentStatus,
+                                        totalPaid,
+                                        date
+                                    )
                                 }
                             }
                         }
                     }
-
                     true
                 }
-
                 else -> false
             }
         }
@@ -135,12 +140,6 @@ class DetailHistoryFragment :
                     result.data?.let { response ->
                         detailTransactions = response.data
 
-//                        if (detailTransactions.paymentStatus == "lunas") {
-//                            binding.buttonLunas.visibility = View.GONE
-//                        } else {
-//                            binding.buttonLunas.visibility = View.VISIBLE
-//                        }
-
                         (binding.historyDetailRecycler.adapter as DetailHistoryAdapter).updateList(
                             detailTransactions.transactionProduct,
                             detailTransactions.total.toString()
@@ -153,22 +152,6 @@ class DetailHistoryFragment :
                             response.data.id.toString()
                         )
 
-//                        binding.buttonPrint.setOnClickListener {
-//                            val invoiceText = invoiceGenerator.generateInvoiceText(
-//                                detailTransactions,
-//                                detailTransactions.transactionProduct,
-//                                response.data.id.toString()
-//                            )
-//                            val file = invoiceGenerator.saveInvoiceToFile(
-//                                requireContext(),
-//                                invoiceText,
-//                                "Invoice_${response.data.id}.txt"
-//                            )
-//                            invoiceGenerator.shareReceiptTxt(file)
-//                        }
-//                        binding.buttonShare.setOnClickListener {
-//                            invoiceGenerator.shareReceipt(pdfFile)
-//                        }
                     }
                 }
 
@@ -202,16 +185,31 @@ class DetailHistoryFragment :
             if (amount == 0) {
                 statusPayment = "belum lunas"
                 totalPaid = 0
-                setPaymentStatus(transactionId, statusPayment, totalPaid, viewModel.transactionDetail.value?.data?.data?.dueDate)
+                setPaymentStatus(
+                    transactionId,
+                    statusPayment,
+                    totalPaid,
+                    viewModel.transactionDetail.value?.data?.data?.dueDate
+                )
             }
             if (amount > 0 && amount < detailTransactions.total) {
                 statusPayment = "dalam cicilan"
                 totalPaid = amount
-                setPaymentStatus(transactionId, statusPayment, totalPaid, viewModel.transactionDetail.value?.data?.data?.dueDate)
+                setPaymentStatus(
+                    transactionId,
+                    statusPayment,
+                    totalPaid,
+                    viewModel.transactionDetail.value?.data?.data?.dueDate
+                )
             } else {
                 statusPayment = "lunas"
                 totalPaid = amount
-                setPaymentStatus(transactionId, statusPayment, totalPaid, viewModel.transactionDetail.value?.data?.data?.dueDate)
+                setPaymentStatus(
+                    transactionId,
+                    statusPayment,
+                    totalPaid,
+                    viewModel.transactionDetail.value?.data?.data?.dueDate
+                )
             }
         }
     }

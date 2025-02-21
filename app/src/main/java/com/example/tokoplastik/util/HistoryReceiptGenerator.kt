@@ -52,7 +52,7 @@ class HistoryReceiptGenerator (
             val nextLowerUnit = sortedProductPrice[i + 1]
             val ratio = currentUnit.quantityPerUnit.toInt() / nextLowerUnit.quantityPerUnit.toInt()
 
-            result.append("x$ratio")
+            result.append(" x $ratio ${currentUnit.product.lowestUnit}")
         }
 
         return result.toString()
@@ -150,20 +150,29 @@ class HistoryReceiptGenerator (
                 val description = generateTransactionDesc(item.productPrice.unit, item.quantity, historyProductPrice)
 
                 val cells = arrayOf(
-                    "${++index}",
-                    "${item.quantity} ${item.productPrice.unit} \n ${description}",
-                    item.productPrice.product.name,
-                    String.format(Locale.GERMANY, "Rp %,d", item.priceAdjustment),
-                    String.format(Locale.GERMANY, "Rp %,d", item.priceAdjustment * item.quantity)
+                    "${++index}",  // Kolom indeks
+                    "${item.quantity} ${item.productPrice.unit} \n${description}",  // Kolom deskripsi
+                    item.productPrice.product.name,  // Kolom nama produk
+                    String.format(Locale.GERMANY, "%,d", item.priceAdjustment),  // Kolom harga per unit
+                    String.format(Locale.GERMANY, "%,d", item.priceAdjustment * item.quantity)  // Kolom total harga
                 )
 
-                cells.forEach { content ->
+                cells.forEachIndexed { cellIndex, content ->
                     val cell = PdfPCell(Phrase(content, contentFont))
                     if (isAlternateRow) {
                         cell.backgroundColor = alternateRow
                     }
                     cell.setPadding(8f)
-                    cell.horizontalAlignment = Element.ALIGN_CENTER
+
+                    // Atur alignment berdasarkan indeks kolom
+                    when (cellIndex) {
+                        0 -> cell.horizontalAlignment = Element.ALIGN_CENTER
+                        1 -> cell.horizontalAlignment = Element.ALIGN_CENTER
+                        3 -> cell.horizontalAlignment = Element.ALIGN_RIGHT
+                        4 -> cell.horizontalAlignment = Element.ALIGN_RIGHT
+                        else -> cell.horizontalAlignment = Element.ALIGN_LEFT
+                    }
+
                     table.addCell(cell)
                 }
                 isAlternateRow = !isAlternateRow
@@ -173,7 +182,7 @@ class HistoryReceiptGenerator (
             document.add(Paragraph("\n"))
 
             val totalPara = Paragraph(
-                "Total: ${String.format(Locale.GERMANY, "Rp %,d", orderData.total.toLong())}",
+                "Total: ${String.format(Locale.GERMANY, "Rp%,d", orderData.total.toLong())}",
                 FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12f, blueHeader)
             )
             totalPara.alignment = Element.ALIGN_RIGHT
@@ -281,7 +290,7 @@ class HistoryReceiptGenerator (
         // Table Header
         val tableHeader = """
         +----------------------------------------------------------------------------------------+
-        | NO  | BANYAKNYA       | NAMA PRODUK              | HARGA           | JUMLAH            |
+        | NO  | BANYAKNYA       | NAMA PRODUK              |           HARGA |            JUMLAH |
         |-----|-----------------|--------------------------|-----------------|-------------------|
     """.trimIndent()
 
@@ -291,7 +300,7 @@ class HistoryReceiptGenerator (
             val description = generateTransactionDesc(item.productPrice.unit, item.quantity, historyProductPrice)
 
             val wrappedItemName = wrapText(item.productPrice.product.name, 24) // Wrap item name to 24 characters
-            val firstLine = "| ${(index + 1).toString().padEnd(3)} | ${(item.quantity.toString() + " " + item.productPrice.unit).padEnd(15)} | ${wrappedItemName[0].padEnd(24)} | ${item.priceAdjustment.toString().padEnd(15)} | ${(item.priceAdjustment * item.quantity).toString().padEnd(17)} |"
+            val firstLine = "| ${(index + 1).toString().padEnd(3)} | ${(item.quantity.toString() + " " + item.productPrice.unit).padEnd(15)} | ${wrappedItemName[0].padEnd(24)} | ${String.format(Locale.GERMANY, "%,d", item.priceAdjustment.toLong()).padStart(15)} | ${String.format(Locale.GERMANY, "%,d", (item.priceAdjustment * item.quantity).toLong()).padStart(17)} |"
             val descriptionLine = "|     | ${description.padEnd(15)} |                          |                 |                   |"
             val additionalLines = wrappedItemName.drop(1).map { "|     |                 | ${it.padEnd(24)} |                 |                   |" }
             listOf(firstLine, descriptionLine) + additionalLines
@@ -300,7 +309,7 @@ class HistoryReceiptGenerator (
         // Footer
         val footer = """
         |-----|-----------------|--------------------------|-----------------|-------------------|
-        | 		                                                Total: ${String.format(Locale.GERMANY, "Rp %,d", orderData.total.toLong()).padEnd(18)}|
+        | 		                                                Total: ${String.format(Locale.GERMANY, "Rp%,d", orderData.total.toLong()).padStart(17)} |
         +----------------------------------------------------------------------------------------+
 
     """.trimIndent()

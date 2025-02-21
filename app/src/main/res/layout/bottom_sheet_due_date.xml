@@ -20,56 +20,54 @@
             android:text="Pilih Tanggal Jatuh Tempo"
             android:textColor="@color/black"
             android:textSize="18sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
     </RelativeLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/black"/>
+        android:background="@color/black" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="15dp"
-        android:text="Tanggal Jatuh Tempo :"
-        android:textColor="@color/black"
-        android:textSize="18sp" />
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/dateButton"
-        style="@style/blueButtonStyle"
-        android:layout_width="200dp"
-        android:layout_height="@dimen/medium_button_height"
-        android:text="Pilih tanggal"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="10dp"/>
-
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="16dp">
+        android:layout_marginTop="24dp">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/dateButton"
+            style="@style/blueButtonStyle"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/ic_date"
+            android:drawableTint="@color/white"
+            android:textColor="@drawable/radio_text_selector"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/dateEditText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
             android:id="@+id/dateEditText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="Jatuh Tempo"
-            android:focusable="false"/>
-    </LinearLayout>
+            android:focusable="false"
+            android:hint="Tanggal Jatuh Tempo"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/dateButton"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/doneButton"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/medium_button_height"
-        android:layout_marginTop="20dp"
-        android:text="Done"
         style="@style/blueButtonStyle"
-        android:layout_marginEnd="35dp"
-        android:layout_marginBottom="15dp"
-        android:layout_gravity="end"/>
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/medium_button_height"
+        android:layout_gravity="end"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="24dp"
+        android:text="Ubah" />
 </LinearLayout>

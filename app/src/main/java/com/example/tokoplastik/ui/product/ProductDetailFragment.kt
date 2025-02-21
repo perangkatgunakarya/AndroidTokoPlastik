@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.EditText
 import android.widget.Spinner
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -21,9 +22,12 @@ import com.example.tokoplastik.databinding.FragmentProductDetailBinding
 import com.example.tokoplastik.ui.base.BaseFragment
 import com.example.tokoplastik.util.Resource
 import com.example.tokoplastik.util.handleApiError
+import com.example.tokoplastik.util.setNumberFormatter
 import com.example.tokoplastik.viewmodel.ProductDetailViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
@@ -38,12 +42,16 @@ class ProductDetailFragment : BaseFragment<ProductDetailViewModel, FragmentProdu
     private var defaultPosition: Int = 0
     private var latestCapitalPrice: Int? = null
     private var newestCapitalPrice: Int? = null
+    private lateinit var currentCapitalInput : EditText
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         productId = args.productId
         spinner = binding.lowestUnit
+
+        currentCapitalInput = view.findViewById(R.id.currentCapital)
+        currentCapitalInput.setNumberFormatter()
 
         setupViews()
         setupObservers()
@@ -106,7 +114,14 @@ class ProductDetailFragment : BaseFragment<ProductDetailViewModel, FragmentProdu
                     binding.textProductDetail.text = it.data?.data?.product?.name
                     binding.productName.setText(it.data?.data?.product?.name)
                     binding.supplierName.setText(it.data?.data?.product?.supplier)
-                    binding.latestCapital.setText(String.format(Locale.GERMANY, "Rp %,d", it.data?.data?.product?.newestCapitalPrice))
+
+                    val symbols = DecimalFormatSymbols(Locale.getDefault()).apply {
+                        groupingSeparator = '.'
+                    }
+                    val formatter = DecimalFormat("#,###", symbols)
+                    val formattedLatestCapital = formatter.format(it.data?.data?.product?.newestCapitalPrice)
+
+                    binding.latestCapital.setText("Rp${formattedLatestCapital}")
                     binding.latestStock.setText("${it.data?.data?.product?.latestStock}")
                     binding.notes.setText(it.data?.data?.product?.notes)
 

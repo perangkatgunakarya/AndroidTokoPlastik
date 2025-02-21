@@ -8,6 +8,9 @@ import androidx.recyclerview.widget.RecyclerView
 import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.tokoplastik.data.responses.ProductPrice
 import com.example.tokoplastik.databinding.ProductPriceListLayoutBinding
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.util.Locale
 
 class ProductPricesAdapter(
     private val onDeleteItem: (ProductPrice) -> Unit
@@ -21,7 +24,14 @@ class ProductPricesAdapter(
         fun bind(price: ProductPrice) {
             binding.unitText.text = price.unit
             binding.quantityPerUnitText.text = "${price.quantityPerUnit} per unit"
-            binding.priceText.text = "Rp ${price.price}"
+
+            val symbols = DecimalFormatSymbols(Locale.getDefault()).apply {
+                groupingSeparator = '.'
+            }
+            val formatter = DecimalFormat("#,###", symbols)
+            val formattedPrice = formatter.format(price.price)
+
+            binding.priceText.text = "Rp${formattedPrice}"
         }
     }
 

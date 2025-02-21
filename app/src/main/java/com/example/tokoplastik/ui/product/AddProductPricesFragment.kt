@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.navigation.fragment.navArgs
@@ -20,7 +21,9 @@ import com.example.tokoplastik.data.responses.ProductPrice
 import com.example.tokoplastik.databinding.FragmentAddProductPricesBinding
 import com.example.tokoplastik.ui.base.BaseFragment
 import com.example.tokoplastik.util.Resource
+import com.example.tokoplastik.util.getRawValue
 import com.example.tokoplastik.util.handleApiError
+import com.example.tokoplastik.util.setNumberFormatter
 import com.example.tokoplastik.util.visible
 import com.example.tokoplastik.viewmodel.AddProductPricesViewModel
 import kotlinx.coroutines.flow.first
@@ -37,6 +40,8 @@ class AddProductPricesFragment :
     private val units = listOf("pcs", "unit", "pack", "unit", "buah", "pasang", "kotak", "lusin", "lembar", "keping", "batang", "bungkus", "potong", "tablet", "ekor", "rim", "karat", "botol", "butir", "roll", "dus", "karung", "koli", "sak", "bal", "kaleng", "set", "slop", "gulung", "ton", "kg", "gram", "mg", "meter", "m2", "m3", "inch", "cc", "liter")
     private var selectedUnit: String? = null
 
+    private lateinit var priceEdit: EditText
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         observeViewModel()
@@ -49,6 +54,9 @@ class AddProductPricesFragment :
         }
 
         binding.productPricesProgressbar.visible(false)
+
+        priceEdit = view.findViewById(com.example.tokoplastik.R.id.price_edit_text)
+        priceEdit.setNumberFormatter()
 
         setupViews()
         setupUnitSpinner()
@@ -84,7 +92,7 @@ class AddProductPricesFragment :
         binding.buttonAddPrice.setOnClickListener {
             val unit = binding.unitDropdown.text.toString()
             val quantity = binding.quantityEditText.text.toString()
-            val price = binding.priceEditText.text.toString().toIntOrNull() ?: 0
+            val price = binding.priceEditText.getRawValue().toString().toIntOrNull() ?: 0
 
             if (validateInputs(quantity, price, unit)) {
                 Log.d("Fragment", "Attempting to add product price")

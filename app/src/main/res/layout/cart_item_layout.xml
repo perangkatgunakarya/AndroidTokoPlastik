@@ -2,7 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginVertical="10dp"
+    android:layout_marginVertical="5dp"
     app:cardElevation="0dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -11,13 +11,16 @@
         android:background="@drawable/card_border"
         android:padding="16dp">
 
-        <ImageView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/product_image"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_marginTop="8dp"
-            android:background="@drawable/image_placeholder"
-            android:contentDescription="Product Image"
+            android:background="@drawable/circle_background"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/modal_price" />
 
@@ -27,7 +30,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="Amplop Paperline Biru Kecil 200/80 blablablalbla blalb albla"
+            android:text="Nama Produk"
             android:textColor="@color/black"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/product_image"
@@ -39,7 +42,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:text="(elham)"
+            android:text="(Pelanggan)"
             app:layout_constraintStart_toStartOf="@id/product_text"
             app:layout_constraintTop_toBottomOf="@id/product_text" />
 
@@ -49,7 +52,7 @@
             style="@style/p"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="[Rp200.000.000]"
+            android:text="Modal : "
             android:textColor="@color/black"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -61,13 +64,15 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:layout_marginEnd="24dp"
-            android:hint="100.000.000"
+            android:hint="Rp"
             android:inputType="numberDecimal"
             android:textColor="@color/black"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/unitsSpinner"
-            app:layout_constraintStart_toStartOf="@id/product_text"
-            app:layout_constraintTop_toBottomOf="@+id/supplier_text" />
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/supplier_text"
+            app:layout_constraintVertical_bias="1.0" />
 
         <Spinner
             android:id="@+id/unitsSpinner"
@@ -92,25 +97,25 @@
 
             <ImageButton
                 android:id="@+id/btnMinus"
-                android:layout_width="10dp"
-                android:layout_height="10dp"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Decrease quantity"
                 android:src="@drawable/ic_remove" />
 
             <TextView
                 android:id="@+id/quantityText"
-                style="@style/p_bold"
+                style="@style/h4_bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="18dp"
-                android:text="10"
+                android:text="1"
                 android:textColor="@color/black" />
 
             <ImageButton
                 android:id="@+id/btnPlus"
-                android:layout_width="10dp"
-                android:layout_height="10dp"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Increase quantity"
                 android:src="@drawable/ic_plus_thin" />

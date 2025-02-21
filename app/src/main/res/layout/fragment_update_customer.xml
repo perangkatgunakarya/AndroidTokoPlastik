@@ -8,7 +8,7 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/toolbar_update_customer"
         android:layout_width="match_parent"
-        android:layout_height="55dp"
+        android:layout_height="50dp"
         app:cardElevation="5dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -34,7 +34,7 @@
             <ImageButton
                 android:id="@+id/button_back"
                 android:layout_width="55dp"
-                android:layout_height="55dp"
+                android:layout_height="50dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Back"
                 android:src="@drawable/ic_back"
@@ -49,7 +49,7 @@
                 android:layout_marginStart="5dp"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:text="NAMA CUSTOMER"
+                android:text=""
                 android:textAlignment="textStart"
                 android:textColor="@color/g_black"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -72,7 +72,7 @@
             android:layout_width="match_parent"
             android:layout_height="58dp"
             android:layout_marginBottom="8dp"
-            android:hint="Nama Customer"
+            android:hint="Nama Pelanggan"
             android:padding="10dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -121,7 +121,7 @@
             android:layout_height="@dimen/medium_button_height"
             android:layout_gravity="bottom|end"
             android:layout_marginTop="30dp"
-            android:text="Update"
+            android:text="Ubah"
             app:layout_constraintTop_toBottomOf="@id/phone_text_layout" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 

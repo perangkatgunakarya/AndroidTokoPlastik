@@ -10,21 +10,26 @@ import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
 import androidx.lifecycle.ViewModelProvider
 import com.example.tokoplastik.R
+import com.example.tokoplastik.util.getRawValue
+import com.example.tokoplastik.util.setNumberFormatter
 import com.example.tokoplastik.viewmodel.CheckoutViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
+import java.util.Locale
 import java.util.TimeZone
 
 class CreditBottomSheet : BottomSheetDialogFragment() {
-    private lateinit var viewModel : CheckoutViewModel
+    private lateinit var viewModel: CheckoutViewModel
 
-    private lateinit var countTotal : TextView
-    private lateinit var paidTotal : TextView
-    private lateinit var paidDate : TextView
-    private lateinit var remainingTotal : TextView
-    private lateinit var paidInput : EditText
-    private lateinit var paidButton : AppCompatButton
-    private var paid : Int = 0
+    private lateinit var countTotal: TextView
+    private lateinit var paidTotal: TextView
+    private lateinit var paidDate: TextView
+    private lateinit var remainingTotal: TextView
+    private lateinit var paidInput: EditText
+    private lateinit var paidButton: AppCompatButton
+    private var paid: Int = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,12 +50,21 @@ class CreditBottomSheet : BottomSheetDialogFragment() {
         paidInput = view.findViewById(R.id.paid_input)
         paidButton = view.findViewById(R.id.paid_button)
 
+        paidInput.setNumberFormatter()
+
         // observe detail transaksi
         viewModel.transactionDetail.observe(viewLifecycleOwner) { transactionDetail ->
             paid = transactionDetail.data?.data?.paid!!
 
-            countTotal.text = getString(R.string.price_format, transactionDetail.data?.data?.total?.toDouble())
-            paidTotal.text = getString(R.string.price_format, transactionDetail.data?.data?.paid?.toDouble())
+            val symbols = DecimalFormatSymbols(Locale.getDefault()).apply {
+                groupingSeparator = '.'
+            }
+            val formatter = DecimalFormat("#,###", symbols)
+            val formattedCountTotal = formatter.format(transactionDetail.data.data.total.toDouble())
+            countTotal.text = "Rp$formattedCountTotal"
+
+            val formattedPaidTotal = formatter.format(transactionDetail.data.data.paid.toDouble())
+            paidTotal.text = "Rp$formattedPaidTotal"
 
             //paid date
             val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'")
@@ -59,13 +73,16 @@ class CreditBottomSheet : BottomSheetDialogFragment() {
             paidDate.text = "Terakhir bayar : ${SimpleDateFormat("dd MMM Y").format(date)}"
 
             //remaining total
-            remainingTotal.text = getString(R.string.price_format, (transactionDetail.data?.data?.total?.toDouble() ?: 0.0) - (transactionDetail.data?.data?.paid?.toDouble() ?: 0.0))
-
+            val formattedRemainingTotal = formatter.format(
+                (transactionDetail.data?.data?.total?.toDouble()
+                    ?: 0.0) - (transactionDetail.data?.data?.paid?.toDouble() ?: 0.0)
+            )
+            remainingTotal.text = "Rp$formattedRemainingTotal"
         }
 
         //klik bayar
         paidButton.setOnClickListener {
-            viewModel.setPaidAmount(paidInput.text.toString().toInt() + paid)
+            viewModel.setPaidAmount(paidInput.getRawValue() + paid)
             dismiss()
         }
     }

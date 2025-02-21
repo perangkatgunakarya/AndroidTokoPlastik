@@ -21,14 +21,64 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.91" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.03" />
+    <androidx.cardview.widget.CardView
+        android:id="@+id/toolbar_checkout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        app:cardElevation="5dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_inside_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.09" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_inside_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.91" />
+
+            <ImageButton
+                android:id="@+id/button_back"
+                android:layout_width="55dp"
+                android:layout_height="50dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Back"
+                android:src="@drawable/ic_back"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/text_transaction_detail"
+                style="@style/h4_bold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="19dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="awefawef"
+                android:textAlignment="textStart"
+                android:textColor="@color/g_black"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline_inside_2"
+                app:layout_constraintStart_toEndOf="@id/button_back"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
 
     <TextView
+        android:layout_marginTop="16dp"
         android:id="@+id/checkout_fragment_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -36,7 +86,7 @@
         android:textColor="@color/g_black"
         android:textSize="@dimen/h3TextSize"
         app:layout_constraintStart_toStartOf="@id/guideline"
-        app:layout_constraintTop_toTopOf="@id/guideline3" />
+        app:layout_constraintTop_toBottomOf="@id/toolbar_checkout" />
 
     <AutoCompleteTextView
         android:id="@+id/product_dropdown"
@@ -88,23 +138,24 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:clipToPadding="false"
-        android:paddingBottom="@dimen/keyboard_padding"
-        android:scrollbars="vertical"
         android:fadeScrollbars="false"
-        app:layout_constraintTop_toBottomOf="@id/cart_title"
-        app:layout_constraintStart_toStartOf="@id/guideline"
+        android:paddingBottom="@dimen/keyboard_padding"
+        android:layout_marginTop="8dp"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toTopOf="@id/totalCardView"
         app:layout_constraintEnd_toEndOf="@id/guideline2"
-        app:layout_constraintBottom_toTopOf="@id/totalCardView"/>
+        app:layout_constraintStart_toStartOf="@id/guideline"
+        app:layout_constraintTop_toBottomOf="@id/cart_title" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/totalCardView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginBottom="40dp"
         app:cardCornerRadius="10dp"
         app:cardElevation="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginBottom="40dp">
+        app:layout_constraintStart_toStartOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -137,6 +188,7 @@
             <TextView
                 android:id="@+id/count_total"
                 style="@style/h3_bold"
+                android:text="Rp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/black"
@@ -148,8 +200,8 @@
                 style="@style/blueButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/medium_button_height"
-                android:paddingVertical="10dp"
                 android:paddingHorizontal="24dp"
+                android:paddingVertical="10dp"
                 android:text="Checkout"
                 app:layout_constraintEnd_toEndOf="@id/guideline5"
                 app:layout_constraintTop_toTopOf="parent" />

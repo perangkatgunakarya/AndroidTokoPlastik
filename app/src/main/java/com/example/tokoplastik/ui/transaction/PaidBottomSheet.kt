@@ -13,6 +13,9 @@ import com.example.tokoplastik.util.getRawValue
 import com.example.tokoplastik.util.setNumberFormatter
 import com.example.tokoplastik.viewmodel.CheckoutViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.util.Locale
 
 class PaidBottomSheet : BottomSheetDialogFragment() {
     private lateinit var viewModel : CheckoutViewModel
@@ -42,7 +45,12 @@ class PaidBottomSheet : BottomSheetDialogFragment() {
         //observe cartItems
         viewModel.cartItems.observe(viewLifecycleOwner) { items ->
             val total = items.sumOf { it.customPrice * it.quantity }
-            countTotal.text = getString(R.string.price_format, total.toDouble())
+            val symbols = DecimalFormatSymbols(Locale.getDefault()).apply {
+                groupingSeparator = '.'
+            }
+            val formatter = DecimalFormat("#,###", symbols)
+            val formattedTotal = formatter.format(total.toDouble())
+            countTotal.text = "Rp$formattedTotal"
         }
 
         //klik bayar and proceed checkout in checkout fragment
