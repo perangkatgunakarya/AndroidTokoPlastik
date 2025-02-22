@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,9 +24,13 @@ import com.example.tokoplastik.util.HistoryReceiptGenerator
 import com.example.tokoplastik.util.Resource
 import com.example.tokoplastik.util.handleApiError
 import com.example.tokoplastik.viewmodel.CheckoutViewModel
+import com.rajat.pdfviewer.PdfViewerActivity
+import com.rajat.pdfviewer.util.saveTo
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.TimeZone
 
 class DetailHistoryFragment :
     BaseFragment<CheckoutViewModel, FragmentDetailHistoryBinding, CheckoutRepository>() {
@@ -48,6 +53,33 @@ class DetailHistoryFragment :
         binding.menuIcon.setOnClickListener {
             showPopupMenu(it)
         }
+
+        binding.buttonPreview.setOnClickListener {
+            if (::detailTransactions.isInitialized) {
+                val pdfFile = invoiceGenerator.generatedPdfReceipt(
+                    detailTransactions,
+                    detailTransactions.transactionProduct,
+                    detailTransactions.id.toString()
+                )
+
+                val pdfPath = "/storage/emulated/0/Android/data/${requireContext().packageName}/files/Documents/Invoice_${detailTransactions.id}.pdf"
+
+                val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'")
+                parser.timeZone = TimeZone.getTimeZone("UTC")
+                val date = parser.parse(detailTransactions.createdAt)
+                val transactionDate = SimpleDateFormat("dd MMM Y HH:mm").format(date)
+
+                launchPdfFromUri(uri = pdfPath, title = "${detailTransactions.customer.name}\n${transactionDate}")
+            }
+        }
+    }
+
+    private fun launchPdfFromUri(uri: String, title:String) {
+        startActivity(
+            PdfViewerActivity.launchPdfFromPath(
+                context = requireContext(), path = uri,
+                pdfTitle = title, saveTo = saveTo.ASK_EVERYTIME,  fromAssets = false)
+        )
     }
 
     private fun showPopupMenu(view: View) {
@@ -115,6 +147,7 @@ class DetailHistoryFragment :
                     }
                     true
                 }
+
                 else -> false
             }
         }

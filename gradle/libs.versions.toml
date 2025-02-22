@@ -12,6 +12,7 @@ constraintlayout = "2.1.4"
 googleGmsGoogleServices = "4.4.2"
 firebaseAuth = "23.0.0"
 hilt = "1.2.0"
+pdfViewer = "2.1.1"
 retrofit = "2.9.0"
 coroutines = "1.7.3"
 lifecycle = "2.2.0"
@@ -38,6 +39,7 @@ androidx-constraintlayout = { group = "androidx.constraintlayout", name = "const
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
 hiltAndroid = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt" }
 hiltCompiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hilt" }
+pdf-viewer = { module = "io.github.afreakyelf:Pdf-Viewer", version.ref = "pdfViewer" }
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }

@@ -55,7 +55,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
+    implementation(libs.pdf.viewer)
     implementation(libs.hiltAndroid)
     kapt(libs.hiltCompiler)
     implementation(libs.retrofit)
