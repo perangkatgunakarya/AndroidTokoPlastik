@@ -13,7 +13,7 @@ import java.text.DecimalFormatSymbols
 import java.util.Locale
 
 class ProductPricesAdapter(
-    private val onDeleteItem: (ProductPrice) -> Unit
+    private val onItemClick: (ProductPrice) -> Unit
 ) : RecyclerView.Adapter<ProductPricesAdapter.ViewHolder>() {
 
     private var productList = mutableListOf<ProductPrice>()
@@ -21,7 +21,9 @@ class ProductPricesAdapter(
     class ViewHolder(private val binding: ProductPriceListLayoutBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(price: ProductPrice) {
+        fun bind(price: ProductPrice, onItemClick: (ProductPrice) -> Unit) {
+            binding.root.setOnClickListener { onItemClick(price) }  // Add click listener
+
             binding.unitText.text = price.unit
             binding.quantityPerUnitText.text = "${price.quantityPerUnit} per unit"
 
@@ -57,34 +59,7 @@ class ProductPricesAdapter(
                 ): Boolean = false
 
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                    val position = viewHolder.adapterPosition
-                    val item = adapter.productList[position]
-
-                    SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE)
-                        .setTitleText("Hapus Harga Produk")
-                        .setContentText("Apakah Anda yakin ingin menghapus harga produk?")
-                        .setConfirmText("Hapus")
-                        .setConfirmClickListener { sDialog ->
-                            adapter.onDeleteItem(item)
-                            sDialog.dismissWithAnimation()
-                            confirm()
-                        }
-                        .setCancelText("Cancel")
-                        .setCancelClickListener { sDialog ->
-                            adapter.notifyItemChanged(position)
-                            sDialog.dismissWithAnimation()
-                        }
-                        .show()
-                }
-
-                fun confirm() {
-                    SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE).apply {
-                        contentText = "Harga Produk Berhasil Dihapus"
-                        setConfirmButton("OK") {
-                            dismissWithAnimation()
-                        }
-                        show()
-                    }
+                    TODO("Not yet implemented")
                 }
             }
         }
@@ -100,6 +75,6 @@ class ProductPricesAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(productList[position])
+        holder.bind(productList[position], onItemClick)
     }
 }

@@ -76,11 +76,12 @@ class AddProductPricesFragment :
     }
 
     private fun setupViews() {
-        pricesAdapter = ProductPricesAdapter (
-            onDeleteItem = { item ->
-                viewModel.deleteProductPrice(item.id)
+        pricesAdapter = ProductPricesAdapter(
+            onItemClick = { item ->
+                fillFormWithProductPrice(item)
             }
         )
+
         binding.productPricesRecyclerView.apply {
             adapter = pricesAdapter
             layoutManager = LinearLayoutManager(requireContext())
@@ -108,6 +109,19 @@ class AddProductPricesFragment :
                     viewModel.addProductPrices(args.productId, price, unit, quantity)
                 }
             }
+        }
+    }
+
+    private fun fillFormWithProductPrice(productPrice: ProductPrice) {
+        existingProductPrice = productPrice
+        binding.apply {
+            unitDropdown.setText(productPrice.unit)
+            quantityEditText.setText(productPrice.quantityPerUnit)
+
+            val formattedPrice = productPrice.price.toString()
+            priceEditText.setText(formattedPrice)
+
+            buttonAddPrice.text = "Update Price"
         }
     }
 
@@ -148,7 +162,6 @@ class AddProductPricesFragment :
     }
 
     private fun observeViewModel() {
-
         viewModel.productPrices.observe(viewLifecycleOwner) { result ->
             binding.productPricesProgressbar.visible(result is Resource.Loading)
 
@@ -157,16 +170,10 @@ class AddProductPricesFragment :
                     binding.productPricesProgressbar.visible(false)
                     result.data?.let { response ->
                         getProductPrices = response.data
-                        Log.d("ProductPrices", "Received ${getProductPrices.size} items")
                         pricesAdapter.updateList(getProductPrices)
-                        pricesAdapter.notifyDataSetChanged()
                     }
                 }
-
-                is Resource.Failure -> {
-                    handleApiError(result)
-                }
-
+                is Resource.Failure -> handleApiError(result)
                 Resource.Loading -> {}
             }
         }
@@ -183,21 +190,45 @@ class AddProductPricesFragment :
                         Toast.LENGTH_SHORT
                     ).show()
                     clearInputs()
+                    // Refresh the list after adding
+                    viewModel.getProductPrices(args.productId)
                 }
-
                 is Resource.Failure -> {
                     Toast.makeText(requireContext(), result.errorBody.toString(), Toast.LENGTH_SHORT).show()
                 }
+                Resource.Loading -> {}
+            }
+        }
 
-                is Resource.Loading -> {}
+        viewModel.updateResult.observe(viewLifecycleOwner) { result ->
+            binding.productPricesProgressbar.visible(result is Resource.Loading)
+
+            when (result) {
+                is Resource.Success -> {
+                    binding.productPricesProgressbar.visible(false)
+                    Toast.makeText(
+                        requireContext(),
+                        "Harga berhasil diperbarui",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    clearInputs()
+                    viewModel.getProductPrices(args.productId)
+                }
+                is Resource.Failure -> {
+                    Toast.makeText(requireContext(), result.errorBody.toString(), Toast.LENGTH_SHORT).show()
+                }
+                Resource.Loading -> {}
             }
         }
     }
 
     private fun clearInputs() {
-        binding.quantityEditText.text?.clear()
-        binding.priceEditText.text?.clear()
-        binding.unitDropdown.text?.clear()
+        binding.apply {
+            quantityEditText.text?.clear()
+            priceEditText.text?.clear()
+            unitDropdown.text?.clear()
+            buttonAddPrice.text = "Add Price"
+        }
         existingProductPrice = null
     }
 
