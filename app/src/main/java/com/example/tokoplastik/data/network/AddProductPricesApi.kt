@@ -7,6 +7,7 @@ import com.example.tokoplastik.data.responses.ProductPricesResponses
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -20,6 +21,12 @@ interface AddProductPricesApi {
 
     @POST("product-price")
     suspend fun addProductPrices(
+        @Body productPrice: AddProductPrices
+    ): AddProductPricesResponses
+
+    @PATCH("product-price/{id}")
+    suspend fun updateProductPrices(
+        @Path("id") id: Int,
         @Body productPrice: AddProductPrices
     ): AddProductPricesResponses
 

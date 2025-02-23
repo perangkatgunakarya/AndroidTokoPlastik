@@ -41,6 +41,7 @@ class AddProductPricesFragment :
     private var selectedUnit: String? = null
 
     private lateinit var priceEdit: EditText
+    private var existingProductPrice: ProductPrice? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -95,8 +96,17 @@ class AddProductPricesFragment :
             val price = binding.priceEditText.getRawValue().toString().toIntOrNull() ?: 0
 
             if (validateInputs(quantity, price, unit)) {
-                Log.d("Fragment", "Attempting to add product price")
-                viewModel.addProductPrices(args.productId, price, unit, quantity)
+                if (existingProductPrice != null) {
+                    viewModel.updateProductPrices(
+                        existingProductPrice!!.id,
+                        args.productId,
+                        price,
+                        unit,
+                        quantity
+                    )
+                } else {
+                    viewModel.addProductPrices(args.productId, price, unit, quantity)
+                }
             }
         }
     }
@@ -126,6 +136,12 @@ class AddProductPricesFragment :
         if (price <= 0) {
             binding.priceEditText.error = "Harga harus lebih dari 0"
             isValid = false
+        }
+
+        if (::getProductPrices.isInitialized) {
+            existingProductPrice = getProductPrices.find { productPrice ->
+                productPrice.unit.equals(unit, ignoreCase = true)
+            }
         }
 
         return isValid
@@ -182,6 +198,7 @@ class AddProductPricesFragment :
         binding.quantityEditText.text?.clear()
         binding.priceEditText.text?.clear()
         binding.unitDropdown.text?.clear()
+        existingProductPrice = null
     }
 
 

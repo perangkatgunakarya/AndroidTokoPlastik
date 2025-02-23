@@ -24,6 +24,9 @@ class AddProductPricesViewModel(
     private val _productPrices: MutableLiveData<Resource<ProductPricesResponses>> = MutableLiveData()
     val productPrices: LiveData<Resource<ProductPricesResponses>> = _productPrices
 
+    private val _updateResult: MutableLiveData<Resource<AddProductPricesResponses>> = MutableLiveData()
+    val updateResult: LiveData<Resource<AddProductPricesResponses>> = _updateResult
+
     private val _deleteResult: MutableLiveData<Resource<DeleteProductPricesResponses>> = MutableLiveData()
     val deleteResult: LiveData<Resource<DeleteProductPricesResponses>> = _deleteResult
 
@@ -39,6 +42,14 @@ class AddProductPricesViewModel(
         viewModelScope.launch {
             _productPrices.value = Resource.Loading
             _productPrices.value = repository.getProductPrices(productId)
+        }
+    }
+
+    fun updateProductPrices(id: Int, productId: Int, price: Int, unit: String, quantityPerUnit: String) {
+        viewModelScope.launch {
+            _updateResult.value = Resource.Loading
+            val product = AddProductPrices(productId, price, unit, quantityPerUnit)
+            _updateResult.value = repository.updateProductPrices(id, product)
         }
     }
 
