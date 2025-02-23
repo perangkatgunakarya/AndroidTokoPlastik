@@ -38,6 +38,10 @@ class RestockQuantityBottomSheet : BottomSheetDialogFragment() {
         restockUnit = view.findViewById(R.id.restockUnit)
         saveStockButton = view.findViewById(R.id.saveStockButton)
 
+        viewModel.productId?.let { productId ->
+            viewModel.getProduct(productId)
+        }
+
         saveStockButton.setOnClickListener {
             val quantity = restockQuantity.text.toString().toIntOrNull()
             if (quantity != null) {
@@ -75,7 +79,7 @@ class RestockQuantityBottomSheet : BottomSheetDialogFragment() {
                     dismiss()
                 }
                 is Resource.Loading -> {
-                    dismiss()
+
                 }
             }
         }

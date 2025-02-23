@@ -56,6 +56,10 @@ class AddProductPricesFragment :
 
         binding.productPricesProgressbar.visible(false)
 
+        binding.buttonBack.setOnClickListener {
+            requireActivity().onBackPressed()
+        }
+
         priceEdit = view.findViewById(com.example.tokoplastik.R.id.price_edit_text)
         priceEdit.setNumberFormatter()
 
@@ -86,9 +90,9 @@ class AddProductPricesFragment :
             adapter = pricesAdapter
             layoutManager = LinearLayoutManager(requireContext())
 
-            val swipeToDeleteCallback = ProductPricesAdapter.createSwipeToDelete(pricesAdapter, this.context)
-            val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)
-            itemTouchHelper.attachToRecyclerView(this)
+//            val swipeToDeleteCallback = ProductPricesAdapter.createSwipeToDelete(pricesAdapter, this.context)
+//            val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)
+//            itemTouchHelper.attachToRecyclerView(this)
         }
 
         binding.buttonAddPrice.setOnClickListener {
@@ -121,7 +125,7 @@ class AddProductPricesFragment :
             val formattedPrice = productPrice.price.toString()
             priceEditText.setText(formattedPrice)
 
-            buttonAddPrice.text = "Update Price"
+            buttonAddPrice.text = "Perbarui Harga Satuan"
         }
     }
 

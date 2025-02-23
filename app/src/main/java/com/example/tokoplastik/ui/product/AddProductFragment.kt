@@ -36,6 +36,10 @@ class AddProductFragment : BaseFragment<AddProductViewModel, FragmentAddProductB
         capitalPriceInput = view.findViewById(com.example.tokoplastik.R.id.capital_price_text_field)
         capitalPriceInput.setNumberFormatter()
 
+        binding.buttonBack.setOnClickListener {
+            requireActivity().onBackPressed()
+        }
+
         binding.addProductProgressBar.visible(false)
 
         setupViews()

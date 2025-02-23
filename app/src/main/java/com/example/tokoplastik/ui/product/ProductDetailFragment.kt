@@ -21,6 +21,7 @@ import com.example.tokoplastik.data.repository.ProductRepository
 import com.example.tokoplastik.databinding.FragmentProductDetailBinding
 import com.example.tokoplastik.ui.base.BaseFragment
 import com.example.tokoplastik.util.Resource
+import com.example.tokoplastik.util.getRawValue
 import com.example.tokoplastik.util.handleApiError
 import com.example.tokoplastik.util.setNumberFormatter
 import com.example.tokoplastik.viewmodel.ProductDetailViewModel
@@ -32,17 +33,58 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
 
-class ProductDetailFragment : BaseFragment<ProductDetailViewModel, FragmentProductDetailBinding, ProductRepository>() {
+class ProductDetailFragment :
+    BaseFragment<ProductDetailViewModel, FragmentProductDetailBinding, ProductRepository>() {
 
     private val args: ProductDetailFragmentArgs by navArgs()
     private var productId: Int = -1
     private lateinit var spinner: Spinner
-    private val units = listOf("pcs", "unit", "pack", "unit", "buah", "pasang", "kotak", "lusin", "lembar", "keping", "batang", "bungkus", "potong", "tablet", "ekor", "rim", "karat", "botol", "butir", "roll", "dus", "karung", "koli", "sak", "bal", "kaleng", "set", "slop", "gulung", "ton", "kg", "gram", "mg", "meter", "m2", "m3", "inch", "cc", "liter")
+    private val units = listOf(
+        "pcs",
+        "unit",
+        "pack",
+        "unit",
+        "buah",
+        "pasang",
+        "kotak",
+        "lusin",
+        "lembar",
+        "keping",
+        "batang",
+        "bungkus",
+        "potong",
+        "tablet",
+        "ekor",
+        "rim",
+        "karat",
+        "botol",
+        "butir",
+        "roll",
+        "dus",
+        "karung",
+        "koli",
+        "sak",
+        "bal",
+        "kaleng",
+        "set",
+        "slop",
+        "gulung",
+        "ton",
+        "kg",
+        "gram",
+        "mg",
+        "meter",
+        "m2",
+        "m3",
+        "inch",
+        "cc",
+        "liter"
+    )
     private var selectedUnit: String? = null
     private var defaultPosition: Int = 0
     private var latestCapitalPrice: Int? = null
     private var newestCapitalPrice: Int? = null
-    private lateinit var currentCapitalInput : EditText
+    private lateinit var currentCapitalInput: EditText
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -73,7 +115,8 @@ class ProductDetailFragment : BaseFragment<ProductDetailViewModel, FragmentProdu
         }
 
         binding.stockCardButton.setOnClickListener {
-            val direction = ProductDetailFragmentDirections.actionDetailProductFragmentToStockFragment(productId)
+            val direction =
+                ProductDetailFragmentDirections.actionDetailProductFragmentToStockFragment(productId)
             findNavController().navigate(direction)
         }
 
@@ -95,7 +138,12 @@ class ProductDetailFragment : BaseFragment<ProductDetailViewModel, FragmentProdu
         spinner.adapter = adapter
 
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parentView: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            override fun onItemSelected(
+                parentView: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
                 selectedUnit = units[position]
             }
 
@@ -119,7 +167,8 @@ class ProductDetailFragment : BaseFragment<ProductDetailViewModel, FragmentProdu
                         groupingSeparator = '.'
                     }
                     val formatter = DecimalFormat("#,###", symbols)
-                    val formattedLatestCapital = formatter.format(it.data?.data?.product?.newestCapitalPrice)
+                    val formattedLatestCapital =
+                        formatter.format(it.data?.data?.product?.newestCapitalPrice)
 
                     binding.latestCapital.setText("Rp${formattedLatestCapital}")
                     binding.latestStock.setText("${it.data?.data?.product?.latestStock}")
@@ -128,16 +177,20 @@ class ProductDetailFragment : BaseFragment<ProductDetailViewModel, FragmentProdu
                     val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'")
                     parser.timeZone = TimeZone.getTimeZone("UTC")
                     val date = parser.parse(it.data?.data?.product?.updatedAt)
-                    binding.latestCapitalDate.text = "Terakhir diperbarui: ${SimpleDateFormat("dd MMM Y").format(date)}"
+                    binding.latestCapitalDate.text =
+                        "Terakhir diperbarui: ${SimpleDateFormat("dd MMM Y").format(date)}"
 
                     defaultPosition = units.indexOf(it.data?.data?.product?.lowestUnit)
                     spinner.setSelection(defaultPosition)
 
+                    latestCapitalPrice = it.data?.data?.product?.capitalPrice
                     newestCapitalPrice = it.data?.data?.product?.newestCapitalPrice
                 }
+
                 is Resource.Loading -> {
                     binding.progressBar.visibility = View.VISIBLE
                 }
+
                 is Resource.Failure -> {
                     binding.progressBar.visibility = View.GONE
                     handleApiError(it)
@@ -151,25 +204,34 @@ class ProductDetailFragment : BaseFragment<ProductDetailViewModel, FragmentProdu
             val name = binding.productName.text.toString()
             val supplier = binding.supplierName.text.toString()
             val notes = binding.notes.text.toString()
-            var latest: Int? = null
-            var newest: Int? = null
+            var latest: Int?
+            var newest: Int?
 
-            if (newestCapitalPrice == 0) {
-                if (binding.currentCapital.text.toString() == "") {
-                    latest = binding.currentCapital.text.toString().toInt()
-                    newest = binding.currentCapital.text.toString().toInt()
-                } else {
-                    latest = 0
-                    newest = 0
-                }
+            if (binding.currentCapital.text.toString() == "") {
+                latest = latestCapitalPrice
+                newest = newestCapitalPrice
+
             } else {
-                if (binding.currentCapital.text.toString() == "") {
-                    newest = 0
-                } else {
-                    newest = binding.currentCapital.text?.toString()?.toInt()
-                }
-                latest = newestCapitalPrice
+                newest = currentCapitalInput.getRawValue()
+                latest = currentCapitalInput.getRawValue()
             }
+
+//            if (newestCapitalPrice == 0) {
+//                if (binding.currentCapital.text.toString() == "") {
+//                    latest = binding.currentCapital.text.toString().toInt()
+//                    newest = binding.currentCapital.text.toString().toInt()
+//                } else {
+//                    latest = 0
+//                    newest = 0
+//                }
+//            } else {
+//                if (binding.currentCapital.text.toString() == "") {
+//                    newest = 0
+//                } else {
+//                    newest = binding.currentCapital.text?.toString()?.toInt()
+//                }
+//                latest = newestCapitalPrice
+//            }
 
             val lowestUnit = selectedUnit
 
@@ -187,10 +249,12 @@ class ProductDetailFragment : BaseFragment<ProductDetailViewModel, FragmentProdu
                         }
                         requireActivity().onBackPressed()
                     }
+
                     is Resource.Failure -> {
                         binding.progressBar.visibility = View.GONE
                         handleApiError(it)
                     }
+
                     is Resource.Loading -> {
                         binding.progressBar.visibility = View.VISIBLE
                     }

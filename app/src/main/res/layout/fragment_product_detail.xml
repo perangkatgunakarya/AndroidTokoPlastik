@@ -335,7 +335,7 @@
             android:layout_height="@dimen/medium_button_height"
             android:layout_marginEnd="10dp"
             android:backgroundTint="@color/secondary"
-            android:text="Tambahkan Harga Jual"
+            android:text="Tambahkan Harga Satuan"
             android:textColor="@color/black"
             app:layout_constraintEnd_toStartOf="@id/saveButton"
             app:layout_constraintStart_toStartOf="parent"

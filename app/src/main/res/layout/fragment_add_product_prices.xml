@@ -105,7 +105,7 @@
                 style="@style/blueButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/medium_button_height"
-                android:text="Tambahkan Harga" />
+                android:text="Tambahkan Harga Satuan" />
 
         </LinearLayout>
 

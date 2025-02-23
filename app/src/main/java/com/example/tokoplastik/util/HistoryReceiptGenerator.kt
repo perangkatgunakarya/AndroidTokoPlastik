@@ -27,35 +27,64 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class HistoryReceiptGenerator (
+class HistoryReceiptGenerator(
     private val context: Context
 ) {
     public var allProductPrices: List<ProductPrice> = emptyList()
     private lateinit var historyProductPrice: List<ProductPrice>
 
-    fun generateTransactionDesc(unit: String, quantity: Int, productPrice: List<ProductPrice>): String {
+    fun generateTransactionDesc(
+        unit: String,
+        quantity: Int,
+        productPrice: List<ProductPrice>
+    ): String {
+
         val sortedProductPrice = productPrice.sortedByDescending { it.quantityPerUnit }
         val selectedUnitIndex = sortedProductPrice.indexOfFirst { it.unit == unit }
-        if (selectedUnitIndex == -1) {
+        val selectedUnit = sortedProductPrice.firstOrNull() { it.unit == unit }
+        if (selectedUnit == null) {
             return "Unit tidak ditemukan"
         }
 
         val isLowestUnit = selectedUnitIndex == sortedProductPrice.size - 1
         if (isLowestUnit) {
-            return "$quantity"
+            return ""
         }
 
-        val result = StringBuilder("$quantity")
-
-        for (i in selectedUnitIndex until sortedProductPrice.size - 1) {
-            val currentUnit = sortedProductPrice[i]
-            val nextLowerUnit = sortedProductPrice[i + 1]
-            val ratio = currentUnit.quantityPerUnit.toInt() / nextLowerUnit.quantityPerUnit.toInt()
-
-            result.append(" x $ratio ${currentUnit.product.lowestUnit}")
+        val lowestProductPrice = sortedProductPrice[sortedProductPrice.size - 1]
+        val result : String = if (unit === lowestProductPrice.unit) {
+            ""
+        } else {
+            "($quantity x ${selectedUnit.quantityPerUnit} ${lowestProductPrice.unit})"
         }
 
-        return result.toString()
+        return result
+
+
+
+
+//        val sortedProductPrice = productPrice.sortedByDescending { it.quantityPerUnit }
+//        val selectedUnitIndex = sortedProductPrice.indexOfFirst { it.unit == unit }
+//        if (selectedUnitIndex == -1) {
+//            return "Unit tidak ditemukan"
+//        }
+//
+//        val isLowestUnit = selectedUnitIndex == sortedProductPrice.size - 1
+//        if (isLowestUnit) {
+//            return "$quantity"
+//        }
+//
+//        val result = StringBuilder("$quantity")
+//
+//        for (i in selectedUnitIndex until sortedProductPrice.size - 1) {
+//            val currentUnit = sortedProductPrice[i]
+//            val nextLowerUnit = sortedProductPrice[i + 1]
+//            val ratio = currentUnit.quantityPerUnit.toInt() / nextLowerUnit.quantityPerUnit.toInt()
+//
+//            result.append(" x $ratio ${currentUnit.product.lowestUnit}")
+//        }
+//
+//        return result.toString()
     }
 
     fun generatedPdfReceipt(
@@ -93,7 +122,11 @@ class HistoryReceiptGenerator (
             headerTable.widthPercentage = 100f
             headerTable.setWidths(floatArrayOf(5f, 5f))
 
-            val address = if (orderData.customer.address.length > 30) { orderData.customer.address.take(30) } else { orderData.customer.address }
+            val address = if (orderData.customer.address.length > 30) {
+                orderData.customer.address.take(30)
+            } else {
+                orderData.customer.address
+            }
             val customerInfoCell = PdfPCell().apply {
                 border = Rectangle.NO_BORDER
                 val customerFont = FontFactory.getFont(FontFactory.HELVETICA, 13f, BaseColor.BLACK)
@@ -108,12 +141,20 @@ class HistoryReceiptGenerator (
                 val detailsFont = FontFactory.getFont(FontFactory.HELVETICA, 11f)
                 addElement(Paragraph("Referensi    : TPHA-${orderId}", detailsFont))
                 addElement(
-                    Paragraph("Tanggal      : ${
-                        SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(
-                            Date()
-                        )}", detailsFont)
+                    Paragraph(
+                        "Tanggal      : ${
+                            SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(
+                                Date()
+                            )
+                        }", detailsFont
+                    )
                 )
-                addElement(Paragraph("Status        : ${orderData.paymentStatus.toUpperCase()}", detailsFont))
+                addElement(
+                    Paragraph(
+                        "Status        : ${orderData.paymentStatus.toUpperCase()}",
+                        detailsFont
+                    )
+                )
                 addElement(Paragraph("Jatuh Tempo  : ${orderData.dueDate}", detailsFont))
             }
 
@@ -131,7 +172,7 @@ class HistoryReceiptGenerator (
             table.setWidths(floatArrayOf(0.5f, 1.5f, 2.5f, 1.5f, 1.5f))
 
             val headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11f, BaseColor.WHITE)
-            arrayOf("NO", "BANYAKNYA", "NAMA ITEM", "HARGA",  "JUMLAH").forEach { header ->
+            arrayOf("NO", "BANYAKNYA", "NAMA ITEM", "HARGA", "JUMLAH").forEach { header ->
                 val cell = PdfPCell(Phrase(header, headerFont))
                 cell.backgroundColor = blueHeader
                 cell.setPadding(8f)
@@ -145,16 +186,32 @@ class HistoryReceiptGenerator (
 
             var index: Int = 0
             cartItems.forEach { item ->
-                Log.d("DetailHistoryFragment", "Item: ${allProductPrices} - ${item.productPrice.product.id}")
-                historyProductPrice = allProductPrices.filter { it.productId == item.productPrice.product.id }
-                val description = generateTransactionDesc(item.productPrice.unit, item.quantity, historyProductPrice)
+                Log.d(
+                    "DetailHistoryFragment",
+                    "Item: ${allProductPrices} - ${item.productPrice.product.id}"
+                )
+                historyProductPrice =
+                    allProductPrices.filter { it.productId == item.productPrice.product.id }
+                val description = generateTransactionDesc(
+                    item.productPrice.unit,
+                    item.quantity,
+                    historyProductPrice
+                )
 
                 val cells = arrayOf(
                     "${++index}",  // Kolom indeks
                     "${item.quantity} ${item.productPrice.unit} \n${description}",  // Kolom deskripsi
                     item.productPrice.product.name,  // Kolom nama produk
-                    String.format(Locale.GERMANY, "%,d", item.priceAdjustment),  // Kolom harga per unit
-                    String.format(Locale.GERMANY, "%,d", item.priceAdjustment * item.quantity)  // Kolom total harga
+                    String.format(
+                        Locale.GERMANY,
+                        "%,d",
+                        item.priceAdjustment
+                    ),  // Kolom harga per unit
+                    String.format(
+                        Locale.GERMANY,
+                        "%,d",
+                        item.priceAdjustment * item.quantity
+                    )  // Kolom total harga
                 )
 
                 cells.forEachIndexed { cellIndex, content ->
@@ -257,7 +314,11 @@ class HistoryReceiptGenerator (
         val centeredShopName = shopName.padStart((84 + shopName.length) / 2, ' ').padEnd(84, ' ')
 
         // Wrap the address if it exceeds 30 characters
-        val address = if (orderData.customer.address.length > 30) { orderData.customer.address.take(30) } else { orderData.customer.address }
+        val address = if (orderData.customer.address.length > 30) {
+            orderData.customer.address.take(30)
+        } else {
+            orderData.customer.address
+        }
         val formattedRecipientInfo = """
             ${"Yth.".padEnd(59)}
             ${orderData.customer.name.padEnd(59)}
@@ -270,12 +331,19 @@ class HistoryReceiptGenerator (
         val invoiceDetails = """
         INVOICE
         Referensi : TPHA-${orderId}
-        ${"Tanggal   : ".padStart(31) + try {
-            SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
-                .format(SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", Locale.getDefault()).parse(orderData.createdAt))
-        } catch (e: Exception) {
-            "Invalid Date"
-        }}
+        ${
+            "Tanggal   : ".padStart(31) + try {
+                SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
+                    .format(
+                        SimpleDateFormat(
+                            "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'",
+                            Locale.getDefault()
+                        ).parse(orderData.createdAt)
+                    )
+            } catch (e: Exception) {
+                "Invalid Date"
+            }
+        }
         ${"Status    : ".padStart(31) + orderData.paymentStatus.toUpperCase()}
         ${"Jatuh Tempo : ".padStart(31) + orderData.dueDate}
     """.trimIndent()
@@ -283,9 +351,10 @@ class HistoryReceiptGenerator (
         // Combine Recipient Info and Invoice Details
         val recipientLines = formattedRecipientInfo.lines()
         val detailLines = invoiceDetails.lines()
-        val combinedInfo = recipientLines.zip(detailLines).joinToString("\n") { (recipient, detail) ->
-            recipient.padEnd(40) + detail
-        }
+        val combinedInfo =
+            recipientLines.zip(detailLines).joinToString("\n") { (recipient, detail) ->
+                recipient.padEnd(40) + detail
+            }
 
         // Table Header
         val tableHeader = """
@@ -296,20 +365,45 @@ class HistoryReceiptGenerator (
 
         // Items
         val itemsText = cartItems.flatMapIndexed { index, item ->
-            historyProductPrice = allProductPrices.filter { it.productId == item.productPrice.product.id }
-            val description = generateTransactionDesc(item.productPrice.unit, item.quantity, historyProductPrice)
+            historyProductPrice =
+                allProductPrices.filter { it.productId == item.productPrice.product.id }
+            val description =
+                generateTransactionDesc(item.productPrice.unit, item.quantity, historyProductPrice)
 
-            val wrappedItemName = wrapText(item.productPrice.product.name, 24) // Wrap item name to 24 characters
-            val firstLine = "| ${(index + 1).toString().padEnd(3)} | ${(item.quantity.toString() + " " + item.productPrice.unit).padEnd(15)} | ${wrappedItemName[0].padEnd(24)} | ${String.format(Locale.GERMANY, "%,d", item.priceAdjustment.toLong()).padStart(15)} | ${String.format(Locale.GERMANY, "%,d", (item.priceAdjustment * item.quantity).toLong()).padStart(17)} |"
-            val descriptionLine = "|     | ${description.padEnd(15)} |                          |                 |                   |"
-            val additionalLines = wrappedItemName.drop(1).map { "|     |                 | ${it.padEnd(24)} |                 |                   |" }
+            val wrappedItemName =
+                wrapText(item.productPrice.product.name, 24) // Wrap item name to 24 characters
+            val firstLine = "| ${
+                (index + 1).toString().padEnd(3)
+            } | ${(item.quantity.toString() + " " + item.productPrice.unit).padEnd(15)} | ${
+                wrappedItemName[0].padEnd(
+                    24
+                )
+            } | ${
+                String.format(Locale.GERMANY, "%,d", item.priceAdjustment.toLong()).padStart(15)
+            } | ${
+                String.format(
+                    Locale.GERMANY,
+                    "%,d",
+                    (item.priceAdjustment * item.quantity).toLong()
+                ).padStart(17)
+            } |"
+            val descriptionLine =
+                "|     | ${description.padEnd(15)} |                          |                 |                   |"
+            val additionalLines = wrappedItemName.drop(1)
+                .map { "|     |                 | ${it.padEnd(24)} |                 |                   |" }
             listOf(firstLine, descriptionLine) + additionalLines
         }.joinToString("\n")
 
         // Footer
         val footer = """
         |-----|-----------------|--------------------------|-----------------|-------------------|
-        | 		                                                Total: ${String.format(Locale.GERMANY, "Rp%,d", orderData.total.toLong()).padStart(17)} |
+        | 		                                                Total: ${
+            String.format(
+                Locale.GERMANY,
+                "Rp%,d",
+                orderData.total.toLong()
+            ).padStart(17)
+        } |
         +----------------------------------------------------------------------------------------+
 
     """.trimIndent()

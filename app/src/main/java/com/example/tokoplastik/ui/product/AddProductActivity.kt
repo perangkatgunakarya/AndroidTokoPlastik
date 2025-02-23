@@ -28,18 +28,6 @@ class AddProductActivity : AppCompatActivity() {
             insets
         }
 
-        setSupportActionBar(findViewById(R.id.toolbar))
-
-        supportActionBar?.apply {
-            setDisplayHomeAsUpEnabled(true)
-            setHomeAsUpIndicator(R.drawable.ic_back)
-            title = "Tambah Produk"
-        }
-
-        findViewById<Toolbar>(R.id.toolbar).setNavigationOnClickListener {
-            finish()
-        }
-
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView3) as NavHostFragment
         navController = navHostFragment.navController
 
