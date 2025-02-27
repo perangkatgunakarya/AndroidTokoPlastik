@@ -145,7 +145,7 @@ class HistoryFragment :
                 }
             })
 
-            isIconified = false
+//            isIconified = false
             setIconifiedByDefault(false)
             clearFocus()
         }

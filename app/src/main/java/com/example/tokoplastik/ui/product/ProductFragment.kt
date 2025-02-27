@@ -52,6 +52,8 @@ class ProductFragment : BaseFragment<ProductViewModel, FragmentProductBinding, P
         observeProducts()
 
         setupSearchView()
+        binding.root.requestFocus() // Memberikan fokus ke root layout agar SearchView tidak mendapat fokus
+
 
         // Dapatkan referensi ke button_add_product
         val buttonAddProduct: FloatingActionButton = binding.buttonAddProduct
@@ -86,6 +88,7 @@ class ProductFragment : BaseFragment<ProductViewModel, FragmentProductBinding, P
             showPopupMenu(it)
         }
     }
+
 
     private fun showPopupMenu(view: View) {
         val popupMenu = androidx.appcompat.widget.PopupMenu(requireContext(), view)
@@ -201,7 +204,7 @@ class ProductFragment : BaseFragment<ProductViewModel, FragmentProductBinding, P
                 }
             })
 
-            isIconified = false
+//            isIconified = false
             setIconifiedByDefault(false)
             clearFocus()
         }
