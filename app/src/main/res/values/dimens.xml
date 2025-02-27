@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="default_margin">40dp</dimen>
     <dimen name="buttonCorners">15dp</dimen>
     <dimen name="welcomeTextMargin">115dp</dimen>
     <dimen name="smallButtonWidth">130dp</dimen>

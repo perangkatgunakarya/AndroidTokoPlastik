@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -24,6 +26,7 @@ import com.example.tokoplastik.util.handleApiError
 import com.example.tokoplastik.util.visible
 import com.example.tokoplastik.viewmodel.ProductViewModel
 import com.example.tokoplastik.viewmodel.SortType
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
@@ -49,6 +52,22 @@ class ProductFragment : BaseFragment<ProductViewModel, FragmentProductBinding, P
         observeProducts()
 
         setupSearchView()
+
+        // Dapatkan referensi ke button_add_product
+        val buttonAddProduct: FloatingActionButton = binding.buttonAddProduct
+
+        // Atur listener untuk WindowInsets
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars())
+
+            // Sesuaikan margin bottom button_add_product
+            val params = buttonAddProduct.layoutParams as ViewGroup.MarginLayoutParams
+            params.bottomMargin = insets.bottom + resources.getDimensionPixelSize(R.dimen.default_margin) // Tambahkan margin tambahan
+            buttonAddProduct.layoutParams = params
+
+            // Kembalikan insets yang telah dikonsumsi
+            WindowInsetsCompat.CONSUMED
+        }
 
         binding.buttonAddProduct.setOnClickListener {
             val intent = Intent(requireContext(), AddProductActivity::class.java)
