@@ -68,7 +68,7 @@
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/start_button"
         android:layout_width="@dimen/smallButtonWidth"
-        android:layout_height="@dimen/smallButtonHeight"
+        android:layout_height="45dp"
         app:layout_constraintTop_toTopOf="@id/small_welcome_text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@id/guideline_ellipse_left"
