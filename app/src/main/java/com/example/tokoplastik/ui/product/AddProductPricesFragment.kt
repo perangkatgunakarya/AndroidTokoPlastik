@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.tokoplastik.adapter.ProductPricesAdapter
 import com.example.tokoplastik.data.network.AddProductPricesApi
+import com.example.tokoplastik.data.network.GetProductApi
 import com.example.tokoplastik.data.repository.AddProductPricesRepository
 import com.example.tokoplastik.data.responses.ProductPrice
 import com.example.tokoplastik.databinding.FragmentAddProductPricesBinding
@@ -26,6 +27,7 @@ import com.example.tokoplastik.util.handleApiError
 import com.example.tokoplastik.util.setNumberFormatter
 import com.example.tokoplastik.util.visible
 import com.example.tokoplastik.viewmodel.AddProductPricesViewModel
+import com.example.tokoplastik.viewmodel.ProductDetailViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
@@ -37,6 +39,8 @@ class AddProductPricesFragment :
     private lateinit var getProductPrices: List<ProductPrice>
     private var productId: Int = -1
 
+    private lateinit var productDetailViewModel: ProductDetailViewModel
+
     private val units = listOf("pcs", "unit", "pack", "unit", "buah", "pasang", "kotak", "lusin", "lembar", "keping", "batang", "bungkus", "potong", "tablet", "ekor", "rim", "karat", "botol", "butir", "roll", "dus", "karung", "koli", "sak", "bal", "kaleng", "set", "slop", "gulung", "ton", "kg", "gram", "mg", "meter", "m2", "m3", "inch", "cc", "liter")
     private var selectedUnit: String? = null
 
@@ -45,6 +49,9 @@ class AddProductPricesFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        initProductDetailViewModel()
+
         observeViewModel()
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
@@ -66,6 +73,34 @@ class AddProductPricesFragment :
         setupViews()
         setupUnitSpinner()
         viewModel.getProductPrices(args.productId)
+
+        productDetailViewModel.getProductDetail(args.productId)
+    }
+
+    private fun initProductDetailViewModel() {
+        val token = runBlocking { userPreferences.authToken.first() }
+        val productApi = remoteDataSource.buildApi(GetProductApi::class.java, token)
+        val productRepository = com.example.tokoplastik.data.repository.ProductRepository(productApi)
+
+        // Buat instance ProductDetailViewModel
+        productDetailViewModel = ProductDetailViewModel(productRepository)
+
+        // Observe perubahan pada productDetail
+        productDetailViewModel.productDetail.observe(viewLifecycleOwner) { result ->
+            when (result) {
+                is Resource.Success -> {
+                    result.data?.let { response ->
+                        // Dapatkan lowestUnit dari detail produk
+                        val lowestUnit = response.data.product.lowestUnit
+
+                        // Perbarui TextView
+                        binding.lowestUnit.text = lowestUnit
+                    }
+                }
+                is Resource.Failure -> handleApiError(result)
+                Resource.Loading -> {}
+            }
+        }
     }
 
     companion object {
@@ -231,7 +266,7 @@ class AddProductPricesFragment :
             quantityEditText.text?.clear()
             priceEditText.text?.clear()
             unitDropdown.text?.clear()
-            buttonAddPrice.text = "Add Price"
+            buttonAddPrice.text = "Tambah Harga Satuan"
         }
         existingProductPrice = null
     }

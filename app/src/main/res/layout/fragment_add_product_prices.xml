@@ -82,14 +82,38 @@
                 android:layout_marginBottom="12dp"
                 android:hint="Satuan" />
 
-            <EditText
-                android:id="@+id/quantity_edit_text"
-                style="@style/h4"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/edit_text_height"
-                android:layout_marginBottom="12dp"
-                android:hint="Isi Unit Terkecil per Satuan"
-                android:inputType="number" />
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp">
+
+                <EditText
+                    android:id="@+id/quantity_edit_text"
+                    style="@style/h4"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/edit_text_height"
+                    android:layout_marginEnd="16dp"
+                    android:hint="Isi Unit Terkecil per Satuan"
+                    android:inputType="number"
+                    app:layout_constraintEnd_toStartOf="@id/lowest_unit"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/lowest_unit"
+                    style="@style/h4_bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:text=""
+                    android:textAlignment="textStart"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/quantity_edit_text"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <EditText
                 android:id="@+id/price_edit_text"
@@ -99,6 +123,7 @@
                 android:layout_marginBottom="12dp"
                 android:hint="Harga per Satuan"
                 android:inputType="numberDecimal" />
+
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/button_add_price"
