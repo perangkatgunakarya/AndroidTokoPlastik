@@ -151,7 +151,6 @@
         android:id="@+id/totalCardView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginBottom="40dp"
         app:cardCornerRadius="10dp"
         app:cardElevation="15dp"
         app:layout_constraintBottom_toBottomOf="parent"

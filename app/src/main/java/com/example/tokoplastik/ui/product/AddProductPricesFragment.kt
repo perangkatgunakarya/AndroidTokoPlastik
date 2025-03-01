@@ -41,7 +41,7 @@ class AddProductPricesFragment :
 
     private lateinit var productDetailViewModel: ProductDetailViewModel
 
-    private val units = listOf("pcs", "unit", "pack", "unit", "buah", "pasang", "kotak", "lusin", "lembar", "keping", "batang", "bungkus", "potong", "tablet", "ekor", "rim", "karat", "botol", "butir", "roll", "dus", "karung", "koli", "sak", "bal", "kaleng", "set", "slop", "gulung", "ton", "kg", "gram", "mg", "meter", "m2", "m3", "inch", "cc", "liter")
+    private val units = listOf("pcs", "ikat", "unit", "pack", "unit", "buah", "pasang", "kotak", "lusin", "lembar", "keping", "batang", "bungkus", "potong", "tablet", "ekor", "rim", "karat", "botol", "butir", "roll", "dus", "karung", "koli", "sak", "bal", "kaleng", "set", "slop", "gulung", "ton", "kg", "gram", "mg", "meter", "m2", "m3", "inch", "cc", "liter")
     private var selectedUnit: String? = null
 
     private lateinit var priceEdit: EditText
@@ -131,7 +131,7 @@ class AddProductPricesFragment :
         }
 
         binding.buttonAddPrice.setOnClickListener {
-            val unit = binding.unitDropdown.text.toString()
+            val unit = binding.unitDropdown.text.toString().lowercase()
             val quantity = binding.quantityEditText.text.toString()
             val price = binding.priceEditText.getRawValue().toString().toIntOrNull() ?: 0
 

@@ -55,17 +55,14 @@ class ProductFragment : BaseFragment<ProductViewModel, FragmentProductBinding, P
         binding.root.requestFocus() // Memberikan fokus ke root layout agar SearchView tidak mendapat fokus
 
 
-        // Dapatkan referensi ke button_add_product
-        val buttonAddProduct: FloatingActionButton = binding.buttonAddProduct
-
         // Atur listener untuk WindowInsets
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars())
 
             // Sesuaikan margin bottom button_add_product
-            val params = buttonAddProduct.layoutParams as ViewGroup.MarginLayoutParams
-            params.bottomMargin = insets.bottom + resources.getDimensionPixelSize(R.dimen.default_margin) // Tambahkan margin tambahan
-            buttonAddProduct.layoutParams = params
+            val params = binding.buttonAddProduct.layoutParams as ViewGroup.MarginLayoutParams
+            params.bottomMargin = insets.bottom + resources.getDimensionPixelSize(R.dimen.add_button_margin) // Tambahkan margin tambahan
+            binding.buttonAddProduct.layoutParams = params
 
             // Kembalikan insets yang telah dikonsumsi
             WindowInsetsCompat.CONSUMED

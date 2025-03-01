@@ -12,8 +12,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import com.example.tokoplastik.R
 import com.example.tokoplastik.data.network.CustomerApi
 import com.example.tokoplastik.data.repository.CustomerRepository
 import com.example.tokoplastik.data.responses.Customer
@@ -64,6 +67,19 @@ class TransactionFragment : BaseFragment<TransactionViewModel, FragmentTransacti
 
         if (nameEditText.text.isNullOrEmpty()) {
             binding.buttonToCheckout.enable(false)
+        }
+
+        // Atur listener untuk WindowInsets
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars())
+
+            // Sesuaikan margin bottom button_add_product
+            val params = binding.buttonToCheckout.layoutParams as ViewGroup.MarginLayoutParams
+            params.bottomMargin = insets.bottom + resources.getDimensionPixelSize(R.dimen.add_button_margin) // Tambahkan margin tambahan
+            binding.buttonToCheckout.layoutParams = params
+
+            // Kembalikan insets yang telah dikonsumsi
+            WindowInsetsCompat.CONSUMED
         }
 
         binding.buttonToCheckout.setOnClickListener {

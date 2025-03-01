@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
 import androidx.navigation.ui.NavigationUI
 import com.example.tokoplastik.ui.transaction.CheckoutFragment
 import com.google.android.material.behavior.HideBottomViewOnScrollBehavior
@@ -28,19 +27,43 @@ class HomeActivity : AppCompatActivity() {
         setContentView(R.layout.activity_home)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, if (insets.isVisible(WindowInsetsCompat.Type.navigationBars())) 0 else systemBars.bottom)
+            v.setPadding(
+                systemBars.left,
+                systemBars.top,
+                systemBars.right,
+                if (insets.isVisible(WindowInsetsCompat.Type.navigationBars())) 0 else systemBars.bottom
+            )
             insets
         }
 
         bottomNav = findViewById(R.id.bottom_navigation)
 
-        val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.fragmentContainerView2) as NavHostFragment
         navController = navHostFragment.navController
 
-        NavigationUI.setupWithNavController(bottomNavigation, navController)
-        bottomNavigation.labelVisibilityMode = BottomNavigationView.LABEL_VISIBILITY_LABELED
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.detailProductFragment -> {
+                    bottomNav.visibility = View.GONE
+                }
+
+                R.id.stockFragment -> {
+                    bottomNav.visibility = View.GONE
+                }
+
+                R.id.checkoutFragment -> {
+                    bottomNav.visibility = View.GONE
+                }
+
+                else -> {
+                    bottomNav.visibility = View.VISIBLE
+                }
+            }
+        }
+
+        NavigationUI.setupWithNavController(bottomNav, navController)
+        bottomNav.labelVisibilityMode = BottomNavigationView.LABEL_VISIBILITY_LABELED
 
         supportFragmentManager.registerFragmentLifecycleCallbacks(object :
             FragmentManager.FragmentLifecycleCallbacks() {
@@ -64,6 +87,6 @@ class HomeActivity : AppCompatActivity() {
         val params = bottomNav.layoutParams as CoordinatorLayout.LayoutParams
         params.behavior = null
         bottomNav.layoutParams = params
-        bottomNav.visibility = View.VISIBLE
+//        bottomNav.visibility = View.VISIBLE
     }
 }

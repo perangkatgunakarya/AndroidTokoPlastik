@@ -124,6 +124,10 @@ class CartAdapter(
                     )
                     unitsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                     unitsSpinner.adapter = unitsAdapter
+                    val selectedPrice = item.productPrice[position]
+                    binding.lowestUnitQuantity.text =
+                        "(${(selectedPrice.quantityPerUnit)} ${item.product?.data?.product?.lowestUnit})"
+
 
                     binding.quantityText.text = item.quantity.toString()
                     val initialUnit = item.selectedPrice.unit
@@ -176,6 +180,18 @@ class CartAdapter(
                             val newQuantity = item.quantity + 1
                             onQuantityChanged(item, newQuantity)
                             binding.quantityText.text = newQuantity.toString()
+
+                            // Dapatkan posisi unit yang sedang dipilih di spinner
+                            val position = unitsSpinner.selectedItemPosition
+
+                            // Pastikan posisi valid
+                            if (position != -1 && position < item.productPrice.size) {
+                                val selectedPrice = item.productPrice[position]
+
+                                // Update tampilan lowest unit quantity
+                                binding.lowestUnitQuantity.text =
+                                    "(${(selectedPrice.quantityPerUnit.toInt() * newQuantity)} ${item.product?.data?.product?.lowestUnit})"
+                            }
                         } catch (e: Exception) {
                             Log.e("CartAdapter", "Error increasing quantity", e)
                         }
@@ -189,6 +205,18 @@ class CartAdapter(
                                 val newQuantity = item.quantity - 1
                                 onQuantityChanged(item, newQuantity)
                                 binding.quantityText.text = newQuantity.toString()
+
+                                // Dapatkan posisi unit yang sedang dipilih di spinner
+                                val position = unitsSpinner.selectedItemPosition
+
+                                // Pastikan posisi valid
+                                if (position != -1 && position < item.productPrice.size) {
+                                    val selectedPrice = item.productPrice[position]
+
+                                    // Update tampilan lowest unit quantity
+                                    binding.lowestUnitQuantity.text =
+                                        "(${(selectedPrice.quantityPerUnit.toInt() * newQuantity)} ${item.product?.data?.product?.lowestUnit})"
+                                }
                             }
                         } catch (e: Exception) {
                             Log.e("CartAdapter", "Error decreasing quantity", e)
@@ -210,6 +238,8 @@ class CartAdapter(
 
                                         // Update tempPrices dan EditText dengan harga unit baru
                                         tempPrices[adapterPosition] = selectedPrice.price
+                                        binding.lowestUnitQuantity.text =
+                                            "(${(selectedPrice.quantityPerUnit.toInt() * item.quantity)} ${item.product?.data?.product?.lowestUnit})" //product lowest unit
 
                                         // Format dan set harga baru ke EditText
                                         val symbols =

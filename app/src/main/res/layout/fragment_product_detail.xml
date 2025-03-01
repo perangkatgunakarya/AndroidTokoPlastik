@@ -6,20 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ui.product.ProductDetailFragment">
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline_1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.09" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline_2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.91" />
-
     <androidx.cardview.widget.CardView
         android:id="@+id/toolbar_detail_product"
         android:layout_width="match_parent"
@@ -74,291 +60,321 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/productNameLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        app:layout_constraintLeft_toRightOf="@id/guideline_1"
-        app:layout_constraintRight_toLeftOf="@id/guideline_2"
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar_detail_product">
 
-        <TextView
-            android:id="@+id/productNameLabel"
-            style="@style/p_bold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Nama Produk"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <EditText
-            android:id="@+id/productName"
-            style="@style/h4"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:hint="Nama Produk"
-            android:inputType="text"
-            android:maxLines="1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/productNameLabel" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:layout_height="wrap_content">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/supplierNameLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        app:layout_constraintEnd_toEndOf="@id/guideline_2"
-        app:layout_constraintStart_toStartOf="@id/guideline_1"
-        app:layout_constraintTop_toBottomOf="@id/productNameLayout">
-
-        <TextView
-            android:id="@+id/supplierNameLabel"
-            style="@style/p_bold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Nama Supplier"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <EditText
-            android:id="@+id/supplierName"
-            style="@style/h4"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:hint="Nama Supplier"
-            android:inputType="text"
-            android:maxLines="1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/supplierNameLabel" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/capitalLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="@id/guideline_2"
-        app:layout_constraintStart_toStartOf="@id/guideline_1"
-        app:layout_constraintTop_toBottomOf="@id/supplierNameLayout">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/latestCapitalLayout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="4dp"
-            app:layout_constraintEnd_toStartOf="@id/currentCapitalLayout"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:id="@+id/latestCapitalLabel"
-                style="@style/p_bold"
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Harga Modal Terakhir"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.09" />
 
-            <EditText
-                android:id="@+id/latestCapital"
-                style="@style/h4"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:enabled="false"
-                android:hint="Modal Terakhir"
-                android:inputType="text"
-                android:maxLines="1"
-                app:layout_constraintEnd_toStartOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/latestCapitalLabel" />
-
-            <TextView
-                android:id="@+id/latestCapitalDate"
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Terakhir diperbarui : "
-                android:textSize="10sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/latestCapital" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/currentCapitalLayout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/latestCapitalLayout"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:id="@+id/currentCapitalLabel"
-                style="@style/p_bold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Perbarui"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <EditText
-                android:id="@+id/currentCapital"
-                style="@style/h4"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:hint="Modal Terbaru"
-                android:inputType="number"
-                android:maxLines="1"
-                app:layout_constraintTop_toBottomOf="@id/currentCapitalLabel"
-                tools:layout_editor_absoluteX="0dp" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/stockLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="@id/guideline_2"
-        app:layout_constraintStart_toStartOf="@id/guideline_1"
-        app:layout_constraintTop_toBottomOf="@id/capitalLayout">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toStartOf="@id/stockCardButton"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.91" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/latestStockLayout"
+                android:id="@+id/productNameLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintEnd_toStartOf="@id/lowestUnit"
-                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="20dp"
+                app:layout_constraintLeft_toRightOf="@id/guideline_1"
+                app:layout_constraintRight_toLeftOf="@id/guideline_2"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
-                    android:id="@+id/latestStockLabel"
+                    android:id="@+id/productNameLabel"
                     style="@style/p_bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Stock Terakhir"
+                    android:text="Nama Produk"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <EditText
-                    android:id="@+id/latestStock"
+                    android:id="@+id/productName"
                     style="@style/h4"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
-                    android:enabled="false"
-                    android:hint="Stock Terakhir"
+                    android:hint="Nama Produk"
                     android:inputType="text"
                     android:maxLines="1"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/latestStockLabel" />
-
+                    app:layout_constraintTop_toBottomOf="@id/productNameLabel" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <Spinner
-                android:id="@+id/lowestUnit"
-                android:layout_width="120dp"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/supplierNameLayout"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
+                android:layout_marginTop="20dp"
+                app:layout_constraintEnd_toEndOf="@id/guideline_2"
+                app:layout_constraintStart_toStartOf="@id/guideline_1"
+                app:layout_constraintTop_toBottomOf="@id/productNameLayout">
+
+                <TextView
+                    android:id="@+id/supplierNameLabel"
+                    style="@style/p_bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Nama Supplier"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <EditText
+                    android:id="@+id/supplierName"
+                    style="@style/h4"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:hint="Nama Supplier"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/supplierNameLabel" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/capitalLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="@id/guideline_2"
+                app:layout_constraintStart_toStartOf="@id/guideline_1"
+                app:layout_constraintTop_toBottomOf="@id/supplierNameLayout">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/latestCapitalLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="4dp"
+                    app:layout_constraintEnd_toStartOf="@id/currentCapitalLayout"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:id="@+id/latestCapitalLabel"
+                        style="@style/p_bold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Harga Modal Terakhir"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <EditText
+                        android:id="@+id/latestCapital"
+                        style="@style/h4"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:enabled="false"
+                        android:hint="Modal Terakhir"
+                        android:inputType="text"
+                        android:maxLines="1"
+                        app:layout_constraintEnd_toStartOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/latestCapitalLabel" />
+
+                    <TextView
+                        android:id="@+id/latestCapitalDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Terakhir diperbarui : "
+                        android:textSize="10sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/latestCapital" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/currentCapitalLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/latestCapitalLayout"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:id="@+id/currentCapitalLabel"
+                        style="@style/p_bold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Perbarui"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <EditText
+                        android:id="@+id/currentCapital"
+                        style="@style/h4"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:hint="Modal Terbaru"
+                        android:inputType="number"
+                        android:maxLines="1"
+                        app:layout_constraintTop_toBottomOf="@id/currentCapitalLabel"
+                        tools:layout_editor_absoluteX="0dp" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/stockLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="@id/guideline_2"
+                app:layout_constraintStart_toStartOf="@id/guideline_1"
+                app:layout_constraintTop_toBottomOf="@id/capitalLayout">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toStartOf="@id/stockCardButton"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/latestStockLayout"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        app:layout_constraintEnd_toStartOf="@id/lowestUnit"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <TextView
+                            android:id="@+id/latestStockLabel"
+                            style="@style/p_bold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Stock Terakhir"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <EditText
+                            android:id="@+id/latestStock"
+                            style="@style/h4"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:enabled="false"
+                            android:hint="Stock Terakhir"
+                            android:inputType="text"
+                            android:maxLines="1"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/latestStockLabel" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <Spinner
+                        android:id="@+id/lowestUnit"
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/latestStockLayout" />
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/stockCardButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/black"
+                    android:text="Kartu Stok"
+                    android:textColor="@color/white"
+                    android:textSize="10sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/notesLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                app:layout_constraintEnd_toEndOf="@id/guideline_2"
+                app:layout_constraintStart_toStartOf="@id/guideline_1"
+                app:layout_constraintTop_toBottomOf="@id/stockLayout">
+
+                <TextView
+                    android:id="@+id/notesLabel"
+                    style="@style/p_bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Catatan"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <EditText
+                    android:id="@+id/notes"
+                    style="@style/h4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Catatan"
+                    android:inputType="text|textMultiLine"
+                    android:minLines="2"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/notesLabel" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                app:layout_constraintEnd_toStartOf="@id/guideline_2"
+                app:layout_constraintStart_toEndOf="@id/guideline_1"
+                app:layout_constraintTop_toBottomOf="@id/notesLayout">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/goToProductPriceButton"
+                    style="@style/blueButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/medium_button_height"
+                    android:layout_marginEnd="10dp"
+                    android:backgroundTint="@color/secondary"
+                    android:text="Tambahkan Harga Satuan"
+                    android:textColor="@color/black"
+                    app:layout_constraintEnd_toStartOf="@id/saveButton"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/saveButton"
+                    style="@style/blueButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/medium_button_height"
+                    android:text="Simpan"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/goToProductPriceButton"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/latestStockLayout" />
-
-
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/stockCardButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/black"
-            android:text="Kartu Stok"
-            android:textColor="@color/white"
-            android:textSize="10sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/notesLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        app:layout_constraintEnd_toEndOf="@id/guideline_2"
-        app:layout_constraintStart_toStartOf="@id/guideline_1"
-        app:layout_constraintTop_toBottomOf="@id/stockLayout">
-
-        <TextView
-            android:id="@+id/notesLabel"
-            style="@style/p_bold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Catatan"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <EditText
-            android:id="@+id/notes"
-            style="@style/h4"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:hint="Catatan"
-            android:inputType="text|textMultiLine"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/notesLabel" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        app:layout_constraintEnd_toStartOf="@id/guideline_2"
-        app:layout_constraintStart_toEndOf="@id/guideline_1"
-        app:layout_constraintTop_toBottomOf="@id/notesLayout">
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/goToProductPriceButton"
-            style="@style/blueButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/medium_button_height"
-            android:layout_marginEnd="10dp"
-            android:backgroundTint="@color/secondary"
-            android:text="Tambahkan Harga Satuan"
-            android:textColor="@color/black"
-            app:layout_constraintEnd_toStartOf="@id/saveButton"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/saveButton"
-            style="@style/blueButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/medium_button_height"
-            android:text="Simpan"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/goToProductPriceButton"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

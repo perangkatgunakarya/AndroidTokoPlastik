@@ -39,47 +39,7 @@ class ProductDetailFragment :
     private val args: ProductDetailFragmentArgs by navArgs()
     private var productId: Int = -1
     private lateinit var spinner: Spinner
-    private val units = listOf(
-        "pcs",
-        "unit",
-        "pack",
-        "unit",
-        "buah",
-        "pasang",
-        "kotak",
-        "lusin",
-        "lembar",
-        "keping",
-        "batang",
-        "bungkus",
-        "potong",
-        "tablet",
-        "ekor",
-        "rim",
-        "karat",
-        "botol",
-        "butir",
-        "roll",
-        "dus",
-        "karung",
-        "koli",
-        "sak",
-        "bal",
-        "kaleng",
-        "set",
-        "slop",
-        "gulung",
-        "ton",
-        "kg",
-        "gram",
-        "mg",
-        "meter",
-        "m2",
-        "m3",
-        "inch",
-        "cc",
-        "liter"
-    )
+    private val units = listOf("pcs", "ikat", "unit", "pack", "unit", "buah", "pasang", "kotak", "lusin", "lembar", "keping", "batang", "bungkus", "potong", "tablet", "ekor", "rim", "karat", "botol", "butir", "roll", "dus", "karung", "koli", "sak", "bal", "kaleng", "set", "slop", "gulung", "ton", "kg", "gram", "mg", "meter", "m2", "m3", "inch", "cc", "liter")
     private var selectedUnit: String? = null
     private var defaultPosition: Int = 0
     private var latestCapitalPrice: Int? = null
@@ -101,14 +61,6 @@ class ProductDetailFragment :
     }
 
     private fun setupViews() {
-        binding.notes.setOnFocusChangeListener { view, hasFocus ->
-            if (hasFocus) {
-                view.post {
-                    val scrollY = view.top
-                    binding.root.scrollTo(0, scrollY)
-                }
-            }
-        }
 
         binding.buttonBack.setOnClickListener {
             requireActivity().onBackPressed()
