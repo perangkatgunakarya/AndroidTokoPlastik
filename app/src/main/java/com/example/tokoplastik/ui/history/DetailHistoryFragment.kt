@@ -4,10 +4,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.FileProvider
+import androidx.core.view.isVisible
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import cn.pedant.SweetAlert.SweetAlertDialog
@@ -86,6 +88,14 @@ class DetailHistoryFragment :
         val popupMenu = androidx.appcompat.widget.PopupMenu(requireContext(), view)
         popupMenu.inflate(R.menu.detail_history_fragment_menu)
 
+        val menu: Menu = popupMenu.menu
+        if (::detailTransactions.isInitialized && detailTransactions.paymentStatus == "lunas") {
+            val buttonLunasItem = menu.findItem(R.id.button_lunas)
+            val buttonJatuhTempo = menu.findItem(R.id.button_due_date)
+            buttonLunasItem?.isVisible = false
+            buttonJatuhTempo?.isVisible = false
+        }
+
         popupMenu.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.button_print -> {
@@ -122,6 +132,8 @@ class DetailHistoryFragment :
                         if (detailTransactions.paymentStatus != "lunas") {
                             val bottomSheet = CreditBottomSheet()
                             bottomSheet.show(childFragmentManager, "CREDIT_BOTTOM_SHEET")
+                        } else {
+                            // saya ingin menghilangkan R.id.button_lunas di menu detail history
                         }
                     }
                     true
