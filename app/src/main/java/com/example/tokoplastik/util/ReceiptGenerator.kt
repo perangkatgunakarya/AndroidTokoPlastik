@@ -24,29 +24,54 @@ class ReceiptGenerator(
     public var allProductPrices: List<ProductPrice> = emptyList()
     private lateinit var historyProductPrice: List<ProductPrice>
 
-    fun generateTransactionDesc(unit: String, quantity: Int, productPrice: List<ProductPrice>): String {
+    fun generateTransactionDesc(
+        unit: String,
+        quantity: Int,
+        productPrice: List<ProductPrice>
+    ): String {
         val sortedProductPrice = productPrice.sortedByDescending { it.quantityPerUnit }
         val selectedUnitIndex = sortedProductPrice.indexOfFirst { it.unit == unit }
-        if (selectedUnitIndex == -1) {
+        val selectedUnit = sortedProductPrice.firstOrNull() { it.unit == unit }
+        if (selectedUnit == null) {
             return "Unit tidak ditemukan"
         }
 
         val isLowestUnit = selectedUnitIndex == sortedProductPrice.size - 1
         if (isLowestUnit) {
-            return "$quantity"
+            return ""
         }
 
-        val result = StringBuilder("$quantity")
-
-        for (i in selectedUnitIndex until sortedProductPrice.size - 1) {
-            val currentUnit = sortedProductPrice[i]
-            val nextLowerUnit = sortedProductPrice[i + 1]
-            val ratio = currentUnit.quantityPerUnit.toInt() / nextLowerUnit.quantityPerUnit.toInt()
-
-            result.append("x$ratio")
+        val lowestProductPrice = sortedProductPrice[sortedProductPrice.size - 1]
+        val result: String = if (unit === lowestProductPrice.unit) {
+            ""
+        } else {
+            "($quantity x ${selectedUnit.quantityPerUnit} ${lowestProductPrice.unit})"
         }
 
-        return result.toString()
+        return result
+
+//        val sortedProductPrice = productPrice.sortedByDescending { it.quantityPerUnit }
+//        val selectedUnitIndex = sortedProductPrice.indexOfFirst { it.unit == unit }
+//        if (selectedUnitIndex == -1) {
+//            return "Unit tidak ditemukan"
+//        }
+//
+//        val isLowestUnit = selectedUnitIndex == sortedProductPrice.size - 1
+//        if (isLowestUnit) {
+//            return "$quantity"
+//        }
+//
+//        val result = StringBuilder("$quantity")
+//
+//        for (i in selectedUnitIndex until sortedProductPrice.size - 1) {
+//            val currentUnit = sortedProductPrice[i]
+//            val nextLowerUnit = sortedProductPrice[i + 1]
+//            val ratio = currentUnit.quantityPerUnit.toInt() / nextLowerUnit.quantityPerUnit.toInt()
+//
+//            result.append("x$ratio")
+//        }
+//
+//        return result.toString()
     }
 
     fun generatedPdfReceipt(
@@ -84,7 +109,11 @@ class ReceiptGenerator(
             headerTable.widthPercentage = 100f
             headerTable.setWidths(floatArrayOf(5f, 5f))
 
-            val address = if (orderData.customer.address.length > 30) { orderData.customer.address.take(30) } else { orderData.customer.address }
+            val address = if (orderData.customer.address.length > 30) {
+                orderData.customer.address.take(30)
+            } else {
+                orderData.customer.address
+            }
             val customerInfoCell = PdfPCell().apply {
                 border = Rectangle.NO_BORDER
                 val customerFont = FontFactory.getFont(FontFactory.HELVETICA, 13f, BaseColor.BLACK)
@@ -97,10 +126,33 @@ class ReceiptGenerator(
                 border = Rectangle.NO_BORDER
                 horizontalAlignment = Element.ALIGN_RIGHT
                 val detailsFont = FontFactory.getFont(FontFactory.HELVETICA, 11f)
-                addElement(Paragraph("Referensi    : TPHA-${orderId}", detailsFont))
-                addElement(Paragraph("Tanggal      : ${SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(Date())}", detailsFont))
-                addElement(Paragraph("Status        : ${orderData.paymentStatus.toUpperCase()}", detailsFont))
-                addElement(Paragraph("Jatuh Tempo  : ${orderData.dueDate}", detailsFont))
+
+                // Create a PdfPTable for aligned details
+                val detailsTable = PdfPTable(2)
+                detailsTable.setWidths(floatArrayOf(4f, 5f))
+                detailsTable.widthPercentage = 75f
+                detailsTable.horizontalAlignment = Element.ALIGN_RIGHT
+
+                // Helper function to create aligned detail rows
+                fun createDetailRow(label: String, value: String): List<PdfPCell> {
+                    val labelCell = PdfPCell(Phrase(label, detailsFont))
+                    labelCell.border = Rectangle.NO_BORDER
+                    labelCell.horizontalAlignment = Element.ALIGN_LEFT
+
+                    val valueCell = PdfPCell(Phrase(value, detailsFont))
+                    valueCell.border = Rectangle.NO_BORDER
+                    valueCell.horizontalAlignment = Element.ALIGN_LEFT
+
+                    return listOf(labelCell, valueCell)
+                }
+
+                // Add aligned detail rows
+                createDetailRow("Referensi", ": TPHA-${orderId}").forEach { detailsTable.addCell(it) }
+                createDetailRow("Tanggal", ": " + SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(Date())).forEach { detailsTable.addCell(it) }
+                createDetailRow("Status", ": " + orderData.paymentStatus.toUpperCase()).forEach { detailsTable.addCell(it) }
+                createDetailRow("Jatuh Tempo", ": " + orderData.dueDate).forEach { detailsTable.addCell(it) }
+
+                addElement(detailsTable)
             }
 
             headerTable.addCell(customerInfoCell)
@@ -117,7 +169,7 @@ class ReceiptGenerator(
             table.setWidths(floatArrayOf(0.5f, 1.5f, 2.5f, 1.5f, 1.5f))
 
             val headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11f, BaseColor.WHITE)
-            arrayOf("NO", "BANYAKNYA", "NAMA ITEM", "HARGA",  "JUMLAH").forEach { header ->
+            arrayOf("NO", "BANYAKNYA", "NAMA ITEM", "HARGA", "JUMLAH").forEach { header ->
                 val cell = PdfPCell(Phrase(header, headerFont))
                 cell.backgroundColor = blueHeader
                 cell.setPadding(8f)
@@ -131,25 +183,42 @@ class ReceiptGenerator(
 
             var index: Int = 0
             cartItems.forEach { item ->
-                Log.d("HistoryReceiptGenerator", "Processing item: ${item.selectedPrice.productId} - ${allProductPrices}")
-                historyProductPrice = allProductPrices.filter { it.productId == item.selectedPrice.productId }
-                val description = generateTransactionDesc(item.selectedPrice.unit, item.quantity, historyProductPrice)
+                Log.d(
+                    "HistoryReceiptGenerator",
+                    "Processing item: ${item.selectedPrice.productId} - ${allProductPrices}"
+                )
+                historyProductPrice =
+                    allProductPrices.filter { it.productId == item.selectedPrice.productId }
+                val description = generateTransactionDesc(
+                    item.selectedPrice.unit,
+                    item.quantity,
+                    historyProductPrice
+                )
 
                 val cells = arrayOf(
                     "${++index}",
                     "${item.quantity} ${item.selectedPrice.unit} \n ${description}",
                     item.product?.data?.product?.name,
-                    String.format(Locale.GERMANY, "Rp %,d", item.customPrice),
-                    String.format(Locale.GERMANY, "Rp %,d", item.customPrice * item.quantity)
+                    String.format(Locale.GERMANY, "%,d", item.customPrice),
+                    String.format(Locale.GERMANY, "%,d", item.customPrice * item.quantity)
                 )
 
-                cells.forEach { content ->
+                cells.forEachIndexed { cellIndex, content ->
                     val cell = PdfPCell(Phrase(content, contentFont))
                     if (isAlternateRow) {
                         cell.backgroundColor = alternateRow
                     }
                     cell.setPadding(8f)
-                    cell.horizontalAlignment = Element.ALIGN_CENTER
+
+                    // Atur alignment berdasarkan indeks kolom
+                    when (cellIndex) {
+                        0 -> cell.horizontalAlignment = Element.ALIGN_CENTER
+                        1 -> cell.horizontalAlignment = Element.ALIGN_CENTER
+                        3 -> cell.horizontalAlignment = Element.ALIGN_RIGHT
+                        4 -> cell.horizontalAlignment = Element.ALIGN_RIGHT
+                        else -> cell.horizontalAlignment = Element.ALIGN_LEFT
+                    }
+
                     table.addCell(cell)
                 }
                 isAlternateRow = !isAlternateRow
@@ -234,7 +303,11 @@ class ReceiptGenerator(
         val centeredShopName = shopName.padStart((84 + shopName.length) / 2, ' ').padEnd(84, ' ')
 
         // Wrap the address if it exceeds 30 characters
-        val address = if (orderData.customer.address.length > 30) { orderData.customer.address.take(30) } else { orderData.customer.address }
+        val address = if (orderData.customer.address.length > 30) {
+            orderData.customer.address.take(30)
+        } else {
+            orderData.customer.address
+        }
         val formattedRecipientInfo = """
             ${"Yth.".padEnd(59)}
             ${orderData.customer.name.padEnd(59)}
@@ -247,12 +320,19 @@ class ReceiptGenerator(
         val invoiceDetails = """
         INVOICE
         Referensi : TPHA-${orderId}
-        ${"Tanggal   : ".padStart(31) + try {
-            SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
-                .format(SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", Locale.getDefault()).parse(orderData.createdAt))
-        } catch (e: Exception) {
-            "Invalid Date"
-        }}
+        ${
+            "Tanggal   : ".padStart(31) + try {
+                SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
+                    .format(
+                        SimpleDateFormat(
+                            "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'",
+                            Locale.getDefault()
+                        ).parse(orderData.createdAt)
+                    )
+            } catch (e: Exception) {
+                "Invalid Date"
+            }
+        }
         ${"Status    : ".padStart(31) + orderData.paymentStatus.toUpperCase()}
         ${"Jatuh Tempo  : ".padStart(31) + orderData.dueDate}
     """.trimIndent()
@@ -260,9 +340,10 @@ class ReceiptGenerator(
         // Combine Recipient Info and Invoice Details
         val recipientLines = formattedRecipientInfo.lines()
         val detailLines = invoiceDetails.lines()
-        val combinedInfo = recipientLines.zip(detailLines).joinToString("\n") { (recipient, detail) ->
-            recipient.padEnd(40) + detail
-        }
+        val combinedInfo =
+            recipientLines.zip(detailLines).joinToString("\n") { (recipient, detail) ->
+                recipient.padEnd(40) + detail
+            }
 
         // Table Header
         val tableHeader = """
@@ -273,20 +354,41 @@ class ReceiptGenerator(
 
         // Items
         val itemsText = cartItems.flatMapIndexed { index, item ->
-            historyProductPrice = allProductPrices.filter { it.productId == item.product?.data?.product?.id }
-            val description = generateTransactionDesc(item.selectedPrice.unit, item.quantity, historyProductPrice)
+            historyProductPrice =
+                allProductPrices.filter { it.productId == item.product?.data?.product?.id }
+            val description =
+                generateTransactionDesc(item.selectedPrice.unit, item.quantity, historyProductPrice)
 
-            val wrappedItemName = wrapText(item.product?.data?.product?.name.toString(), 24) // Wrap item name to 24 characters
-            val firstLine = "| ${(index + 1).toString().padEnd(3)} | ${(item.quantity.toString() + " " + item.selectedPrice.unit).padEnd(15)} | ${wrappedItemName[0].padEnd(24)} | ${item.customPrice.toString().padEnd(15)} | ${(item.customPrice * item.quantity).toString().padEnd(17)} |"
-            val descriptionLine = "|     | ${description.padEnd(15)} |                          |                 |                   |"
-            val additionalLines = wrappedItemName.drop(1).map { "|     |                 | ${it.padEnd(24)} |                 |                   |" }
+            val wrappedItemName = wrapText(
+                item.product?.data?.product?.name.toString(),
+                24
+            ) // Wrap item name to 24 characters
+            val firstLine = "| ${
+                (index + 1).toString().padEnd(3)
+            } | ${(item.quantity.toString() + " " + item.selectedPrice.unit).padEnd(15)} | ${
+                wrappedItemName[0].padEnd(
+                    24
+                )
+            } | ${
+                item.customPrice.toString().padEnd(15)
+            } | ${(item.customPrice * item.quantity).toString().padEnd(17)} |"
+            val descriptionLine =
+                "|     | ${description.padEnd(15)} |                          |                 |                   |"
+            val additionalLines = wrappedItemName.drop(1)
+                .map { "|     |                 | ${it.padEnd(24)} |                 |                   |" }
             listOf(firstLine, descriptionLine) + additionalLines
         }.joinToString("\n")
 
         // Footer
         val footer = """
         |-----|-----------------|--------------------------|-----------------|-------------------|
-        | 		                                                Total: ${String.format(Locale.GERMANY, "Rp %,d", orderData.total.toLong()).padEnd(18)}|
+        | 		                                                Total: ${
+            String.format(
+                Locale.GERMANY,
+                "Rp %,d",
+                orderData.total.toLong()
+            ).padEnd(18)
+        }|
         +----------------------------------------------------------------------------------------+
 
     """.trimIndent()

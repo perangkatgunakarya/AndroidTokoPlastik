@@ -139,23 +139,33 @@ class HistoryReceiptGenerator(
                 border = Rectangle.NO_BORDER
                 horizontalAlignment = Element.ALIGN_RIGHT
                 val detailsFont = FontFactory.getFont(FontFactory.HELVETICA, 11f)
-                addElement(Paragraph("Referensi    : TPHA-${orderId}", detailsFont))
-                addElement(
-                    Paragraph(
-                        "Tanggal      : ${
-                            SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(
-                                Date()
-                            )
-                        }", detailsFont
-                    )
-                )
-                addElement(
-                    Paragraph(
-                        "Status        : ${orderData.paymentStatus.toUpperCase()}",
-                        detailsFont
-                    )
-                )
-                addElement(Paragraph("Jatuh Tempo  : ${orderData.dueDate}", detailsFont))
+
+                // Create a PdfPTable for aligned details
+                val detailsTable = PdfPTable(2)
+                detailsTable.setWidths(floatArrayOf(4f, 5f))
+                detailsTable.widthPercentage = 75f
+                detailsTable.horizontalAlignment = Element.ALIGN_RIGHT
+
+                // Helper function to create aligned detail rows
+                fun createDetailRow(label: String, value: String): List<PdfPCell> {
+                    val labelCell = PdfPCell(Phrase(label, detailsFont))
+                    labelCell.border = Rectangle.NO_BORDER
+                    labelCell.horizontalAlignment = Element.ALIGN_LEFT
+
+                    val valueCell = PdfPCell(Phrase(value, detailsFont))
+                    valueCell.border = Rectangle.NO_BORDER
+                    valueCell.horizontalAlignment = Element.ALIGN_LEFT
+
+                    return listOf(labelCell, valueCell)
+                }
+
+                // Add aligned detail rows
+                createDetailRow("Referensi", ": TPHA-${orderId}").forEach { detailsTable.addCell(it) }
+                createDetailRow("Tanggal", ": " + SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(Date())).forEach { detailsTable.addCell(it) }
+                createDetailRow("Status", ": " + orderData.paymentStatus.toUpperCase()).forEach { detailsTable.addCell(it) }
+                createDetailRow("Jatuh Tempo", ": " + orderData.dueDate).forEach { detailsTable.addCell(it) }
+
+                addElement(detailsTable)
             }
 
             headerTable.addCell(customerInfoCell)

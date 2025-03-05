@@ -12,14 +12,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.09" />
+        app:layout_constraintGuide_percent="0.05" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.91" />
+        app:layout_constraintGuide_percent="0.95" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/toolbar_checkout"
@@ -66,38 +66,16 @@
                 android:layout_marginEnd="19dp"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:text="awefawef"
-                android:textAlignment="textStart"
+                android:text="Daftar Barang Transaksi"
+                android:textAlignment="center"
                 android:textColor="@color/g_black"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/guideline_inside_2"
                 app:layout_constraintStart_toEndOf="@id/button_back"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageButton
-                android:id="@+id/button_preview"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_file_open"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="@id/guideline_inside_2"
-                app:layout_constraintEnd_toEndOf="@id/guideline_inside_2"
-                app:layout_constraintBottom_toBottomOf="parent"/>
-
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
-
-    <TextView
-        android:layout_marginTop="16dp"
-        android:id="@+id/checkout_fragment_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Pilih Produk"
-        android:textColor="@color/g_black"
-        android:textSize="@dimen/h3TextSize"
-        app:layout_constraintStart_toStartOf="@id/guideline"
-        app:layout_constraintTop_toBottomOf="@id/toolbar_checkout" />
 
     <AutoCompleteTextView
         android:id="@+id/product_dropdown"
@@ -107,7 +85,7 @@
         android:hint="Cari Nama Produk"
         app:layout_constraintEnd_toEndOf="@id/guideline2"
         app:layout_constraintStart_toStartOf="@id/guideline"
-        app:layout_constraintTop_toBottomOf="@id/checkout_fragment_title" />
+        app:layout_constraintTop_toBottomOf="@id/toolbar_checkout"/>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/button_add_product"
@@ -177,14 +155,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.06" />
+                app:layout_constraintGuide_percent="0.02" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.94" />
+                app:layout_constraintGuide_percent="0.98" />
 
 
             <TextView

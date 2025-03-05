@@ -64,36 +64,38 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:layout_marginEnd="24dp"
-            android:hint="Rp"
+            android:hint="Rp10.000.000.000"
             android:inputType="numberDecimal"
             android:textColor="@color/black"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/unitsSpinner"
+            app:layout_constraintEnd_toStartOf="@+id/quantityLayout"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/supplier_text"
             app:layout_constraintVertical_bias="1.0" />
-
-        <Spinner
-            android:id="@+id/unitsSpinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="-16dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/product_image" />
 
         <LinearLayout
             android:id="@+id/lowest_unit_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/unitsSpinner">
+            app:layout_constraintTop_toBottomOf="@id/product_image">
+
+            <Spinner
+                android:id="@+id/unitsSpinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="-16dp"
+                android:layout_gravity="end"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/product_image" />
 
             <TextView
                 android:id="@+id/lowest_unit_quantity"
                 style="@style/p"
+                android:layout_gravity="end"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="4dp"
@@ -115,25 +117,30 @@
 
             <ImageButton
                 android:id="@+id/btnMinus"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Decrease quantity"
                 android:src="@drawable/ic_remove" />
 
-            <TextView
+            <EditText
                 android:id="@+id/quantityText"
                 style="@style/h4_bold"
-                android:layout_width="wrap_content"
+                android:maxLength="9"
+                android:layout_width="50dp"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="18dp"
-                android:text="1"
+                android:layout_marginBottom="-2dp"
+                android:inputType="number"
+                android:paddingTop="0dp"
+                android:text="23444"
+                android:textAlignment="center"
                 android:textColor="@color/black" />
 
             <ImageButton
                 android:id="@+id/btnPlus"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Increase quantity"
                 android:src="@drawable/ic_plus_thin" />

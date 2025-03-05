@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.compose.ui.semantics.text
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -126,20 +127,79 @@ class CartAdapter(
                     unitsSpinner.adapter = unitsAdapter
                     val selectedPrice = item.productPrice[position]
                     binding.lowestUnitQuantity.text =
-                        "(${(selectedPrice.quantityPerUnit)} ${item.product?.data?.product?.lowestUnit})"
+                        "(${item.quantity} x ${(selectedPrice.quantityPerUnit)} ${item.product?.data?.product?.lowestUnit})"
 
 
-                    binding.quantityText.text = item.quantity.toString()
-                    val initialUnit = item.selectedPrice.unit
-                    val position = item.productPrice.indexOfFirst { it.unit == initialUnit }
-                    if (position != -1) {
-                        unitsSpinner.setSelection(position)
-                        if (item.customPrice != item.selectedPrice.price) {
-                            tempPrices[adapterPosition] = item.customPrice
-                        } else {
-                            tempPrices[adapterPosition] = item.selectedPrice.price
+                    quantityText.setText(item.quantity.toString())
+                    quantityText.addTextChangedListener(object : TextWatcher {
+                        override fun beforeTextChanged(
+                            s: CharSequence?,
+                            start: Int,
+                            count: Int,
+                            after: Int
+                        ) {
                         }
-                    }
+
+                        override fun onTextChanged(
+                            s: CharSequence?,
+                            start: Int,
+                            before: Int,
+                            count: Int
+                        ) {
+                            val newQuantityString = s.toString()
+
+                            // Menghilangkan angka 0 di depan
+                            val trimmedQuantityString = newQuantityString.trimStart('0')
+
+                            if (newQuantityString != trimmedQuantityString) {
+                                // Jika ada angka 0 di depan, update EditText
+                                quantityText.setText(trimmedQuantityString)
+                            }
+
+                            if (trimmedQuantityString.isNotEmpty()) {
+                                try {
+                                    val newQuantity = trimmedQuantityString.toInt()
+                                    // Memastikan kuantitas tidak kurang dari 1
+                                    if (newQuantity >= 1) {
+                                        // Memanggil onQuantityChanged untuk memperbarui data
+                                        onQuantityChanged(item, newQuantity)
+
+                                        // Dapatkan posisi unit yang sedang dipilih di spinner
+                                        val position = unitsSpinner.selectedItemPosition
+
+                                        // Pastikan posisi valid
+                                        if (position != -1 && position < item.productPrice.size) {
+                                            val selectedPrice = item.productPrice[position]
+
+                                            // Update tampilan lowest unit quantity
+                                            binding.lowestUnitQuantity.text =
+                                                "(${newQuantity} x ${selectedPrice.quantityPerUnit.toInt()} ${item.product?.data?.product?.lowestUnit})"
+                                        }
+                                    } else {
+                                        // Jika kuantitas kurang dari 1, bersihkan teks
+                                        quantityText.text.clear()
+                                        onQuantityChanged(item, 0)
+
+                                        // Reset tampilan lowest unit quantity
+                                        binding.lowestUnitQuantity.text = ""
+                                    }
+                                } catch (e: NumberFormatException) {
+                                    // Jika input bukan angka, bersihkan teks
+                                    quantityText.text.clear()
+                                    onQuantityChanged(item, 0)
+
+                                    // Reset tampilan lowest unit quantity
+                                    binding.lowestUnitQuantity.text = ""
+                                }
+                            } else {
+                                // Teks kosong, reset ke kondisi awal
+                                onQuantityChanged(item, 0)
+                                binding.lowestUnitQuantity.text = ""
+                            }
+                        }
+
+                        override fun afterTextChanged(s: Editable?) {}
+                    })
 
                     if (!priceEdit.hasFocus()) {
                         val price = tempPrices[adapterPosition] ?: item.customPrice
@@ -177,9 +237,12 @@ class CartAdapter(
                         try {
                             if (!isClickValid()) return@setOnClickListener
 
-                            val newQuantity = item.quantity + 1
+                            val currentQuantity = quantityText.text.toString().toIntOrNull() ?: 1
+                            val newQuantity = currentQuantity + 1
                             onQuantityChanged(item, newQuantity)
-                            binding.quantityText.text = newQuantity.toString()
+                            // Perbarui quantityText di sini
+                            quantityText.setText(newQuantity.toString())
+                            quantityText.setSelection(quantityText.text.length) // Pindahkan kursor ke akhir teks
 
                             // Dapatkan posisi unit yang sedang dipilih di spinner
                             val position = unitsSpinner.selectedItemPosition
@@ -190,7 +253,7 @@ class CartAdapter(
 
                                 // Update tampilan lowest unit quantity
                                 binding.lowestUnitQuantity.text =
-                                    "(${(selectedPrice.quantityPerUnit.toInt() * newQuantity)} ${item.product?.data?.product?.lowestUnit})"
+                                    "(${newQuantity} x ${selectedPrice.quantityPerUnit.toInt()} ${item.product?.data?.product?.lowestUnit})"
                             }
                         } catch (e: Exception) {
                             Log.e("CartAdapter", "Error increasing quantity", e)
@@ -201,10 +264,13 @@ class CartAdapter(
                         try {
                             if (!isClickValid()) return@setOnClickListener
 
-                            if (item.quantity > 1) {
-                                val newQuantity = item.quantity - 1
+                            val currentQuantity = quantityText.text.toString().toIntOrNull() ?: 1
+                            if (currentQuantity > 1) {
+                                val newQuantity = currentQuantity - 1
                                 onQuantityChanged(item, newQuantity)
-                                binding.quantityText.text = newQuantity.toString()
+                                // Perbarui quantityText di sini
+                                quantityText.setText(newQuantity.toString())
+                                quantityText.setSelection(quantityText.text.length) // Pindahkan kursor ke akhir teks
 
                                 // Dapatkan posisi unit yang sedang dipilih di spinner
                                 val position = unitsSpinner.selectedItemPosition
@@ -215,7 +281,7 @@ class CartAdapter(
 
                                     // Update tampilan lowest unit quantity
                                     binding.lowestUnitQuantity.text =
-                                        "(${(selectedPrice.quantityPerUnit.toInt() * newQuantity)} ${item.product?.data?.product?.lowestUnit})"
+                                        "(${newQuantity} x ${selectedPrice.quantityPerUnit.toInt()} ${item.product?.data?.product?.lowestUnit})"
                                 }
                             }
                         } catch (e: Exception) {
@@ -239,7 +305,7 @@ class CartAdapter(
                                         // Update tempPrices dan EditText dengan harga unit baru
                                         tempPrices[adapterPosition] = selectedPrice.price
                                         binding.lowestUnitQuantity.text =
-                                            "(${(selectedPrice.quantityPerUnit.toInt() * item.quantity)} ${item.product?.data?.product?.lowestUnit})" //product lowest unit
+                                            "(${item.quantity} x ${selectedPrice.quantityPerUnit.toInt()} ${item.product?.data?.product?.lowestUnit})" //product lowest unit
 
                                         // Format dan set harga baru ke EditText
                                         val symbols =

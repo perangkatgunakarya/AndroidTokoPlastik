@@ -107,7 +107,7 @@
             style="@style/h3_bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="PAID"
+            android:text="LUNAS"
             android:textColor="@color/text_red"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

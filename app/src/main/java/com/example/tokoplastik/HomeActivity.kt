@@ -59,6 +59,9 @@ class HomeActivity : AppCompatActivity() {
                 R.id.detailHistoryFragment -> {
                     bottomNav.visibility = View.GONE
                 }
+                R.id.addCustomerFragment  -> {
+                    bottomNav.visibility = View.GONE
+                }
 
                 else -> {
                     bottomNav.visibility = View.VISIBLE
