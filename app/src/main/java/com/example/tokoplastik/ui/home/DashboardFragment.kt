@@ -46,34 +46,34 @@ class DashboardFragment :
             SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(Date())
         binding.userName.text = "Hello, ${runBlocking { userPreferences.username.first() }}"
 
-        lineChart = binding.chart
-        setupChipGroupListener()
+//        lineChart = binding.chart
+//        setupChipGroupListener()
         setupObserver()
         viewModel.getDashboardData()
         viewModel.getChart()
 
-//        binding.buttonLogout.setOnClickListener { logout() }
+        binding.buttonLogout.setOnClickListener { logout() }
     }
 
-    private fun setupChipGroupListener() {
-        binding.radioGroup.setOnCheckedChangeListener { group, checkedId ->
-            when (checkedId) {
-                binding.radioButtonDaily.id -> {
-                    viewModel.getChart()
-                    binding.TitleTextView.text = "Grafik Penjualan Harian"
-                }
-
-                binding.radioButtonMonthly.id -> {
-                    viewModel.getChartMonthly()
-                    binding.TitleTextView.text = "Grafik Penjualan Bulanan"
-                }
-
-                else -> {
-                    Log.d("DashboardFragment", "No radio button selected")
-                }
-            }
-        }
-    }
+//    private fun setupChipGroupListener() {
+//        binding.radioGroup.setOnCheckedChangeListener { group, checkedId ->
+//            when (checkedId) {
+//                binding.radioButtonDaily.id -> {
+//                    viewModel.getChart()
+//                    binding.TitleTextView.text = "Grafik Penjualan Harian"
+//                }
+//
+//                binding.radioButtonMonthly.id -> {
+//                    viewModel.getChartMonthly()
+//                    binding.TitleTextView.text = "Grafik Penjualan Bulanan"
+//                }
+//
+//                else -> {
+//                    Log.d("DashboardFragment", "No radio button selected")
+//                }
+//            }
+//        }
+//    }
 
     private fun setupObserver() {
         viewModel.chart.observe(viewLifecycleOwner) {
@@ -104,23 +104,23 @@ class DashboardFragment :
                     binding.topText.text = it.data?.data?.topProduct?.product?.name
                     binding.unpaidText.text = it.data?.data?.unpaidOrder.toString()
 
-                    if (it.data?.data?.todayIncome!! < 0) {
-                        val formattedOmzet = formatter.format(abs(it.data.data.todayIncome))
-                        binding.omzetText.text = "-Rp$formattedOmzet"
-                    } else {
-                        val formattedOmzet = formatter.format(it.data.data.todayIncome)
-                        binding.omzetText.text = "Rp$formattedOmzet"
-                    }
+//                    if (it.data?.data?.todayIncome!! < 0) {
+//                        val formattedOmzet = formatter.format(abs(it.data.data.todayIncome))
+//                        binding.omzetText.text = "-Rp$formattedOmzet"
+//                    } else {
+//                        val formattedOmzet = formatter.format(it.data.data.todayIncome)
+//                        binding.omzetText.text = "Rp$formattedOmzet"
+//                    }
 
 
 
-                    if (it.data?.data?.monthlyProfit!! < 0) {
-                        val formattedProfit = formatter.format(abs(it.data.data.monthlyProfit))
-                        binding.profitText.text = "-Rp${formattedProfit}"
-                    } else {
-                        val formattedProfit = formatter.format(it.data.data.monthlyProfit)
-                        binding.profitText.text = "Rp$formattedProfit"
-                    }
+//                    if (it.data?.data?.monthlyProfit!! < 0) {
+//                        val formattedProfit = formatter.format(abs(it.data.data.monthlyProfit))
+//                        binding.profitText.text = "-Rp${formattedProfit}"
+//                    } else {
+//                        val formattedProfit = formatter.format(it.data.data.monthlyProfit)
+//                        binding.profitText.text = "Rp$formattedProfit"
+//                    }
 
                 }
 
