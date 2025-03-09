@@ -25,7 +25,7 @@ class ProductPricesAdapter(
             binding.root.setOnClickListener { onItemClick(price) }  // Add click listener
 
             binding.unitText.text = price.unit
-            binding.quantityPerUnitText.text = "${price.quantityPerUnit} per unit"
+            binding.quantityPerUnitText.text = "isi ${price.quantityPerUnit} ${price.product.lowestUnit}"
 
             val symbols = DecimalFormatSymbols(Locale.getDefault()).apply {
                 groupingSeparator = '.'
