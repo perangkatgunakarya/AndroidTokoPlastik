@@ -24,7 +24,32 @@ class ReceiptGenerator(
     public var allProductPrices: List<ProductPrice> = emptyList()
     private lateinit var historyProductPrice: List<ProductPrice>
 
-    fun generateTransactionDesc(
+    private fun formatDate(dateString: String): String {
+        val outputFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+
+        // List format input yang didukung
+        val inputFormats = listOf(
+            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", Locale.getDefault()),
+            SimpleDateFormat("dd MMMM yyyy", Locale("id", "ID")),
+            SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()),
+        )
+
+        // Coba parse dengan semua format yang tersedia
+        for (format in inputFormats) {
+            try {
+                val date: Date = format.parse(dateString) ?: continue
+                return outputFormat.format(date)
+            } catch (e: Exception) {
+                // Lanjut ke format berikutnya jika format ini gagal
+                continue
+            }
+        }
+
+        // Jika semua format gagal
+        return "-"
+    }
+
+    private fun generateTransactionDesc(
         unit: String,
         quantity: Int,
         productPrice: List<ProductPrice>
@@ -148,9 +173,9 @@ class ReceiptGenerator(
 
                 // Add aligned detail rows
                 createDetailRow("Referensi", ": TPHA-${orderId}").forEach { detailsTable.addCell(it) }
-                createDetailRow("Tanggal", ": " + SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(Date())).forEach { detailsTable.addCell(it) }
+                createDetailRow("Tanggal", ": " + formatDate(orderData.createdAt)).forEach { detailsTable.addCell(it) }
                 createDetailRow("Status", ": " + orderData.paymentStatus.toUpperCase()).forEach { detailsTable.addCell(it) }
-                createDetailRow("Jatuh Tempo", ": " + orderData.dueDate).forEach { detailsTable.addCell(it) }
+                createDetailRow("Jatuh Tempo", ": " + formatDate(orderData.dueDate)).forEach { detailsTable.addCell(it) }
 
                 addElement(detailsTable)
             }
@@ -225,7 +250,13 @@ class ReceiptGenerator(
             }
 
             document.add(table)
-            document.add(Paragraph("\n"))
+
+            val attentionText = Paragraph(
+                "\nPerhatian : Barang yang sudah dibeli tidak dapat dikembalikan lagi.",
+                FontFactory.getFont(FontFactory.HELVETICA, 10f, BaseColor.RED)
+            )
+            attentionText.alignment = Element.ALIGN_LEFT
+            document.add(attentionText)
 
             val totalPara = Paragraph(
                 "Total: ${String.format(Locale.GERMANY, "Rp %,d", orderData.total.toLong())}",
@@ -243,22 +274,22 @@ class ReceiptGenerator(
             val penerimaCell = PdfPCell().apply {
                 border = Rectangle.NO_BORDER
                 val penerimaFont = FontFactory.getFont(FontFactory.HELVETICA, 11f)
-                addElement(Paragraph("Penerima\n\n\n", penerimaFont))
-                addElement(Paragraph("""(             )""".trimIndent(), penerimaFont))
+                addElement(Paragraph("Penerima\n\n\n\n", penerimaFont))
+                addElement(Paragraph("""(                                  )""".trimIndent(), penerimaFont))
             }
 
             val pengirimCell = PdfPCell().apply {
                 border = Rectangle.NO_BORDER
                 val pengirimFont = FontFactory.getFont(FontFactory.HELVETICA, 11f)
-                addElement(Paragraph("Pengirim\n\n\n", pengirimFont))
-                addElement(Paragraph("""(             )""".trimIndent(), pengirimFont))
+                addElement(Paragraph("Pengirim\n\n\n\n", pengirimFont))
+                addElement(Paragraph("""(                                  )""".trimIndent(), pengirimFont))
             }
 
             val regardCell = PdfPCell().apply {
                 border = Rectangle.NO_BORDER
                 val regardFont = FontFactory.getFont(FontFactory.HELVETICA, 11f)
-                addElement(Paragraph("Dengan Hormat\n\n\n", regardFont))
-                addElement(Paragraph("Toko Plastik H. Ali", regardFont))
+                addElement(Paragraph("Dengan Hormat\n\n\n\n", regardFont))
+                addElement(Paragraph("""(                                  )""".trimIndent(), regardFont))
             }
 
             footerTable.addCell(penerimaCell)
@@ -321,20 +352,10 @@ class ReceiptGenerator(
         INVOICE
         Referensi : TPHA-${orderId}
         ${
-            "Tanggal   : ".padStart(31) + try {
-                SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
-                    .format(
-                        SimpleDateFormat(
-                            "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'",
-                            Locale.getDefault()
-                        ).parse(orderData.createdAt)
-                    )
-            } catch (e: Exception) {
-                "Invalid Date"
-            }
+            "Tanggal   : ".padStart(31) + formatDate(orderData.createdAt)
         }
         ${"Status    : ".padStart(31) + orderData.paymentStatus.toUpperCase()}
-        ${"Jatuh Tempo  : ".padStart(31) + orderData.dueDate}
+        ${"Jatuh Tempo  : ".padStart(31) + formatDate(orderData.dueDate)}
     """.trimIndent()
 
         // Combine Recipient Info and Invoice Details
@@ -396,27 +417,21 @@ class ReceiptGenerator(
         val recipientSenderRegard = """
             
             
-       Penerima                        Pengirim                 Dengan Hormat
+       Penerima                           Pengirim                           Dengan Hormat
     
     
     
-    (             )                 (              )            $shopName
+       (                )                 (                )                 (                )
     """.trimIndent()
 
         val footer3 = """
         
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
     """.trimIndent()
-        return "$centeredShopName\n\n$combinedInfo\n\n$tableHeader\n$itemsText\n$footer\n$recipientSenderRegard\n$footer3"
+        val attentionText = """
+            Perhatian : Barang yang sudah dibeli tidak dapat dikembalikan lagi.
+        """.trimIndent()
+        return "$centeredShopName\n\n$combinedInfo\n\n$tableHeader\n$itemsText\n$footer\n$attentionText\n\n$recipientSenderRegard\n$footer3"
     }
 
     // Helper function to wrap text

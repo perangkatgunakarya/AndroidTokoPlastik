@@ -170,7 +170,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Total"
-                app:layout_constraintStart_toStartOf="@id/guideline4"
+                app:layout_constraintEnd_toEndOf="@id/guideline5"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
@@ -180,7 +180,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/black"
-                app:layout_constraintStart_toStartOf="@id/guideline4"
+                app:layout_constraintEnd_toEndOf="@id/guideline5"
                 app:layout_constraintTop_toBottomOf="@id/total_title" />
 
             <androidx.appcompat.widget.AppCompatButton
@@ -191,7 +191,7 @@
                 android:paddingHorizontal="24dp"
                 android:paddingVertical="10dp"
                 android:text="Checkout"
-                app:layout_constraintEnd_toEndOf="@id/guideline5"
+                app:layout_constraintStart_toStartOf="@id/guideline4"
                 app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

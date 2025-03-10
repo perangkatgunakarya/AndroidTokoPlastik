@@ -76,21 +76,6 @@ class DashboardFragment :
 //    }
 
     private fun setupObserver() {
-        viewModel.chart.observe(viewLifecycleOwner) {
-            when (it) {
-                is Resource.Success -> {
-                    binding.homeProgressBar.visible(false)
-                    updateChart(it.data?.data)
-                }
-
-                is Resource.Failure -> {
-                    binding.homeProgressBar.visible(false)
-                    handleApiError(it)
-                }
-
-                is Resource.Loading -> {}
-            }
-        }
 
         viewModel.dashboardData.observe(viewLifecycleOwner) {
             when (it) {
@@ -132,42 +117,6 @@ class DashboardFragment :
                 is Resource.Loading -> {}
             }
         }
-    }
-
-    private fun updateChart(chartData: ChartData?) {
-        val omzetEntries = mutableListOf<Entry>()
-        val costEntries = mutableListOf<Entry>()
-        val range = chartData?.range
-
-        chartData?.data?.forEach { series ->
-            when (series.label) {
-                "Omzet" -> {
-                    series.points.forEach { point ->
-                        if (range.toString() == "daily") {
-                            val dateIndex = convertDateToIndex(point.x)
-                            omzetEntries.add(Entry(dateIndex, point.y.toFloat()))
-                        } else {
-                            val dateIndex = convertDateToIndexMonthly(point.x)
-                            omzetEntries.add(Entry(dateIndex, point.y.toFloat()))
-                        }
-                    }
-                }
-
-                "Cost" -> {
-                    series.points.forEach { point ->
-                        if (range.toString() == "daily") {
-                            val dateIndex = convertDateToIndex(point.x)
-                            costEntries.add(Entry(dateIndex, point.y.toFloat()))
-                        } else {
-                            val dateIndex = convertDateToIndexMonthly(point.x)
-                            costEntries.add(Entry(dateIndex, point.y.toFloat()))
-                        }
-                    }
-                }
-            }
-        }
-
-        setupLineChart(lineChart, omzetEntries, costEntries, range.toString())
     }
 
     private fun convertDateToIndex(dateStr: String): Float {

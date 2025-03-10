@@ -175,6 +175,14 @@ class CartAdapter(
                                             binding.lowestUnitQuantity.text =
                                                 "(${newQuantity} x ${selectedPrice.quantityPerUnit.toInt()} ${item.product?.data?.product?.lowestUnit})"
                                         }
+
+                                        // Tambahkan update untuk totalPrice
+                                        val currentPrice = tempPrices[adapterPosition] ?: item.customPrice
+                                        val symbols = DecimalFormatSymbols(Locale.getDefault()).apply {
+                                            groupingSeparator = '.'
+                                        }
+                                        val formatter = DecimalFormat("#,###", symbols)
+                                        totalPrice.text = "Rp${formatter.format(newQuantity * currentPrice)}"
                                     } else {
                                         // Jika kuantitas kurang dari 1, bersihkan teks
                                         quantityText.text.clear()
@@ -182,6 +190,9 @@ class CartAdapter(
 
                                         // Reset tampilan lowest unit quantity
                                         binding.lowestUnitQuantity.text = ""
+
+                                        // Reset total price
+                                        totalPrice.text = "Rp0"
                                     }
                                 } catch (e: NumberFormatException) {
                                     // Jika input bukan angka, bersihkan teks
@@ -190,11 +201,17 @@ class CartAdapter(
 
                                     // Reset tampilan lowest unit quantity
                                     binding.lowestUnitQuantity.text = ""
+
+                                    // Reset total price
+                                    totalPrice.text = "Rp0"
                                 }
                             } else {
                                 // Teks kosong, reset ke kondisi awal
                                 onQuantityChanged(item, 0)
                                 binding.lowestUnitQuantity.text = ""
+
+                                // Reset total price
+                                totalPrice.text = "Rp0"
                             }
                         }
 
@@ -233,6 +250,40 @@ class CartAdapter(
                         }
                     }
 
+                    binding.priceEdit.addTextChangedListener(object : TextWatcher {
+                        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                            // Tidak ada perubahan
+                        }
+
+                        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                            if (binding.priceEdit.hasFocus()) {
+                                try {
+                                    // Gunakan getRawValue() untuk mendapatkan nilai tanpa pemisah ribuan
+                                    val newPrice = binding.priceEdit.getRawValue()
+                                    tempPrices[adapterPosition] = newPrice
+                                    onPriceChanged(item, newPrice)
+
+                                    // Update totalPrice setiap kali harga berubah
+                                    val currentQuantity = quantityText.text.toString().toIntOrNull() ?: 0
+                                    val symbols = DecimalFormatSymbols(Locale.getDefault()).apply {
+                                        groupingSeparator = '.'
+                                    }
+                                    val formatter = DecimalFormat("#,###", symbols)
+                                    totalPrice.text = "Rp${formatter.format(currentQuantity * newPrice)}"
+                                } catch (e: NumberFormatException) {
+                                    // Log error tanpa mengubah nilai
+                                    Log.e("CartAdapter", "Error parsing price", e)
+                                }
+                            }
+                        }
+
+                        override fun afterTextChanged(s: Editable?) {
+                            // Tidak ada perubahan
+                        }
+                    })
+
+                    totalPrice.text = "Rp${formatter.format(quantityText.text.toString().toInt() * item.customPrice)}"
+
                     btnPlus.setOnClickListener {
                         try {
                             if (!isClickValid()) return@setOnClickListener
@@ -255,6 +306,8 @@ class CartAdapter(
                                 binding.lowestUnitQuantity.text =
                                     "(${newQuantity} x ${selectedPrice.quantityPerUnit.toInt()} ${item.product?.data?.product?.lowestUnit})"
                             }
+
+                            totalPrice.text = "Rp${formatter.format(newQuantity * item.customPrice)}"
                         } catch (e: Exception) {
                             Log.e("CartAdapter", "Error increasing quantity", e)
                         }
@@ -283,46 +336,50 @@ class CartAdapter(
                                     binding.lowestUnitQuantity.text =
                                         "(${newQuantity} x ${selectedPrice.quantityPerUnit.toInt()} ${item.product?.data?.product?.lowestUnit})"
                                 }
+
+                                totalPrice.text = "Rp${formatter.format(newQuantity * item.customPrice)}"
                             }
                         } catch (e: Exception) {
                             Log.e("CartAdapter", "Error decreasing quantity", e)
                         }
                     }
 
-                    unitsSpinner.onItemSelectedListener =
-                        object : AdapterView.OnItemSelectedListener {
-                            override fun onItemSelected(
-                                parent: AdapterView<*>?,
-                                view: View?,
-                                position: Int,
-                                id: Long
-                            ) {
-                                try {
-                                    val selectedPrice = item.productPrice[position]
-                                    if (selectedPrice != item.selectedPrice) {
-                                        onUnitChanged(item, selectedPrice)
+                    unitsSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                        override fun onItemSelected(
+                            parent: AdapterView<*>?,
+                            view: View?,
+                            position: Int,
+                            id: Long
+                        ) {
+                            try {
+                                val selectedPrice = item.productPrice[position]
+                                if (selectedPrice != item.selectedPrice) {
+                                    onUnitChanged(item, selectedPrice)
 
-                                        // Update tempPrices dan EditText dengan harga unit baru
-                                        tempPrices[adapterPosition] = selectedPrice.price
-                                        binding.lowestUnitQuantity.text =
-                                            "(${item.quantity} x ${selectedPrice.quantityPerUnit.toInt()} ${item.product?.data?.product?.lowestUnit})" //product lowest unit
+                                    // Update tempPrices dan EditText dengan harga unit baru
+                                    tempPrices[adapterPosition] = selectedPrice.price
+                                    binding.lowestUnitQuantity.text =
+                                        "(${item.quantity} x ${selectedPrice.quantityPerUnit.toInt()} ${item.product?.data?.product?.lowestUnit})" //product lowest unit
 
-                                        // Format dan set harga baru ke EditText
-                                        val symbols =
-                                            DecimalFormatSymbols(Locale.getDefault()).apply {
-                                                groupingSeparator = '.'
-                                            }
-                                        val formatter = DecimalFormat("#,###", symbols)
-                                        val formattedPrice = formatter.format(selectedPrice.price)
-                                        priceEdit.setText(formattedPrice)
+                                    // Format dan set harga baru ke EditText
+                                    val symbols = DecimalFormatSymbols(Locale.getDefault()).apply {
+                                        groupingSeparator = '.'
                                     }
-                                } catch (e: Exception) {
-                                    Log.e("CartAdapter", "Error changing unit", e)
-                                }
-                            }
+                                    val formatter = DecimalFormat("#,###", symbols)
+                                    val formattedPrice = formatter.format(selectedPrice.price)
+                                    priceEdit.setText(formattedPrice)
 
-                            override fun onNothingSelected(parent: AdapterView<*>?) {}
+                                    // Update totalPrice dengan harga unit baru
+                                    val currentQuantity = quantityText.text.toString().toIntOrNull() ?: 0
+                                    totalPrice.text = "Rp${formatter.format(currentQuantity * selectedPrice.price)}"
+                                }
+                            } catch (e: Exception) {
+                                Log.e("CartAdapter", "Error changing unit", e)
+                            }
                         }
+
+                        override fun onNothingSelected(parent: AdapterView<*>?) {}
+                    }
                 }
             } catch (e: Exception) {
                 Log.e("CartAdapter", "Error binding view holder", e)
