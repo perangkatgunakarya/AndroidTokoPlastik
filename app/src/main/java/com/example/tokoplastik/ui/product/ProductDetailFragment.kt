@@ -10,6 +10,9 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Spinner
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -54,6 +57,12 @@ class ProductDetailFragment :
 
         currentCapitalInput = view.findViewById(R.id.currentCapital)
         currentCapitalInput.setNumberFormatter()
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val imeHeight = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
+            binding.productDetailScrollView.updatePadding(bottom = imeHeight)
+            insets
+        }
 
         setupViews()
         setupObservers()

@@ -8,6 +8,9 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Toast
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.navigation.fragment.findNavController
 import com.example.tokoplastik.data.network.AddProductApi
 import com.example.tokoplastik.data.repository.AddProductRepository
@@ -41,6 +44,12 @@ class AddProductFragment : BaseFragment<AddProductViewModel, FragmentAddProductB
         }
 
         binding.addProductProgressBar.visible(false)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val imeHeight = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
+            binding.addProductScrollView.updatePadding(bottom = imeHeight)
+            insets
+        }
 
         setupViews()
         observeViewModel()
