@@ -22,6 +22,7 @@ import com.example.tokoplastik.data.repository.CustomerRepository
 import com.example.tokoplastik.data.responses.Customer
 import com.example.tokoplastik.databinding.FragmentTransactionBinding
 import com.example.tokoplastik.ui.base.BaseFragment
+import com.example.tokoplastik.ui.product.ProductSortBottomSheet
 import com.example.tokoplastik.util.enable
 import com.example.tokoplastik.util.visible
 import com.example.tokoplastik.viewmodel.TransactionViewModel
@@ -65,6 +66,10 @@ class TransactionFragment : BaseFragment<TransactionViewModel, FragmentTransacti
 
         setupCustomerAutocomplete()
 
+        binding.menuIcon.setOnClickListener {
+            showPopupMenu(it)
+        }
+
         if (nameEditText.text.isNullOrEmpty()) {
             binding.buttonToCheckout.enable(false)
         }
@@ -95,6 +100,22 @@ class TransactionFragment : BaseFragment<TransactionViewModel, FragmentTransacti
                 findNavController().navigate(action)
             }
         }
+    }
+
+    private fun showPopupMenu(view: View) {
+        val popupMenu = androidx.appcompat.widget.PopupMenu(requireContext(), view)
+        popupMenu.inflate(R.menu.transaction_fragment_menu)
+        popupMenu.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.action_filter -> {
+                    val bottomSheet = ProductSortBottomSheet()
+                    bottomSheet.show(childFragmentManager, "PRODUCT_SORT_BOTTOM_SHEET")
+                    true
+                }
+                else -> false
+            }
+        }
+        popupMenu.show()
     }
 
     private fun setupCustomerAutocomplete() {

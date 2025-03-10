@@ -9,7 +9,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 class RemoteDataSource {
 
     companion object {
-        private const val BASE_URL = "https://pgk.pk237lpdp.com/api/"
+        private const val BASE_URL = "https://admintokoplastik.my.id/api/"
     }
 
     fun<Api> buildApi (

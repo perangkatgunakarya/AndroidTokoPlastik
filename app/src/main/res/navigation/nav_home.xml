@@ -118,4 +118,16 @@
             android:name="productId"
             app:argType="integer"/>
     </fragment>
+    <fragment
+        android:id="@+id/customerFragment"
+        android:name="com.example.tokoplastik.ui.customer.CustomerFragment"
+        android:label="fragment_customer"
+        tools:layout="@layout/fragment_customer">
+        <action
+            android:id="@+id/action_customerFragment_to_addCustomerFragment"
+            app:destination="@id/addCustomerFragment" />
+        <action
+            android:id="@+id/action_customerFragment_to_updateCustomerFragment"
+            app:destination="@id/updateCustomerFragment" />
+    </fragment>
 </navigation>
