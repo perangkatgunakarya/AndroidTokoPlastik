@@ -1,10 +1,15 @@
 package com.example.tokoplastik.adapter
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.tokoplastik.data.responses.AllTransaction
+import com.example.tokoplastik.data.responses.GetProduct
+import com.example.tokoplastik.data.responses.Transaction
 import com.example.tokoplastik.databinding.HistoryListLayoutBinding
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
@@ -12,7 +17,9 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
 
-class HistoryAdapter : RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
+class HistoryAdapter (
+    private val onDeleteItem: (AllTransaction) -> Unit
+) : RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
 
     private var originalList = mutableListOf<AllTransaction>()
     private var filteredList = mutableListOf<AllTransaction>()
@@ -49,6 +56,19 @@ class HistoryAdapter : RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
         notifyDataSetChanged()
     }
 
+    fun removeItem(history: AllTransaction) {
+        val originalIndex = originalList.indexOfFirst { it == history }
+        val filteredIndex = filteredList.indexOfFirst { it == history }
+
+        if (originalIndex != -1) {
+            originalList.removeAt(originalIndex)
+        }
+        if (filteredIndex != -1) {
+            filteredList.removeAt(filteredIndex)
+            notifyItemRemoved(filteredIndex)
+        }
+    }
+
     fun sortByDate(ascending: Boolean = true) {
         filteredList = if (ascending) {
             filteredList.sortedBy { it.createdAt }.toMutableList()
@@ -56,6 +76,56 @@ class HistoryAdapter : RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
             filteredList.sortedByDescending { it.createdAt }
         }.toMutableList()
         notifyDataSetChanged()
+    }
+
+    companion object {
+        fun createSwipeToDelete(
+            adapter: HistoryAdapter,
+            context: Context
+        ): ItemTouchHelper.SimpleCallback {
+            return object : ItemTouchHelper.SimpleCallback (
+                0,
+                ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+            ) {
+                override fun onMove(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder,
+                    target: RecyclerView.ViewHolder
+                ): Boolean = false
+
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                    val position = viewHolder.adapterPosition
+                    val item = adapter.originalList[position]
+
+                    SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE)
+                        .setTitleText("Hapus Transaksi")
+                        .setContentText("Apakah Anda yakin ingin menghapus transaksi ini?")
+                        .setConfirmText("Hapus")
+                        .setConfirmClickListener { sDialog ->
+                            adapter.removeItem(item)
+                            adapter.onDeleteItem(item)
+                            sDialog.dismissWithAnimation()
+                            confirm()
+                        }
+                        .setCancelText("Cancel")
+                        .setCancelClickListener { sDialog ->
+                            adapter.notifyItemChanged(position)
+                            sDialog.dismissWithAnimation()
+                        }
+                        .show()
+                }
+
+                fun confirm() {
+                    SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE).apply {
+                        contentText = "Transaksi Berhasil Dihapus"
+                        setConfirmButton("OK") {
+                            dismissWithAnimation()
+                        }
+                        show()
+                    }
+                }
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryAdapter.ViewHolder {

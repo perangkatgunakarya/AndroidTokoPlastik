@@ -1,6 +1,7 @@
 package com.example.tokoplastik.data.network
 
 import com.example.tokoplastik.data.responses.AllTransactionResponses
+import com.example.tokoplastik.data.responses.DeleteTransactionResponses
 import com.example.tokoplastik.data.responses.GetProductByIdResponses
 import com.example.tokoplastik.data.responses.GetProductResponses
 import com.example.tokoplastik.data.responses.PaymentStatusUpdateRequest
@@ -10,6 +11,7 @@ import com.example.tokoplastik.data.responses.TransactionDetailResponses
 import com.example.tokoplastik.data.responses.TransactionRequest
 import com.example.tokoplastik.data.responses.TransactionResponses
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
@@ -55,4 +57,10 @@ interface CheckoutApi {
         @Path("transactionId") transactionId: Int,
         @Body statusUpdateRequest: PaymentStatusUpdateRequest
     ): PaymentStatusUpdateResponses
+
+    @DELETE("transaction/{transactionId}")
+    suspend fun deleteTransaction(
+        @Path("transactionId") transactionId: Int
+    ): DeleteTransactionResponses
+
 }

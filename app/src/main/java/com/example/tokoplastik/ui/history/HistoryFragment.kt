@@ -78,7 +78,12 @@ class HistoryFragment :
     }
 
     private fun setupRecyclerView() {
-        historyAdapter = HistoryAdapter().apply {
+        historyAdapter = HistoryAdapter(
+            onDeleteItem = { item ->
+                viewModel.deleteTransaction(item.id)
+            }
+        )
+        historyAdapter.apply {
             setOnItemClickListener { transaction ->
                 val directions = HistoryFragmentDirections
                     .actionHistoryFragmentToDetailHistoryFragment(transaction.id)

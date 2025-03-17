@@ -7,6 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.tokoplastik.data.repository.CheckoutRepository
 import com.example.tokoplastik.data.responses.AllTransactionResponses
 import com.example.tokoplastik.data.responses.CartItem
+import com.example.tokoplastik.data.responses.DeleteProductResponse
+import com.example.tokoplastik.data.responses.DeleteTransactionResponses
 import com.example.tokoplastik.data.responses.GetProduct
 import com.example.tokoplastik.data.responses.GetProductByIdResponses
 import com.example.tokoplastik.data.responses.GetProductResponses
@@ -57,6 +59,9 @@ class CheckoutViewModel(
     private val _addTransaction: MutableLiveData<Resource<TransactionResponses>> = MutableLiveData()
     val addTransaction: LiveData<Resource<TransactionResponses>>
         get() = _addTransaction
+
+    private val _deleteResult: MutableLiveData<Resource<DeleteTransactionResponses>> = MutableLiveData()
+    val deleteResult: LiveData<Resource<DeleteTransactionResponses>> = _deleteResult
 
     private val _transactionDetail: MutableLiveData<Resource<TransactionDetailResponses>> = MutableLiveData()
     val transactionDetail: LiveData<Resource<TransactionDetailResponses>>
@@ -116,6 +121,11 @@ class CheckoutViewModel(
     fun getAllProductPrices() = viewModelScope.launch {
         _productPrices.value = Resource.Loading
         _productPrices.value = repository.getAllProductPrices()
+    }
+
+    fun deleteTransaction(transactionId: Int) = viewModelScope.launch {
+        _deleteResult.value = Resource.Loading
+        _deleteResult.value = repository.deleteTransaction(transactionId)
     }
 
     fun setDueDate(date: String) {

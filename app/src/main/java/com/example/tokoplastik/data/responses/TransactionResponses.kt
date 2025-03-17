@@ -23,3 +23,9 @@ data class PaymentStatusUpdateResponses(
     val message: String,
     val success: Boolean
 )
+
+data class DeleteTransactionResponses(
+    val data: List<Any>,
+    val message: String,
+    val success: Boolean
+)

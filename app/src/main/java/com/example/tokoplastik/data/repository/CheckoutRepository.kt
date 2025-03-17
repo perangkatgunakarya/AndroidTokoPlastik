@@ -12,6 +12,10 @@ class CheckoutRepository (
         api.getProduct()
     }
 
+    suspend fun deleteTransaction(transactionId: Int) = safeApiCall {
+        api.deleteTransaction(transactionId)
+    }
+
     suspend fun getProductDetail(productId: Int) = safeApiCall {
         api.getProductDetail(productId)
     }
