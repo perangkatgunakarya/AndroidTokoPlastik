@@ -33,7 +33,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
-class CustomerFragment : BaseFragment<CustomerViewModel, FragmentCustomerBinding, CustomerRepository>() {
+class CustomerFragment :
+    BaseFragment<CustomerViewModel, FragmentCustomerBinding, CustomerRepository>() {
 
     private lateinit var getCustomer: List<Customer>
     private lateinit var customerAdapter: CustomerAdapter
@@ -54,18 +55,9 @@ class CustomerFragment : BaseFragment<CustomerViewModel, FragmentCustomerBinding
         setupSearchView()
         binding.root.requestFocus()
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars())
-
-            val params = binding.buttonAddCustomer.layoutParams as ViewGroup.MarginLayoutParams
-            params.bottomMargin = insets.bottom + resources.getDimensionPixelSize(R.dimen.add_button_margin)
-            binding.buttonAddCustomer.layoutParams = params
-
-            WindowInsetsCompat.CONSUMED
-        }
-
         binding.buttonAddCustomer.setOnClickListener {
-            val directions = CustomerFragmentDirections.actionCustomerFragmentToAddCustomerFragment()
+            val directions =
+                CustomerFragmentDirections.actionCustomerFragmentToAddCustomerFragment()
             findNavController().navigate(directions)
         }
 
@@ -80,6 +72,10 @@ class CustomerFragment : BaseFragment<CustomerViewModel, FragmentCustomerBinding
         binding.menuIcon.setOnClickListener {
             showPopupMenu(it)
         }
+
+        binding.buttonBack.setOnClickListener {
+            requireActivity().onBackPressed()
+        }
     }
 
     private fun showPopupMenu(view: View) {
@@ -92,6 +88,7 @@ class CustomerFragment : BaseFragment<CustomerViewModel, FragmentCustomerBinding
                     bottomSheet.show(childFragmentManager, "CUSTOMER_SORT_BOTTOM_SHEET")
                     true
                 }
+
                 else -> false
             }
         }
@@ -110,7 +107,10 @@ class CustomerFragment : BaseFragment<CustomerViewModel, FragmentCustomerBinding
         customerAdapter = CustomerAdapter()
         customerAdapter.apply {
             setOnItemClickListener { customer ->
-                val directions = CustomerFragmentDirections.actionCustomerFragmentToUpdateCustomerFragment(customer.id)
+                val directions =
+                    CustomerFragmentDirections.actionCustomerFragmentToUpdateCustomerFragment(
+                        customer.id
+                    )
                 findNavController().navigate(directions)
             }
         }
@@ -135,10 +135,12 @@ class CustomerFragment : BaseFragment<CustomerViewModel, FragmentCustomerBinding
                         customerAdapter.updateList(getCustomer)
                     }
                 }
+
                 is Resource.Failure -> {
                     binding.customerProgressBar.visible(false)
                     handleApiError(result)
                 }
+
                 is Resource.Loading -> {
                     binding.customerProgressBar.visible(true)
                 }
@@ -153,6 +155,7 @@ class CustomerFragment : BaseFragment<CustomerViewModel, FragmentCustomerBinding
                         false -> customerAdapter.sortByName(false)
                     }
                 }
+
                 SortType.DATE -> TODO()
                 SortType.CAPITAL -> TODO()
             }

@@ -8,9 +8,11 @@ import android.widget.ImageButton
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.tokoplastik.R
 import com.example.tokoplastik.adapter.HistoryAdapter
+import com.example.tokoplastik.adapter.ProductAdapter
 import com.example.tokoplastik.data.network.CheckoutApi
 import com.example.tokoplastik.data.repository.CheckoutRepository
 import com.example.tokoplastik.data.responses.AllTransaction
@@ -77,6 +79,14 @@ class HistoryFragment :
         popupMenu.show()
     }
 
+    private fun setupSwipeRefresh() {
+        binding.swipeRefreshHistory.apply {
+            setOnRefreshListener {
+                viewModel.getTransactions()
+            }
+        }
+    }
+
     private fun setupRecyclerView() {
         historyAdapter = HistoryAdapter(
             onDeleteItem = { item ->
@@ -93,14 +103,10 @@ class HistoryFragment :
         binding.historyRecycler.apply {
             adapter = historyAdapter
             layoutManager = LinearLayoutManager(requireContext())
-        }
-    }
 
-    private fun setupSwipeRefresh() {
-        binding.swipeRefreshHistory.apply {
-            setOnRefreshListener {
-                viewModel.getTransactions()
-            }
+            val swipeToDeleteCallback = HistoryAdapter.createSwipeToDelete(historyAdapter, this.context)
+            val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)
+            itemTouchHelper.attachToRecyclerView(this)
         }
     }
 

@@ -36,29 +36,35 @@
             android:text="Elham Syahrian Putra"
             android:textColor="@color/text_primary"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/product_initial"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@id/customer_initial"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/address_text"
             style="@style/p"
-            android:layout_width="200dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="1dp"
+            android:ellipsize="end"
             android:maxLines="2"
-            android:text="Tenggarong Kalimantan Tengah Rt 02, Rw 12"
+            android:text="Tenggarong Kalimantan Tengah Tenggarong Kalimantan Tengah Tenggarong Kalimantan Tengah Tenggarong Kalimantan Tengah Tenggarong Kalimantan TengahvRt 02, Rw 12"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/customer_name_text"
             app:layout_constraintTop_toBottomOf="@id/customer_name_text" />
 
         <TextView
-            android:id="@+id/wa_text"
+            android:id="@+id/phone_text"
             style="@style/p_bold"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="2dp"
             android:text="085155430998"
             android:textColor="@color/text_primary"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/customer_initial"
+            app:layout_constraintTop_toBottomOf="@id/address_text" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

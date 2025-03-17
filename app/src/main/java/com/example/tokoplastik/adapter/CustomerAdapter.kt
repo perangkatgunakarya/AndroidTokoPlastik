@@ -28,6 +28,7 @@ class CustomerAdapter () : RecyclerView.Adapter<CustomerAdapter.ViewHolder>() {
         originalList.addAll(newCustomers)
         filteredList.clear()
         filteredList.addAll(newCustomers)
+        notifyDataSetChanged()
     }
 
     fun removeItem(customer: Customer) {
@@ -94,6 +95,7 @@ class CustomerAdapter () : RecyclerView.Adapter<CustomerAdapter.ViewHolder>() {
                 customerInitial.text = initial
                 customerNameText.text = customer.name
                 addressText.text = customer.address
+                phoneText.text = customer.phone
             }
         }
     }

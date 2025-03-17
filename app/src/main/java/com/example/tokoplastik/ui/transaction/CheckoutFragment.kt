@@ -15,6 +15,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -34,7 +35,10 @@ import com.example.tokoplastik.util.Resource
 import com.example.tokoplastik.util.handleApiError
 import com.example.tokoplastik.viewmodel.CheckoutViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.text.DecimalFormat
@@ -46,6 +50,13 @@ class CheckoutFragment :
 
     private lateinit var cartAdapter: CartAdapter
     private lateinit var invoiceGenerator: ReceiptGenerator
+    private var loadingDialog: SweetAlertDialog? = null
+
+    // Track observer registrations to avoid duplicates
+    private val observersRegistered = mutableSetOf<String>()
+
+    // Debounce mechanism for total update
+    private var totalUpdateJob: Job? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -75,149 +86,245 @@ class CheckoutFragment :
         requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
     }
 
-    private fun setupViews() {
-        cartAdapter = CartAdapter(
-            onQuantityChanged = { item, newQuantity ->
-                viewModel.updateItemQuantity(item, newQuantity)
-            },
-            onPriceChanged = { item, newPrice ->
-                viewModel.updateItemPrice(item, newPrice)
-            },
-            onUnitChanged = { item, newUnit ->
-                viewModel.updateItemUnit(item, newUnit)
-            },
-            onDeleteItem = { item ->
-                viewModel.removeCartItem(item)
-            },
-            onItemFocused = { position ->
-                binding.cartRecyclerView.postDelayed({
-                    try {
-                        binding.cartRecyclerView.smoothScrollToPosition(position)
-                    } catch (e: Exception) {
-                        Log.e("CheckoutFragment", "Scroll error: ${e.message}")
-                    }
-                }, 100)
-            }
-        )
-        binding.cartRecyclerView.apply {
-            adapter = cartAdapter
-            layoutManager = LinearLayoutManager(requireContext())
+    override fun onDestroyView() {
+        // Cleanup resources
+        loadingDialog?.dismissWithAnimation()
+        loadingDialog = null
 
-            val swipeToDeleteCallback = CartAdapter.createSwipeToDelete(cartAdapter)
-            val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)
-            itemTouchHelper.attachToRecyclerView(this)
+        // Clean adapter resources
+        if (::cartAdapter.isInitialized) {
+            cartAdapter.onDetached()
         }
 
-        viewModel.getProducts()
-        viewModel.product.observe(viewLifecycleOwner, Observer { result ->
+        // Clear all potentially leaking observers
+        viewModel.selectedProductPricesLoaded.removeObservers(viewLifecycleOwner)
+        viewModel.searchResults.removeObservers(viewLifecycleOwner)
+        viewModel.cartItems.removeObservers(viewLifecycleOwner)
+        viewModel.paidAmount.removeObservers(viewLifecycleOwner)
+        viewModel.dueDate.removeObservers(viewLifecycleOwner)
+        viewModel.productPrices.removeObservers(viewLifecycleOwner)
+        viewModel.addTransaction.removeObservers(viewLifecycleOwner)
+
+        // Cancel any pending jobs
+        totalUpdateJob?.cancel()
+
+        super.onDestroyView()
+    }
+
+    private fun setupViews() {
+        // Initialize adapter only once
+        if (!::cartAdapter.isInitialized) {
+            cartAdapter = CartAdapter(
+                onQuantityChanged = { item, newQuantity ->
+                    viewModel.updateItemQuantity(item, newQuantity)
+                    debouncedTotalUpdate()
+                },
+                onPriceChanged = { item, newPrice ->
+                    viewModel.updateItemPrice(item, newPrice)
+                    debouncedTotalUpdate()
+                },
+                onUnitChanged = { item, newUnit ->
+                    viewModel.updateItemUnit(item, newUnit)
+                    debouncedTotalUpdate()
+                },
+                onDeleteItem = { item ->
+                    viewModel.removeCartItem(item)
+                    // Total will be updated through cartItems observer
+                },
+                onItemFocused = { position ->
+                    // Only scroll if the recycler view exists and has items
+                    if (position >= 0 && ::cartAdapter.isInitialized &&
+                        binding.cartRecyclerView.adapter != null &&
+                        position < (cartAdapter.itemCount)) {
+                        binding.cartRecyclerView.postDelayed({
+                            try {
+                                binding.cartRecyclerView.smoothScrollToPosition(position)
+                            } catch (e: Exception) {
+                                Log.e("CheckoutFragment", "Scroll error: ${e.message}")
+                            }
+                        }, 100)
+                    }
+                }
+            )
+        }
+
+        // Setup RecyclerView once
+        binding.cartRecyclerView.apply {
+            if (adapter == null) {
+                adapter = cartAdapter
+                layoutManager = LinearLayoutManager(requireContext())
+
+                // Only attach helper if not already attached
+                val swipeToDeleteCallback = CartAdapter.createSwipeToDelete(cartAdapter)
+                val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)
+                itemTouchHelper.attachToRecyclerView(this)
+            }
+        }
+
+        // Fetch products only once if needed
+        if (viewModel.product.value?.data?.data.isNullOrEmpty()) {
+            viewModel.getProducts()
+        }
+
+        setupProductsObserver()
+        setupButtonListeners()
+    }
+
+    private fun setupProductsObserver() {
+        if (observersRegistered.contains("products")) return
+
+        viewModel.product.observe(viewLifecycleOwner) { result ->
             val productList = result.data?.data ?: emptyList()
+            if (productList.isEmpty()) return@observe
+
             val displayList = productList.map { "${it.supplier} - ${it.name}" to it.id }
 
+            // Create adapter only once or when data changes
             val productAdapter = ArrayAdapter(
                 requireContext(),
                 android.R.layout.simple_dropdown_item_1line,
                 displayList.map { it.first }
             )
 
-            binding.productDropdown.setAdapter(productAdapter)
-            binding.productDropdown.threshold = 1
+            binding.productDropdown.apply {
+                setAdapter(productAdapter)
+                threshold = 1
 
-            binding.productDropdown.setOnItemClickListener { _, _, position, _ ->
-                var item = productAdapter.getItem(position)
-                var selectedItem = displayList.find { it.first == item }
-                var selectedProductId = selectedItem?.second
+                setOnItemClickListener { _, _, position, _ ->
+                    val item = productAdapter.getItem(position)
+                    val selectedItem = displayList.find { it.first == item }
+                    val selectedProductId = selectedItem?.second
 
-                val selectedProduct = productList.find { it.id == selectedProductId }
+                    val selectedProduct = productList.find { it.id == selectedProductId }
 
-                if (selectedProduct != null) {
-                    viewModel.selectProduct(selectedProduct.id)
-
-                    // Observe the loading state
-                    viewModel.selectedProductPricesLoaded.observe(viewLifecycleOwner) { loaded ->
-                        if (loaded) {
-                            if (viewModel.selectedProductPrices.isNotEmpty()) {
-                                hideKeyboard()
-                                binding.productDropdown.clearFocus()
-                            } else {
-                                SweetAlertDialog(
-                                    requireContext(),
-                                    SweetAlertDialog.ERROR_TYPE
-                                ).apply {
-                                    titleText = "No Price Found"
-                                    contentText =
-                                        "Produk ini belum memiliki data harga. Silakan tambahkan harga terlebih dahulu."
-                                    setConfirmButton("OK") {
-                                        dismissWithAnimation()
-                                        binding.productDropdown.text = null
-                                        viewModel.selectedProduct = null
-                                        viewModel.selectedProductPrices = emptyList()
-                                    }
-                                    setCancelable(false)
-                                    setCanceledOnTouchOutside(false)
-                                    show()
-                                }
-                            }
-                            // Reset the loading state for next selection
-                            viewModel.resetProductPricesLoadedState()
-                        }
+                    selectedProduct?.let {
+                        viewModel.selectProduct(it.id)
+                        setupProductPricesLoadedObserver()
                     }
                 }
             }
+        }
 
-            binding.buttonBack.setOnClickListener {
-                requireActivity().onBackPressed()
-            }
+        observersRegistered.add("products")
+    }
 
-            binding.buttonAddProduct.setOnClickListener {
-                viewModel.addSelectedProductToCart()
-                binding.productDropdown.text.clear()
-            }
+    private fun setupProductPricesLoadedObserver() {
+        // First remove any existing observer to avoid duplicates
+        viewModel.selectedProductPricesLoaded.removeObservers(viewLifecycleOwner)
 
-            if (viewModel.currentCartItems.isEmpty()) {
-                binding.buttonCheckout.setOnClickListener {
-                    val bottomSheet = PaidBottomSheet()
-                    bottomSheet.show(childFragmentManager, "SORT_FILTER_BOTTOM_SHEET")
+        viewModel.selectedProductPricesLoaded.observe(viewLifecycleOwner) { loaded ->
+            if (loaded) {
+                if (viewModel.selectedProductPrices.isNotEmpty()) {
+                    hideKeyboard()
+                    binding.productDropdown.clearFocus()
+                } else {
+                    showErrorDialog("No Price Found",
+                        "Produk ini belum memiliki data harga. Silakan tambahkan harga terlebih dahulu.")
+                    binding.productDropdown.text = null
+                    viewModel.selectedProduct = null
+                    viewModel.selectedProductPrices = emptyList()
                 }
+                // Reset the loading state for next selection
+                viewModel.resetProductPricesLoadedState()
+
+                // Remove this observer after it's done its job
+                viewModel.selectedProductPricesLoaded.removeObservers(viewLifecycleOwner)
             }
-        })
+        }
+    }
+
+    private fun setupButtonListeners() {
+        binding.buttonBack.setOnClickListener {
+            requireActivity().onBackPressed()
+        }
+
+        binding.buttonAddProduct.setOnClickListener {
+            viewModel.addSelectedProductToCart()
+            binding.productDropdown.text.clear()
+        }
+
+        binding.buttonCheckout.setOnClickListener {
+            if (viewModel.currentCartItems.isNotEmpty()) {
+                val bottomSheet = PaidBottomSheet()
+                bottomSheet.show(childFragmentManager, "PAID_BOTTOM_SHEET")
+            } else {
+                // Tambahkan pesan bahwa keranjang kosong
+                showErrorDialog("Keranjang Kosong", "Silakan tambahkan produk ke keranjang terlebih dahulu.")
+            }
+        }
     }
 
     private fun setupObservers() {
-        viewModel.searchResults.observe(viewLifecycleOwner) { products ->
-            val adapter = binding.productDropdown.adapter as ArrayAdapter<String>
-            adapter.clear()
-            adapter.addAll(products.map { it.name })
-        }
-
-        viewModel.cartItems.observe(viewLifecycleOwner) { items ->
-            cartAdapter.updateItems(items)
-            updateTotalAmount(items)
-        }
-
-        var status = ""
-        viewModel.paidAmount.observe(viewLifecycleOwner) { amount ->
-            if (amount == 0) {
-                status = "belum lunas"
-                val bottomSheet = DueDateBottomSheet()
-                bottomSheet.show(childFragmentManager, "DUE_DATE_BOTTOM_SHEET")
-            }
-            if (amount > 0 && amount < viewModel.cartItems.value?.sumOf { it.customPrice * it.quantity } ?: 0) {
-                status = "dalam cicilan"
-                val bottomSheet = DueDateBottomSheet()
-                bottomSheet.show(childFragmentManager, "DUE_DATE_BOTTOM_SHEET")
-            }
-            if (amount == viewModel.cartItems.value?.sumOf { it.customPrice * it.quantity } ?: 0) {
-                status = "lunas"
-                viewModel.setDueDate("-")
-            }
-
-            viewModel.dueDate.observe(viewLifecycleOwner) { date ->
-                if (date != "-") {
-                    processCheckout(status, date)
-                } else {
-                    processCheckout(status, "-")
+        // Avoid registering the same observer multiple times
+        if (!observersRegistered.contains("searchResults")) {
+            viewModel.searchResults.observe(viewLifecycleOwner) { products ->
+                (binding.productDropdown.adapter as? ArrayAdapter<String>)?.let { adapter ->
+                    adapter.clear()
+                    adapter.addAll(products.map { it.name })
                 }
             }
+            observersRegistered.add("searchResults")
+        }
+
+        if (!observersRegistered.contains("cartItems")) {
+            viewModel.cartItems.observe(viewLifecycleOwner) { items ->
+                cartAdapter.submitList(items)  // Use submitList instead of custom method
+                updateTotalAmount(items)
+            }
+            observersRegistered.add("cartItems")
+        }
+
+        if (!observersRegistered.contains("paymentFlow")) {
+            setupPaymentFlowObservers()
+            observersRegistered.add("paymentFlow")
+        }
+    }
+
+    private var transactionStatus: String = ""
+
+    private fun setupPaymentFlowObservers() {
+        viewModel.paidAmount.observe(viewLifecycleOwner) { amount ->
+            val totalAmount = viewModel.cartItems.value?.sumOf { it.customPrice * it.quantity } ?: 0
+
+            val status = when {
+                amount == 0 -> {
+                    showDueDateSheet()
+                    "belum lunas"
+                }
+                amount > 0 && amount < totalAmount -> {
+                    showDueDateSheet()
+                    "dalam cicilan"
+                }
+                else -> {
+                    viewModel.setDueDate("-")
+                    "lunas"
+                }
+            }
+
+            // Store status for later use
+            transactionStatus = status
+        }
+
+        viewModel.dueDate.observe(viewLifecycleOwner) { date ->
+            if (transactionStatus.isNotEmpty()) {
+                processCheckout(transactionStatus, date.takeIf { it.isNotEmpty() } ?: "-")
+            }
+        }
+    }
+
+    private fun showDueDateSheet() {
+        if (isAdded && childFragmentManager.findFragmentByTag("DUE_DATE_BOTTOM_SHEET") == null) {
+            val bottomSheet = DueDateBottomSheet()
+            bottomSheet.show(childFragmentManager, "DUE_DATE_BOTTOM_SHEET")
+        }
+    }
+
+    private fun debouncedTotalUpdate() {
+        totalUpdateJob?.cancel()
+        totalUpdateJob = viewLifecycleOwner.lifecycleScope.launch {
+            delay(300) // Debounce for 300ms
+            val items = viewModel.cartItems.value ?: return@launch
+            updateTotalAmount(items)
         }
     }
 
@@ -233,86 +340,103 @@ class CheckoutFragment :
     }
 
     private fun hideKeyboard() {
-        val imm =
-            requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(requireView().windowToken, 0)
+        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(binding.root.windowToken, 0)
     }
 
-    public fun processCheckout(status: String, tempo: String) {
+    fun processCheckout(status: String, tempo: String) {
         if (!isAdded) return
 
         context?.let { ctx ->
-            val loadingDialog = SweetAlertDialog(ctx, SweetAlertDialog.PROGRESS_TYPE)
-            loadingDialog.apply {
-                titleText = "Processing"
-                contentText = "Processing order..."
-                setCancelable(false)
-                show()
+            // Don't create multiple loading dialogs
+            if (loadingDialog == null) {
+                loadingDialog = SweetAlertDialog(ctx, SweetAlertDialog.PROGRESS_TYPE).apply {
+                    titleText = "Processing"
+                    contentText = "Processing order..."
+                    setCancelable(false)
+                    show()
+                }
             }
 
+            // Prevent multiple observer registrations
+            if (!observersRegistered.contains("checkout")) {
+                setupCheckoutObservers(status, tempo)
+                observersRegistered.add("checkout")
+            } else {
+                // If already registered, just trigger checkout
+                viewModel.checkout(status, tempo)
+            }
+        }
+    }
+
+    private fun setupCheckoutObservers(status: String, tempo: String) {
+        // Get product prices only once if not already fetched
+        if (viewModel.productPrices.value !is Resource.Success) {
             viewModel.getAllProductPrices()
-            viewModel.productPrices.observe(viewLifecycleOwner, {
-                when (it) {
-                    is Resource.Success -> {
-                        invoiceGenerator.allProductPrices = it.data?.data ?: emptyList()
-                    }
+        }
 
-                    is Resource.Failure -> {
-                        handleApiError(it)
-                    }
-
-                    is Resource.Loading -> {}
+        viewModel.productPrices.observe(viewLifecycleOwner) { result ->
+            when (result) {
+                is Resource.Success -> {
+                    invoiceGenerator.allProductPrices = result.data?.data ?: emptyList()
                 }
-            })
-
-            viewModel.addTransaction.observe(viewLifecycleOwner, { result ->
-                if (!isAdded) {
-                    loadingDialog.dismissWithAnimation()
-                    return@observe
+                is Resource.Failure -> {
+                    handleApiError(result)
                 }
+                is Resource.Loading -> {
+                    // No need to do anything while loading
+                }
+            }
+        }
 
-                when (result) {
-                    is Resource.Success -> {
-                        loadingDialog.dismissWithAnimation()
-                        result.data?.let { response ->
-                            val cartItems = viewModel.cartItems.value ?: emptyList()
-                            if (cartItems.isNotEmpty()) {
-                                try {
-                                    val pdfFile = invoiceGenerator.generatedPdfReceipt(
-                                        response.data,
-                                        cartItems,
-                                        response.data.id.toString()
-                                    )
-                                    showSuccessDialog(
-                                        pdfFile,
-                                        response.data,
-                                        cartItems,
-                                        response.data.id.toString()
-                                    )
-                                } catch (e: Exception) {
-                                    handleReceiptError(e)
-                                }
-                            } else {
-                                Log.e("CheckoutFragment", "Cart is empty")
-                                loadingDialog.changeAlertType(SweetAlertDialog.ERROR_TYPE)
-                                loadingDialog.titleText = "Error"
-                                loadingDialog.contentText = "Cart is empty"
+        viewModel.addTransaction.observe(viewLifecycleOwner) { result ->
+            if (!isAdded) {
+                loadingDialog?.dismissWithAnimation()
+                loadingDialog = null
+                return@observe
+            }
+
+            when (result) {
+                is Resource.Success -> {
+                    loadingDialog?.dismissWithAnimation()
+                    loadingDialog = null
+
+                    result.data?.let { response ->
+                        val cartItems = viewModel.cartItems.value ?: emptyList()
+                        if (cartItems.isNotEmpty()) {
+                            try {
+                                val pdfFile = invoiceGenerator.generatedPdfReceipt(
+                                    response.data,
+                                    cartItems,
+                                    response.data.id.toString()
+                                )
+                                showSuccessDialog(
+                                    pdfFile,
+                                    response.data,
+                                    cartItems,
+                                    response.data.id.toString()
+                                )
+                            } catch (e: Exception) {
+                                handleReceiptError(e)
                             }
+                        } else {
+                            showErrorDialog("Error", "Cart is empty")
                         }
                     }
-
-                    is Resource.Failure -> {
-                        loadingDialog.dismissWithAnimation()
-                        handleApiError(result)
-                    }
-
-                    is Resource.Loading -> {
-                    }
                 }
-            })
-
-            viewModel.checkout(status, tempo)
+                is Resource.Failure -> {
+                    loadingDialog?.dismissWithAnimation()
+                    loadingDialog = null
+                    handleApiError(result)
+                }
+                is Resource.Loading -> {
+                    // Handled by progress dialog
+                }
+            }
         }
+
+        // Now trigger the checkout
+        viewModel.checkout(status, tempo)
     }
 
     private fun showSuccessDialog(
@@ -322,22 +446,20 @@ class CheckoutFragment :
         orderId: String
     ) {
         if (!isAdded) return
-        context?.let { ctx ->
-            SweetAlertDialog(requireContext(), SweetAlertDialog.SUCCESS_TYPE).apply {
-                titleText = "Success!"
-                contentText = "Order completed successfully"
-                setCanceledOnTouchOutside(false)
-                Log.i("order complete", "pdf file = ${pdfFile.exists()}")
-                setConfirmButton("OK") {
-                    dismissWithAnimation()
-                    if (pdfFile.exists()) {
-                        showReceiptOptionsDialog(pdfFile, transaction, cartItems, orderId)
-                    } else {
-                        findNavController().navigate(R.id.action_checkoutFragment_to_transactionFragment)
-                    }
+
+        SweetAlertDialog(requireContext(), SweetAlertDialog.SUCCESS_TYPE).apply {
+            titleText = "Success!"
+            contentText = "Order completed successfully"
+            setCanceledOnTouchOutside(false)
+            setConfirmButton("OK") {
+                dismissWithAnimation()
+                if (pdfFile.exists()) {
+                    showReceiptOptionsDialog(pdfFile, transaction, cartItems, orderId)
+                } else {
+                    navigateToTransactionFragment()
                 }
-                show()
             }
+            show()
         }
     }
 
@@ -347,46 +469,59 @@ class CheckoutFragment :
         cartItems: List<CartItem>,
         orderId: String
     ) {
+        if (!isAdded) return
+
         SweetAlertDialog(requireContext(), SweetAlertDialog.NORMAL_TYPE).apply {
             titleText = "Receipt Options"
             contentText = "What would you like to do with the receipt?"
 
             setConfirmButton("Print") {
                 dismissWithAnimation()
-                val invoiceText =
-                    invoiceGenerator.generateInvoiceText(transaction, cartItems, orderId)
+                val invoiceText = invoiceGenerator.generateInvoiceText(transaction, cartItems, orderId)
                 val file = invoiceGenerator.saveInvoiceToFile(
                     requireContext(),
                     invoiceText,
                     "Invoice_${orderId}.txt"
                 )
                 invoiceGenerator.shareReceiptTxt(file)
-                findNavController().navigate(R.id.action_checkoutFragment_to_transactionFragment)
+                navigateToTransactionFragment()
             }
 
             setCancelButton("Share") {
                 dismissWithAnimation()
                 invoiceGenerator.shareReceipt(pdfFile)
-                findNavController().navigate(R.id.action_checkoutFragment_to_transactionFragment)
+                navigateToTransactionFragment()
             }
 
             setNeutralButton("Skip") {
                 dismissWithAnimation()
-                findNavController().navigate(R.id.action_checkoutFragment_to_transactionFragment)
+                navigateToTransactionFragment()
             }
             show()
         }
     }
 
-    private fun handleReceiptError(error: Exception) {
+    private fun showErrorDialog(title: String, message: String) {
+        if (!isAdded) return
+
         SweetAlertDialog(requireContext(), SweetAlertDialog.ERROR_TYPE).apply {
-            titleText = "Receipt Generation Error"
-            contentText = "Failed to generate receipt: ${error.message}"
-            setConfirmButton("OK") {
-                dismissWithAnimation()
-                findNavController().navigate(R.id.action_checkoutFragment_to_transactionFragment)
-            }
+            titleText = title
+            contentText = message
+            setConfirmButton("OK") { dismissWithAnimation() }
             show()
+        }
+    }
+
+    private fun handleReceiptError(error: Exception) {
+        if (!isAdded) return
+
+        showErrorDialog("Receipt Generation Error",
+            "Failed to generate receipt: ${error.message}")
+    }
+
+    private fun navigateToTransactionFragment() {
+        if (isAdded) {
+            findNavController().navigate(R.id.action_checkoutFragment_to_transactionFragment)
         }
     }
 

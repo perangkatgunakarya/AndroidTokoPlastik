@@ -1,20 +1,17 @@
 package com.example.tokoplastik.adapter
 
-import android.R
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import androidx.compose.ui.semantics.text
-import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tokoplastik.data.responses.CartItem
 import com.example.tokoplastik.data.responses.ProductPrice
@@ -24,8 +21,9 @@ import com.example.tokoplastik.util.setNumberFormatter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
@@ -36,13 +34,30 @@ class CartAdapter(
     private val onUnitChanged: (CartItem, ProductPrice) -> Unit,
     private val onDeleteItem: (CartItem) -> Unit,
     private val onItemFocused: (Int) -> Unit
-) : RecyclerView.Adapter<CartAdapter.CartViewHolder>() {
-    private var items = mutableListOf<CartItem>()
-    private var tempPrices = mutableMapOf<Int, Int>()
-    private val scope = CoroutineScope(Dispatchers.Main + Job())
+) : ListAdapter<CartItem, CartAdapter.CartViewHolder>(CartDiffCallback()) {
 
+    // Temporary storage for prices to prevent UI flickers
+    private val tempPrices = mutableMapOf<Int, Int>()
+
+    // Better coroutine management with a cancelable job
+    private val adapterJob = Job()
+    private val adapterScope = CoroutineScope(Dispatchers.Main + adapterJob)
+
+    // Click debounce control
     private var lastClickTime = 0L
-    private val CLICK_TIME_INTERVAL = 50L
+    private val CLICK_TIME_INTERVAL = 200L  // Increased to prevent rapid clicks
+
+    // Reusable formatter to minimize object creation
+    private val priceFormatter by lazy {
+        DecimalFormat("#,###", DecimalFormatSymbols(Locale.getDefault()).apply {
+            groupingSeparator = '.'
+        })
+    }
+
+    // Clean up resources when adapter is detached
+    fun onDetached() {
+        adapterScope.cancel()  // Cancel all coroutines when the adapter is no longer needed
+    }
 
     private fun isClickValid(): Boolean {
         val currentTime = System.currentTimeMillis()
@@ -53,336 +68,337 @@ class CartAdapter(
         return true
     }
 
-    private fun getInitials(productName: String?): String? {
+    private fun getInitials(productName: String?): String {
         return productName?.split(" ")
             ?.take(2)
             ?.mapNotNull { it.firstOrNull()?.uppercase() }
-            ?.joinToString("")
+            ?.joinToString("") ?: ""
     }
 
-    fun updateItems(newItems: List<CartItem>) {
-        scope.launch {
-            try {
-                val diffCallback = CartDiffCallback()
-                val diffResult = withContext(Dispatchers.Default) {
-                    DiffUtil.calculateDiff(object : DiffUtil.Callback() {
-                        override fun getOldListSize(): Int = items.size
-                        override fun getNewListSize(): Int = newItems.size
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CartViewHolder {
+        val binding = CartItemLayoutBinding.inflate(
+            LayoutInflater.from(parent.context), parent, false
+        )
+        return CartViewHolder(binding)
+    }
 
-                        override fun areItemsTheSame(
-                            oldItemPosition: Int,
-                            newItemPosition: Int
-                        ): Boolean {
-                            return items[oldItemPosition].product?.data?.product?.id ==
-                                    newItems[newItemPosition].product?.data?.product?.id
-                        }
-
-                        override fun areContentsTheSame(
-                            oldItemPosition: Int,
-                            newItemPosition: Int
-                        ): Boolean {
-                            return items[oldItemPosition] == newItems[newItemPosition]
-                        }
-                    })
-                }
-
-                items.clear()
-                items.addAll(newItems)
-                diffResult.dispatchUpdatesTo(this@CartAdapter)
-            } catch (e: Exception) {
-                Log.e("CartAdapter", "Error updating items", e)
-            }
-        }
+    override fun onBindViewHolder(holder: CartViewHolder, position: Int) {
+        holder.bind(getItem(position))
     }
 
     inner class CartViewHolder(private val binding: CartItemLayoutBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
+        // Debounce jobs for text changes
+        private var quantityTextJob: Job? = null
+        private var priceTextJob: Job? = null
+
+        init {
+            // Set up text formatters once
+            binding.priceEdit.setNumberFormatter()
+
+            // Set up price edit text listener once
+            binding.priceEdit.apply {
+                imeOptions = EditorInfo.IME_ACTION_DONE
+                inputType = InputType.TYPE_CLASS_NUMBER
+
+                setOnFocusChangeListener { _, hasFocus ->
+                    if (!hasFocus) {
+                        val position = bindingAdapterPosition
+                        if (position != RecyclerView.NO_POSITION) {
+                            val item = getItem(position)
+                            val newPrice = getRawValue()
+                            tempPrices[position] = newPrice
+                            onPriceChanged(item, newPrice)
+                        }
+                    } else {
+                        onItemFocused(bindingAdapterPosition)
+                    }
+                }
+
+                setOnEditorActionListener { _, actionId, _ ->
+                    if (actionId == EditorInfo.IME_ACTION_DONE) {
+                        val position = bindingAdapterPosition
+                        if (position != RecyclerView.NO_POSITION) {
+                            val item = getItem(position)
+                            val newPrice = getRawValue()
+                            tempPrices[position] = newPrice
+                            onPriceChanged(item, newPrice)
+                            clearFocus()
+                        }
+                        true
+                    } else {
+                        false
+                    }
+                }
+            }
+
+            // Set up quantity buttons once
+            binding.btnPlus.setOnClickListener {
+                if (!isClickValid()) return@setOnClickListener
+
+                val position = bindingAdapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    try {
+                        val item = getItem(position)
+                        val currentQuantity = binding.quantityText.text.toString().toIntOrNull() ?: 1
+                        val newQuantity = currentQuantity + 1
+
+                        // Update the text first
+                        binding.quantityText.setText(newQuantity.toString())
+                        binding.quantityText.setSelection(binding.quantityText.text.length)
+
+                        // Then update the data model
+                        updateQuantity(item, newQuantity)
+                    } catch (e: Exception) {
+                        Log.e("CartAdapter", "Error increasing quantity", e)
+                    }
+                }
+            }
+
+            binding.btnMinus.setOnClickListener {
+                if (!isClickValid()) return@setOnClickListener
+
+                val position = bindingAdapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    try {
+                        val item = getItem(position)
+                        val currentQuantity = binding.quantityText.text.toString().toIntOrNull() ?: 1
+
+                        if (currentQuantity > 1) {
+                            val newQuantity = currentQuantity - 1
+
+                            // Update the text first
+                            binding.quantityText.setText(newQuantity.toString())
+                            binding.quantityText.setSelection(binding.quantityText.text.length)
+
+                            // Then update the data model
+                            updateQuantity(item, newQuantity)
+                        }
+                    } catch (e: Exception) {
+                        Log.e("CartAdapter", "Error decreasing quantity", e)
+                    }
+                }
+            }
+        }
+
         fun bind(item: CartItem) {
             try {
                 binding.apply {
-                    priceEdit.setNumberFormatter()
-
-                    val initial = getInitials(item.product?.data?.product?.name)
-                    productImage.text = initial
-
+                    // Set basic product info
+                    productImage.text = getInitials(item.product?.data?.product?.name)
                     productText.text = item.product?.data?.product?.name
-
-                    val symbols = DecimalFormatSymbols(Locale.getDefault()).apply {
-                        groupingSeparator = '.'
-                    }
-                    val formatter = DecimalFormat("#,###", symbols)
-                    val formattedTotal =
-                        formatter.format(item.product?.data?.product?.newestCapitalPrice)
-                    modalPrice.text = "Modal : Rp$formattedTotal"
-
                     supplierText.text = item.product?.data?.product?.supplier
 
-                    val unitsAdapter = ArrayAdapter(
-                        itemView.context,
-                        android.R.layout.simple_spinner_item,
-                        item.productPrice.map { it.unit }
-                    )
-                    unitsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                    unitsSpinner.adapter = unitsAdapter
-                    val selectedPrice = item.productPrice[position]
-                    binding.lowestUnitQuantity.text =
-                        "(${item.quantity} x ${(selectedPrice.quantityPerUnit)} ${item.product?.data?.product?.lowestUnit})"
+                    // Set modal price
+                    val formattedCapitalPrice = priceFormatter.format(item.product?.data?.product?.newestCapitalPrice ?: 0)
+                    modalPrice.text = "Modal : Rp$formattedCapitalPrice"
 
+                    // Set up unit spinner
+                    setupUnitSpinner(item)
 
+                    // Set quantity text without adding a new TextWatcher
+                    removeQuantityTextWatcher()
                     quantityText.setText(item.quantity.toString())
-                    quantityText.addTextChangedListener(object : TextWatcher {
-                        override fun beforeTextChanged(
-                            s: CharSequence?,
-                            start: Int,
-                            count: Int,
-                            after: Int
-                        ) {
-                        }
+                    setupQuantityTextWatcher(item)
 
-                        override fun onTextChanged(
-                            s: CharSequence?,
-                            start: Int,
-                            before: Int,
-                            count: Int
-                        ) {
-                            val newQuantityString = s.toString()
-
-                            // Menghilangkan angka 0 di depan
-                            val trimmedQuantityString = newQuantityString.trimStart('0')
-
-                            if (newQuantityString != trimmedQuantityString) {
-                                // Jika ada angka 0 di depan, update EditText
-                                quantityText.setText(trimmedQuantityString)
-                            }
-
-                            if (trimmedQuantityString.isNotEmpty()) {
-                                try {
-                                    val newQuantity = trimmedQuantityString.toInt()
-                                    // Memastikan kuantitas tidak kurang dari 1
-                                    if (newQuantity >= 1) {
-                                        // Memanggil onQuantityChanged untuk memperbarui data
-                                        onQuantityChanged(item, newQuantity)
-
-                                        // Dapatkan posisi unit yang sedang dipilih di spinner
-                                        val position = unitsSpinner.selectedItemPosition
-
-                                        // Pastikan posisi valid
-                                        if (position != -1 && position < item.productPrice.size) {
-                                            val selectedPrice = item.productPrice[position]
-
-                                            // Update tampilan lowest unit quantity
-                                            binding.lowestUnitQuantity.text =
-                                                "(${newQuantity} x ${selectedPrice.quantityPerUnit.toInt()} ${item.product?.data?.product?.lowestUnit})"
-                                        }
-
-                                        // Tambahkan update untuk totalPrice
-                                        val currentPrice = tempPrices[adapterPosition] ?: item.customPrice
-                                        val symbols = DecimalFormatSymbols(Locale.getDefault()).apply {
-                                            groupingSeparator = '.'
-                                        }
-                                        val formatter = DecimalFormat("#,###", symbols)
-                                        totalPrice.text = "Rp${formatter.format(newQuantity * currentPrice)}"
-                                    } else {
-                                        // Jika kuantitas kurang dari 1, bersihkan teks
-                                        quantityText.text.clear()
-                                        onQuantityChanged(item, 0)
-
-                                        // Reset tampilan lowest unit quantity
-                                        binding.lowestUnitQuantity.text = ""
-
-                                        // Reset total price
-                                        totalPrice.text = "Rp0"
-                                    }
-                                } catch (e: NumberFormatException) {
-                                    // Jika input bukan angka, bersihkan teks
-                                    quantityText.text.clear()
-                                    onQuantityChanged(item, 0)
-
-                                    // Reset tampilan lowest unit quantity
-                                    binding.lowestUnitQuantity.text = ""
-
-                                    // Reset total price
-                                    totalPrice.text = "Rp0"
-                                }
-                            } else {
-                                // Teks kosong, reset ke kondisi awal
-                                onQuantityChanged(item, 0)
-                                binding.lowestUnitQuantity.text = ""
-
-                                // Reset total price
-                                totalPrice.text = "Rp0"
-                            }
-                        }
-
-                        override fun afterTextChanged(s: Editable?) {}
-                    })
-
+                    // Set price text
                     if (!priceEdit.hasFocus()) {
-                        val price = tempPrices[adapterPosition] ?: item.customPrice
-                        priceEdit.setText(price.toString())
-                    } else {
-                        onItemFocused(absoluteAdapterPosition)
+                        val price = tempPrices[bindingAdapterPosition] ?: item.customPrice
+                        priceEdit.setText(priceFormatter.format(price))
                     }
 
-                    priceEdit.imeOptions = EditorInfo.IME_ACTION_DONE
-                    priceEdit.inputType = InputType.TYPE_CLASS_NUMBER
+                    removePriceTextWatcher()
+                    setupPriceTextWatcher(item)
 
-                    priceEdit.setOnFocusChangeListener { _, hasFocus ->
-                        if (!hasFocus) {
-                            val newPrice = priceEdit.getRawValue()
-                            tempPrices[adapterPosition] = newPrice
-                            onPriceChanged(item, newPrice)
-                        } else {
-                            onItemFocused(absoluteAdapterPosition)
-                        }
-                    }
+                    // Update total price display
+                    updateTotalPriceDisplay(item)
 
-                    priceEdit.setOnEditorActionListener { _, actionId, _ ->
-                        if (actionId == EditorInfo.IME_ACTION_DONE) {
-                            val newPrice = priceEdit.getRawValue()
-                            tempPrices[adapterPosition] = newPrice
-                            onPriceChanged(item, newPrice)
-                            priceEdit.clearFocus()
-                            true
-                        } else {
-                            false
-                        }
-                    }
-
-                    binding.priceEdit.addTextChangedListener(object : TextWatcher {
-                        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                            // Tidak ada perubahan
-                        }
-
-                        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                            if (binding.priceEdit.hasFocus()) {
-                                try {
-                                    // Gunakan getRawValue() untuk mendapatkan nilai tanpa pemisah ribuan
-                                    val newPrice = binding.priceEdit.getRawValue()
-                                    tempPrices[adapterPosition] = newPrice
-                                    onPriceChanged(item, newPrice)
-
-                                    // Update totalPrice setiap kali harga berubah
-                                    val currentQuantity = quantityText.text.toString().toIntOrNull() ?: 0
-                                    val symbols = DecimalFormatSymbols(Locale.getDefault()).apply {
-                                        groupingSeparator = '.'
-                                    }
-                                    val formatter = DecimalFormat("#,###", symbols)
-                                    totalPrice.text = "Rp${formatter.format(currentQuantity * newPrice)}"
-                                } catch (e: NumberFormatException) {
-                                    // Log error tanpa mengubah nilai
-                                    Log.e("CartAdapter", "Error parsing price", e)
-                                }
-                            }
-                        }
-
-                        override fun afterTextChanged(s: Editable?) {
-                            // Tidak ada perubahan
-                        }
-                    })
-
-                    totalPrice.text = "Rp${formatter.format(quantityText.text.toString().toInt() * item.customPrice)}"
-
-                    btnPlus.setOnClickListener {
-                        try {
-                            if (!isClickValid()) return@setOnClickListener
-
-                            val currentQuantity = quantityText.text.toString().toIntOrNull() ?: 1
-                            val newQuantity = currentQuantity + 1
-                            onQuantityChanged(item, newQuantity)
-                            // Perbarui quantityText di sini
-                            quantityText.setText(newQuantity.toString())
-                            quantityText.setSelection(quantityText.text.length) // Pindahkan kursor ke akhir teks
-
-                            // Dapatkan posisi unit yang sedang dipilih di spinner
-                            val position = unitsSpinner.selectedItemPosition
-
-                            // Pastikan posisi valid
-                            if (position != -1 && position < item.productPrice.size) {
-                                val selectedPrice = item.productPrice[position]
-
-                                // Update tampilan lowest unit quantity
-                                binding.lowestUnitQuantity.text =
-                                    "(${newQuantity} x ${selectedPrice.quantityPerUnit.toInt()} ${item.product?.data?.product?.lowestUnit})"
-                            }
-
-                            totalPrice.text = "Rp${formatter.format(newQuantity * item.customPrice)}"
-                        } catch (e: Exception) {
-                            Log.e("CartAdapter", "Error increasing quantity", e)
-                        }
-                    }
-
-                    btnMinus.setOnClickListener {
-                        try {
-                            if (!isClickValid()) return@setOnClickListener
-
-                            val currentQuantity = quantityText.text.toString().toIntOrNull() ?: 1
-                            if (currentQuantity > 1) {
-                                val newQuantity = currentQuantity - 1
-                                onQuantityChanged(item, newQuantity)
-                                // Perbarui quantityText di sini
-                                quantityText.setText(newQuantity.toString())
-                                quantityText.setSelection(quantityText.text.length) // Pindahkan kursor ke akhir teks
-
-                                // Dapatkan posisi unit yang sedang dipilih di spinner
-                                val position = unitsSpinner.selectedItemPosition
-
-                                // Pastikan posisi valid
-                                if (position != -1 && position < item.productPrice.size) {
-                                    val selectedPrice = item.productPrice[position]
-
-                                    // Update tampilan lowest unit quantity
-                                    binding.lowestUnitQuantity.text =
-                                        "(${newQuantity} x ${selectedPrice.quantityPerUnit.toInt()} ${item.product?.data?.product?.lowestUnit})"
-                                }
-
-                                totalPrice.text = "Rp${formatter.format(newQuantity * item.customPrice)}"
-                            }
-                        } catch (e: Exception) {
-                            Log.e("CartAdapter", "Error decreasing quantity", e)
-                        }
-                    }
-
-                    unitsSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                        override fun onItemSelected(
-                            parent: AdapterView<*>?,
-                            view: View?,
-                            position: Int,
-                            id: Long
-                        ) {
-                            try {
-                                val selectedPrice = item.productPrice[position]
-                                if (selectedPrice != item.selectedPrice) {
-                                    onUnitChanged(item, selectedPrice)
-
-                                    // Update tempPrices dan EditText dengan harga unit baru
-                                    tempPrices[adapterPosition] = selectedPrice.price
-                                    binding.lowestUnitQuantity.text =
-                                        "(${item.quantity} x ${selectedPrice.quantityPerUnit.toInt()} ${item.product?.data?.product?.lowestUnit})" //product lowest unit
-
-                                    // Format dan set harga baru ke EditText
-                                    val symbols = DecimalFormatSymbols(Locale.getDefault()).apply {
-                                        groupingSeparator = '.'
-                                    }
-                                    val formatter = DecimalFormat("#,###", symbols)
-                                    val formattedPrice = formatter.format(selectedPrice.price)
-                                    priceEdit.setText(formattedPrice)
-
-                                    // Update totalPrice dengan harga unit baru
-                                    val currentQuantity = quantityText.text.toString().toIntOrNull() ?: 0
-                                    totalPrice.text = "Rp${formatter.format(currentQuantity * selectedPrice.price)}"
-                                }
-                            } catch (e: Exception) {
-                                Log.e("CartAdapter", "Error changing unit", e)
-                            }
-                        }
-
-                        override fun onNothingSelected(parent: AdapterView<*>?) {}
-                    }
+                    // Update lowest unit quantity display
+                    updateLowestUnitDisplay(item)
                 }
             } catch (e: Exception) {
                 Log.e("CartAdapter", "Error binding view holder", e)
+            }
+        }
+
+        // Text watchers references to be able to remove them
+        private var quantityTextWatcher: TextWatcher? = null
+        private var priceTextWatcher: TextWatcher? = null
+
+        private fun removeQuantityTextWatcher() {
+            quantityTextWatcher?.let { binding.quantityText.removeTextChangedListener(it) }
+        }
+
+        private fun removePriceTextWatcher() {
+            priceTextWatcher?.let { binding.priceEdit.removeTextChangedListener(it) }
+        }
+
+        private fun setupQuantityTextWatcher(item: CartItem) {
+            quantityTextWatcher = object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    // Cancel previous job if it exists
+                    quantityTextJob?.cancel()
+
+                    val newQuantityString = s.toString()
+
+                    // Skip processing if empty
+                    if (newQuantityString.isEmpty()) {
+                        updateQuantity(item, 0)
+                        binding.lowestUnitQuantity.text = ""
+                        binding.totalPrice.text = "Rp0"
+                        return
+                    }
+
+                    // Trim leading zeros
+                    val trimmedQuantityString = newQuantityString.trimStart('0')
+                    if (newQuantityString != trimmedQuantityString) {
+                        binding.quantityText.setText(trimmedQuantityString)
+                        binding.quantityText.setSelection(trimmedQuantityString.length)
+                        return
+                    }
+
+                    // Process with debounce
+                    quantityTextJob = adapterScope.launch {
+                        delay(150) // Small debounce to prevent rapid changes
+                        try {
+                            if (trimmedQuantityString.isNotEmpty()) {
+                                val newQuantity = trimmedQuantityString.toInt()
+                                if (newQuantity >= 1) {
+                                    updateQuantity(item, newQuantity)
+                                } else {
+                                    binding.quantityText.text.clear()
+                                    updateQuantity(item, 0)
+                                }
+                            }
+                        } catch (e: NumberFormatException) {
+                            binding.quantityText.text.clear()
+                            updateQuantity(item, 0)
+                        }
+                    }
+                }
+
+                override fun afterTextChanged(s: Editable?) {}
+            }
+
+            binding.quantityText.addTextChangedListener(quantityTextWatcher)
+        }
+
+        private fun setupPriceTextWatcher(item: CartItem) {
+            priceTextWatcher = object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    if (binding.priceEdit.hasFocus()) {
+                        // Cancel previous job if it exists
+                        priceTextJob?.cancel()
+
+                        priceTextJob = adapterScope.launch {
+                            delay(200) // Debounce price changes
+                            try {
+                                val newPrice = binding.priceEdit.getRawValue()
+                                tempPrices[bindingAdapterPosition] = newPrice
+                                onPriceChanged(item, newPrice)
+                                updateTotalPriceDisplay(item)
+                            } catch (e: NumberFormatException) {
+                                Log.e("CartAdapter", "Error parsing price", e)
+                            }
+                        }
+                    }
+                }
+
+                override fun afterTextChanged(s: Editable?) {}
+            }
+
+            binding.priceEdit.addTextChangedListener(priceTextWatcher)
+        }
+
+        private fun setupUnitSpinner(item: CartItem) {
+            val units = item.productPrice.map { it.unit }
+            val unitsAdapter = ArrayAdapter(
+                itemView.context,
+                android.R.layout.simple_spinner_item,
+                units
+            )
+            unitsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+            // Remember current selection to prevent unnecessary updates
+            val currentSelection = binding.unitsSpinner.selectedItemPosition
+            val targetSelection = item.productPrice.indexOfFirst { it.unit == item.selectedPrice.unit }
+
+            binding.unitsSpinner.adapter = unitsAdapter
+
+            // Only set selection if different to prevent callbacks
+            if (targetSelection != currentSelection && targetSelection >= 0) {
+                binding.unitsSpinner.setSelection(targetSelection)
+            }
+
+            // Remove existing listener to prevent duplicates
+            if (binding.unitsSpinner.onItemSelectedListener != null) {
+                binding.unitsSpinner.onItemSelectedListener = null
+            }
+
+            binding.unitsSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(parent: AdapterView<*>?, view: android.view.View?, position: Int, id: Long) {
+                    try {
+                        if (position >= 0 && position < item.productPrice.size) {
+                            val selectedPrice = item.productPrice[position]
+                            if (selectedPrice != item.selectedPrice) {
+                                onUnitChanged(item, selectedPrice)
+
+                                // Update price in map and UI
+                                tempPrices[bindingAdapterPosition] = selectedPrice.price
+
+                                // Update related UI elements
+                                updateLowestUnitDisplay(item)
+
+                                // Format and set price
+                                binding.priceEdit.setText(priceFormatter.format(selectedPrice.price))
+
+                                // Update total price
+                                updateTotalPriceDisplay(item)
+                            }
+                        }
+                    } catch (e: Exception) {
+                        Log.e("CartAdapter", "Error changing unit", e)
+                    }
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
+            }
+        }
+
+        private fun updateQuantity(item: CartItem, newQuantity: Int) {
+            onQuantityChanged(item, newQuantity)
+            updateLowestUnitDisplay(item)
+            updateTotalPriceDisplay(item)
+        }
+
+        private fun updateLowestUnitDisplay(item: CartItem) {
+            try {
+                val position = binding.unitsSpinner.selectedItemPosition
+                if (position != -1 && position < item.productPrice.size) {
+                    val selectedPrice = item.productPrice[position]
+                    val quantity = binding.quantityText.text.toString().toIntOrNull() ?: 0
+                    binding.lowestUnitQuantity.text =
+                        "(${quantity} x ${selectedPrice.quantityPerUnit.toInt()} ${item.product?.data?.product?.lowestUnit})"
+                }
+            } catch (e: Exception) {
+                Log.e("CartAdapter", "Error updating lowest unit display", e)
+                binding.lowestUnitQuantity.text = ""
+            }
+        }
+
+        private fun updateTotalPriceDisplay(item: CartItem) {
+            try {
+                val quantity = binding.quantityText.text.toString().toIntOrNull() ?: 0
+                val price = tempPrices[bindingAdapterPosition] ?: item.customPrice
+                binding.totalPrice.text = "Rp${priceFormatter.format(quantity * price)}"
+            } catch (e: Exception) {
+                Log.e("CartAdapter", "Error updating total price display", e)
+                binding.totalPrice.text = "Rp0"
             }
         }
     }
@@ -393,7 +409,9 @@ class CartAdapter(
         }
 
         override fun areContentsTheSame(oldItem: CartItem, newItem: CartItem): Boolean {
-            return oldItem == newItem
+            return oldItem.quantity == newItem.quantity &&
+                    oldItem.customPrice == newItem.customPrice &&
+                    oldItem.selectedPrice.unit == newItem.selectedPrice.unit
         }
     }
 
@@ -411,9 +429,11 @@ class CartAdapter(
 
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                     try {
-                        val position = viewHolder.adapterPosition
-                        val item = adapter.items[position]
-                        adapter.onDeleteItem(item)
+                        val position = viewHolder.bindingAdapterPosition
+                        if (position != RecyclerView.NO_POSITION) {
+                            val item = adapter.getItem(position)
+                            adapter.onDeleteItem(item)
+                        }
                     } catch (e: Exception) {
                         Log.e("CartAdapter", "Error deleting item", e)
                     }
@@ -421,17 +441,4 @@ class CartAdapter(
             }
         }
     }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CartViewHolder {
-        val binding = CartItemLayoutBinding.inflate(
-            LayoutInflater.from(parent.context), parent, false
-        )
-        return CartViewHolder(binding)
-    }
-
-    override fun onBindViewHolder(holder: CartViewHolder, position: Int) {
-        holder.bind(items[position])
-    }
-
-    override fun getItemCount() = items.size
 }

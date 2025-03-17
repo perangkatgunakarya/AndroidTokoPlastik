@@ -2,6 +2,7 @@ package com.example.tokoplastik.ui.transaction
 
 import android.content.Context
 import android.content.Context.INPUT_METHOD_SERVICE
+import android.content.Intent
 import android.content.RestrictionEntry.TYPE_NULL
 import android.os.Bundle
 import android.text.Editable
@@ -22,6 +23,7 @@ import com.example.tokoplastik.data.repository.CustomerRepository
 import com.example.tokoplastik.data.responses.Customer
 import com.example.tokoplastik.databinding.FragmentTransactionBinding
 import com.example.tokoplastik.ui.base.BaseFragment
+import com.example.tokoplastik.ui.product.AddProductActivity
 import com.example.tokoplastik.ui.product.ProductSortBottomSheet
 import com.example.tokoplastik.util.enable
 import com.example.tokoplastik.util.visible
@@ -29,7 +31,8 @@ import com.example.tokoplastik.viewmodel.TransactionViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
-class TransactionFragment : BaseFragment<TransactionViewModel, FragmentTransactionBinding, CustomerRepository>() {
+class TransactionFragment :
+    BaseFragment<TransactionViewModel, FragmentTransactionBinding, CustomerRepository>() {
 
     private var customer_id: Int? = null
 
@@ -52,7 +55,8 @@ class TransactionFragment : BaseFragment<TransactionViewModel, FragmentTransacti
         val hpEditText = binding.customerHpText
 
         binding.buttonAddCustomer.setOnClickListener {
-            val directions = TransactionFragmentDirections.actionTransactionFragmentToAddCustomerFragment()
+            val directions =
+                TransactionFragmentDirections.actionTransactionFragmentToAddCustomerFragment()
             findNavController().navigate(directions)
         }
 
@@ -80,7 +84,8 @@ class TransactionFragment : BaseFragment<TransactionViewModel, FragmentTransacti
 
             // Sesuaikan margin bottom button_add_product
             val params = binding.buttonToCheckout.layoutParams as ViewGroup.MarginLayoutParams
-            params.bottomMargin = insets.bottom + resources.getDimensionPixelSize(R.dimen.add_button_margin) // Tambahkan margin tambahan
+            params.bottomMargin =
+                insets.bottom + resources.getDimensionPixelSize(R.dimen.add_button_margin) // Tambahkan margin tambahan
             binding.buttonToCheckout.layoutParams = params
 
             // Kembalikan insets yang telah dikonsumsi
@@ -88,15 +93,18 @@ class TransactionFragment : BaseFragment<TransactionViewModel, FragmentTransacti
         }
 
         binding.buttonToCheckout.setOnClickListener {
-            val action = TransactionFragmentDirections.actionTransactionFragmentToCheckoutFragment(customer_id.toString())
+            val action = TransactionFragmentDirections.actionTransactionFragmentToCheckoutFragment(
+                customer_id.toString()
+            )
             findNavController().navigate(action)
         }
 
         binding.buttonEditData.setOnClickListener {
             if (customer_id != null) {
-                val action = TransactionFragmentDirections.actionTransactionFragmentToUpdateCustomerFragment(
-                    customer_id!!
-                )
+                val action =
+                    TransactionFragmentDirections.actionTransactionFragmentToUpdateCustomerFragment(
+                        customer_id!!
+                    )
                 findNavController().navigate(action)
             }
         }
@@ -107,11 +115,13 @@ class TransactionFragment : BaseFragment<TransactionViewModel, FragmentTransacti
         popupMenu.inflate(R.menu.transaction_fragment_menu)
         popupMenu.setOnMenuItemClickListener { item ->
             when (item.itemId) {
-                R.id.action_filter -> {
-                    val bottomSheet = ProductSortBottomSheet()
-                    bottomSheet.show(childFragmentManager, "PRODUCT_SORT_BOTTOM_SHEET")
+                R.id.action_customer_list -> {
+                    val action =
+                        TransactionFragmentDirections.actionTransactionFragmentToCustomerFragment()
+                    findNavController().navigate(action)
                     true
                 }
+
                 else -> false
             }
         }
@@ -152,7 +162,8 @@ class TransactionFragment : BaseFragment<TransactionViewModel, FragmentTransacti
     }
 
     private fun hideKeyboard() {
-        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val imm =
+            requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(requireView().windowToken, 0)
     }
 
@@ -163,7 +174,7 @@ class TransactionFragment : BaseFragment<TransactionViewModel, FragmentTransacti
         container: ViewGroup?
     ) = FragmentTransactionBinding.inflate(inflater, container, false)
 
-    override fun getFragmentRepository() : CustomerRepository {
+    override fun getFragmentRepository(): CustomerRepository {
         val token = runBlocking { userPreferences.authToken.first() }
         val api = remoteDataSource.buildApi(CustomerApi::class.java, token)
         return CustomerRepository(api)

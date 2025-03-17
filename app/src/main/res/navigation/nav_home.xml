@@ -22,6 +22,11 @@
         tools:layout="@layout/fragment_transaction">
 
         <action
+            android:id="@+id/action_transactionFragment_to_customerFragment"
+            app:destination="@id/customerFragment"
+            />
+
+        <action
             android:id="@+id/action_transactionFragment_to_checkoutFragment"
             app:destination="@id/checkoutFragment" />
 

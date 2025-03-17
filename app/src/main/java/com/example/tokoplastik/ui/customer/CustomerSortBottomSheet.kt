@@ -37,8 +37,6 @@ class CustomerSortBottomSheet : BottomSheetDialogFragment() {
 
         ascendingButton = view.findViewById(R.id.ascending_customer_name_sort_button)
         descendingButton = view.findViewById(R.id.descending_customer_name_sort_button)
-        highestPriceButton = view.findViewById(R.id.highest_price_modal_sort_button)
-        lowestPriceButton = view.findViewById(R.id.lowest_price_modal_sort_button)
         doneButton = view.findViewById(R.id.doneButton)
 
         doneButton.setOnClickListener {
@@ -48,12 +46,6 @@ class CustomerSortBottomSheet : BottomSheetDialogFragment() {
             } else if (descendingButton.isChecked) {
                 sortType = SortType.NAME
                 viewModel.setSortOrder(SortOrder.DESCENDING)
-            } else if (highestPriceButton.isChecked) {
-                sortType = SortType.CAPITAL
-                viewModel.setSortOrder(SortOrder.DESCENDING)
-            } else if (lowestPriceButton.isChecked) {
-                sortType = SortType.CAPITAL
-                viewModel.setSortOrder(SortOrder.ASCENDING)
             }
 
             viewModel.applySort(sortType)
@@ -63,8 +55,6 @@ class CustomerSortBottomSheet : BottomSheetDialogFragment() {
             )
             dismiss()
         }
-
-        setRadioButtonListeners()
         restorePreviousState()
     }
 
