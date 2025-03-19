@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import cn.pedant.SweetAlert.SweetAlertDialog
+import com.example.tokoplastik.data.responses.GetProduct
 import com.example.tokoplastik.data.responses.ProductPrice
 import com.example.tokoplastik.databinding.ProductPriceListLayoutBinding
 import java.text.DecimalFormat
@@ -13,7 +14,8 @@ import java.text.DecimalFormatSymbols
 import java.util.Locale
 
 class ProductPricesAdapter(
-    private val onItemClick: (ProductPrice) -> Unit
+    private val onItemClick: (ProductPrice) -> Unit,
+    private val onDeleteItem: (ProductPrice) -> Unit
 ) : RecyclerView.Adapter<ProductPricesAdapter.ViewHolder>() {
 
     private var productList = mutableListOf<ProductPrice>()
@@ -43,6 +45,15 @@ class ProductPricesAdapter(
         notifyDataSetChanged()
     }
 
+    fun removeItem(productPrice: ProductPrice) {
+        val originalIndex = productList.indexOfFirst { it == productPrice }
+
+        if (originalIndex != -1) {
+            productList.removeAt(originalIndex)
+            notifyItemRemoved(originalIndex)
+        }
+    }
+
     companion object {
         fun createSwipeToDelete(
             adapter: ProductPricesAdapter,
@@ -59,7 +70,35 @@ class ProductPricesAdapter(
                 ): Boolean = false
 
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                    TODO("Not yet implemented")
+                    val position = viewHolder.adapterPosition
+                    val item = adapter.productList[position]
+
+                    SweetAlertDialog(context, SweetAlertDialog.WARNING_TYPE)
+                        .setTitleText("Hapus Produk")
+                        .setContentText("Apakah Anda yakin ingin menghapus harga satuan ini?")
+                        .setConfirmText("Hapus")
+                        .setConfirmClickListener { sDialog ->
+                            adapter.removeItem(item)
+                            adapter.onDeleteItem(item)
+                            sDialog.dismissWithAnimation()
+                            confirm()
+                        }
+                        .setCancelText("Cancel")
+                        .setCancelClickListener { sDialog ->
+                            adapter.notifyItemChanged(position)
+                            sDialog.dismissWithAnimation()
+                        }
+                        .show()
+                }
+
+                fun confirm() {
+                    SweetAlertDialog(context, SweetAlertDialog.SUCCESS_TYPE).apply {
+                        contentText = "Harga Satuan Berhasil Dihapus"
+                        setConfirmButton("OK") {
+                            dismissWithAnimation()
+                        }
+                        show()
+                    }
                 }
             }
         }

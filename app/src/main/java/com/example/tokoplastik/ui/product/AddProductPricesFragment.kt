@@ -41,7 +41,48 @@ class AddProductPricesFragment :
 
     private lateinit var productDetailViewModel: ProductDetailViewModel
 
-    private val units = listOf("pcs", "ikat", "unit", "pack", "unit", "buah", "pasang", "kotak", "lusin", "lembar", "keping", "batang", "bungkus", "potong", "tablet", "ekor", "rim", "karat", "botol", "butir", "roll", "dus", "karung", "koli", "sak", "bal", "kaleng", "set", "slop", "gulung", "ton", "kg", "gram", "mg", "meter", "m2", "m3", "inch", "cc", "liter")
+    private val units = listOf(
+        "pcs",
+        "ikat",
+        "unit",
+        "pack",
+        "unit",
+        "buah",
+        "pasang",
+        "kotak",
+        "lusin",
+        "lembar",
+        "keping",
+        "batang",
+        "bungkus",
+        "potong",
+        "tablet",
+        "ekor",
+        "rim",
+        "karat",
+        "botol",
+        "butir",
+        "roll",
+        "dus",
+        "karung",
+        "koli",
+        "sak",
+        "bal",
+        "kaleng",
+        "set",
+        "slop",
+        "gulung",
+        "ton",
+        "kg",
+        "gram",
+        "mg",
+        "meter",
+        "m2",
+        "m3",
+        "inch",
+        "cc",
+        "liter"
+    )
     private var selectedUnit: String? = null
 
     private lateinit var priceEdit: EditText
@@ -80,7 +121,8 @@ class AddProductPricesFragment :
     private fun initProductDetailViewModel() {
         val token = runBlocking { userPreferences.authToken.first() }
         val productApi = remoteDataSource.buildApi(GetProductApi::class.java, token)
-        val productRepository = com.example.tokoplastik.data.repository.ProductRepository(productApi)
+        val productRepository =
+            com.example.tokoplastik.data.repository.ProductRepository(productApi)
 
         // Buat instance ProductDetailViewModel
         productDetailViewModel = ProductDetailViewModel(productRepository)
@@ -97,6 +139,7 @@ class AddProductPricesFragment :
                         binding.lowestUnit.text = lowestUnit
                     }
                 }
+
                 is Resource.Failure -> handleApiError(result)
                 Resource.Loading -> {}
             }
@@ -118,6 +161,11 @@ class AddProductPricesFragment :
         pricesAdapter = ProductPricesAdapter(
             onItemClick = { item ->
                 fillFormWithProductPrice(item)
+            },
+            onDeleteItem = { item ->
+                viewModel.deleteProductPrice(item.id)
+                viewModel.getProductPrices(args.productId)
+                clearInputs()
             }
         )
 
@@ -125,9 +173,10 @@ class AddProductPricesFragment :
             adapter = pricesAdapter
             layoutManager = LinearLayoutManager(requireContext())
 
-//            val swipeToDeleteCallback = ProductPricesAdapter.createSwipeToDelete(pricesAdapter, this.context)
-//            val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)
-//            itemTouchHelper.attachToRecyclerView(this)
+            val swipeToDeleteCallback =
+                ProductPricesAdapter.createSwipeToDelete(pricesAdapter, this.context)
+            val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)
+            itemTouchHelper.attachToRecyclerView(this)
         }
 
         binding.buttonAddPrice.setOnClickListener {
@@ -191,9 +240,16 @@ class AddProductPricesFragment :
             isValid = false
         }
 
-        if (::getProductPrices.isInitialized) {
-            existingProductPrice = getProductPrices.find { productPrice ->
+        // Cek jika ini bukan update dari item yang sudah ada
+        if (existingProductPrice == null && ::getProductPrices.isInitialized) {
+            // Cari apakah unit sudah ada
+            val duplicate = getProductPrices.find { productPrice ->
                 productPrice.unit.equals(unit, ignoreCase = true)
+            }
+
+            if (duplicate != null) {
+                binding.unitDropdown.error = "Unit ini sudah ada"
+                isValid = false
             }
         }
 
@@ -212,6 +268,7 @@ class AddProductPricesFragment :
                         pricesAdapter.updateList(getProductPrices)
                     }
                 }
+
                 is Resource.Failure -> handleApiError(result)
                 Resource.Loading -> {}
             }
@@ -232,9 +289,15 @@ class AddProductPricesFragment :
                     // Refresh the list after adding
                     viewModel.getProductPrices(args.productId)
                 }
+
                 is Resource.Failure -> {
-                    Toast.makeText(requireContext(), result.errorBody.toString(), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        result.errorBody.toString(),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
+
                 Resource.Loading -> {}
             }
         }
@@ -253,9 +316,15 @@ class AddProductPricesFragment :
                     clearInputs()
                     viewModel.getProductPrices(args.productId)
                 }
+
                 is Resource.Failure -> {
-                    Toast.makeText(requireContext(), result.errorBody.toString(), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        result.errorBody.toString(),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
+
                 Resource.Loading -> {}
             }
         }
