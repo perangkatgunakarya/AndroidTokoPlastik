@@ -466,7 +466,39 @@ class HistoryReceiptGenerator(
         val attentionText = """
             Perhatian : Barang yang sudah dibeli tidak dapat dikembalikan lagi.
         """.trimIndent()
-        return "$centeredShopName\n\n$combinedInfo\n\n$tableHeader\n$itemsText\n$footer\n$attentionText\n\n$recipientSenderRegard\n$footer3"
+
+        val fullText = "$centeredShopName\n\n$combinedInfo\n\n$tableHeader\n$itemsText\n$footer\n$attentionText\n\n$recipientSenderRegard\n$footer3"
+        return paginateReceiptText(fullText, 28, 4)
+    }
+
+    private fun paginateReceiptText(text: String, rowsPerPage: Int, spaceBetweenPages: Int): String {
+        val lines = text.lines()
+        val totalLines = lines.size
+
+        if (totalLines <= rowsPerPage) {
+            return text
+        }
+
+        val paginatedText = StringBuilder()
+        var currentLine = 0
+
+        while (currentLine < totalLines) {
+            val endLine = minOf(currentLine + rowsPerPage, totalLines)
+            for (i in currentLine until endLine) {
+                paginatedText.append(lines[i])
+                paginatedText.append("\n")
+            }
+
+            currentLine = endLine
+
+            if (currentLine < totalLines) {
+                repeat(spaceBetweenPages) {
+                    paginatedText.append("\n")
+                }
+            }
+        }
+
+        return paginatedText.toString()
     }
 
     // Helper function to wrap text
