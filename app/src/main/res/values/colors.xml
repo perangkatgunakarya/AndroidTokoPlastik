@@ -4,6 +4,8 @@
 
     <color name="primary">#454545</color>
     <color name="secondary">#ededed</color>
+    <color name="secondary_note">#fafafa</color>
+    <color name="secondary_note_focus">#efefef</color>
 
     <color name="text_primary">#21292b</color>
     <color name="text_secondary">#7f7f7f</color>

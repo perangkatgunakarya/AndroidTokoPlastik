@@ -185,6 +185,8 @@ class CartAdapter(
         fun bind(item: CartItem) {
             try {
                 binding.apply {
+                    cartNumber.text = "${bindingAdapterPosition + 1}."
+
                     // Set basic product info
                     productImage.text = getInitials(item.product?.data?.product?.name)
                     productText.text = item.product?.data?.product?.name
@@ -248,7 +250,7 @@ class CartAdapter(
                     if (newQuantityString.isEmpty()) {
                         updateQuantity(item, 0)
                         binding.lowestUnitQuantity.text = ""
-                        binding.totalPrice.text = "Rp0"
+                        binding.totalPrice.text = "0"
                         return
                     }
 
@@ -395,10 +397,10 @@ class CartAdapter(
             try {
                 val quantity = binding.quantityText.text.toString().toIntOrNull() ?: 0
                 val price = tempPrices[bindingAdapterPosition] ?: item.customPrice
-                binding.totalPrice.text = "Rp${priceFormatter.format(quantity * price)}"
+                binding.totalPrice.text = "${priceFormatter.format(quantity * price)}"
             } catch (e: Exception) {
                 Log.e("CartAdapter", "Error updating total price display", e)
-                binding.totalPrice.text = "Rp0"
+                binding.totalPrice.text = "0"
             }
         }
     }

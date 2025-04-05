@@ -33,12 +33,14 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
-class ProductFragment : BaseFragment<ProductViewModel, FragmentProductBinding, ProductRepository> () {
+class ProductFragment :
+    BaseFragment<ProductViewModel, FragmentProductBinding, ProductRepository>() {
 
     private lateinit var getProduct: List<GetProduct>
     private lateinit var productAdapter: ProductAdapter
     private var isNameSortAscending = true
     private var isPriceSortAscending = true
+    private var lastViewedProductId: Int? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -61,7 +63,8 @@ class ProductFragment : BaseFragment<ProductViewModel, FragmentProductBinding, P
 
             // Sesuaikan margin bottom button_add_product
             val params = binding.buttonAddProduct.layoutParams as ViewGroup.MarginLayoutParams
-            params.bottomMargin = insets.bottom + resources.getDimensionPixelSize(R.dimen.add_button_margin) // Tambahkan margin tambahan
+            params.bottomMargin =
+                insets.bottom + resources.getDimensionPixelSize(R.dimen.add_button_margin) // Tambahkan margin tambahan
             binding.buttonAddProduct.layoutParams = params
 
             // Kembalikan insets yang telah dikonsumsi
@@ -97,6 +100,7 @@ class ProductFragment : BaseFragment<ProductViewModel, FragmentProductBinding, P
                     bottomSheet.show(childFragmentManager, "PRODUCT_SORT_BOTTOM_SHEET")
                     true
                 }
+
                 else -> false
             }
         }
@@ -119,12 +123,11 @@ class ProductFragment : BaseFragment<ProductViewModel, FragmentProductBinding, P
         )
         productAdapter.apply {
             setOnItemClickListener { product ->
-//                    val intent = Intent(requireContext(), AddProductActivity::class.java).apply {
-//                        putExtra("openProductPriceFragment", true)
-//                        putExtra("productId", product.id)
-//                    }
-//                    startActivity(intent)
-                val directions = ProductFragmentDirections.actionProductFragmentToProductDetailFragment(product.id)
+                // Simpan ID produk yang diklik
+                lastViewedProductId = product.id
+
+                val directions =
+                    ProductFragmentDirections.actionProductFragmentToProductDetailFragment(product.id)
                 findNavController().navigate(directions)
             }
         }
@@ -133,7 +136,8 @@ class ProductFragment : BaseFragment<ProductViewModel, FragmentProductBinding, P
             adapter = productAdapter
             layoutManager = LinearLayoutManager(requireContext())
 
-            val swipeToDeleteCallback = ProductAdapter.createSwipeToDelete(productAdapter, this.context)
+            val swipeToDeleteCallback =
+                ProductAdapter.createSwipeToDelete(productAdapter, this.context)
             val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)
             itemTouchHelper.attachToRecyclerView(this)
         }
@@ -151,12 +155,17 @@ class ProductFragment : BaseFragment<ProductViewModel, FragmentProductBinding, P
                     result.data?.let { response ->
                         getProduct = response.data
                         productAdapter.updateList(getProduct)
+
+                        // Setelah data dimuat, scroll ke posisi produk yang terakhir dilihat
+                        scrollToLastViewedProduct()
                     }
                 }
+
                 is Resource.Failure -> {
                     binding.productProgressBar.visible(false)
                     handleApiError(result)
                 }
+
                 is Resource.Loading -> {
                     binding.productProgressBar.visible(true)
                 }
@@ -171,13 +180,31 @@ class ProductFragment : BaseFragment<ProductViewModel, FragmentProductBinding, P
                         false -> productAdapter.sortByName(false)
                     }
                 }
+
                 SortType.CAPITAL -> viewModel.isDataSortAscending.observe(viewLifecycleOwner) { ascending ->
                     when (ascending) {
                         true -> productAdapter.sortByPrice(true)
                         false -> productAdapter.sortByPrice(false)
                     }
                 }
+
                 SortType.DATE -> TODO()
+            }
+        }
+    }
+
+    private fun scrollToLastViewedProduct() {
+        // Hanya scroll jika memiliki ID produk terakhir
+        lastViewedProductId?.let { productId ->
+            val position = getProduct.indexOfFirst { it.id == productId }
+            if (position != -1) {
+                binding.productRecycler.post {
+                    (binding.productRecycler.layoutManager as? LinearLayoutManager)?.let { layoutManager ->
+                        val offset = binding.productRecycler.height / 2
+                        layoutManager.scrollToPositionWithOffset(position, offset)
+                    }
+
+                }
             }
         }
     }
@@ -226,7 +253,7 @@ class ProductFragment : BaseFragment<ProductViewModel, FragmentProductBinding, P
         container: ViewGroup?
     ) = FragmentProductBinding.inflate(inflater, container, false)
 
-    override fun getFragmentRepository() : ProductRepository {
+    override fun getFragmentRepository(): ProductRepository {
         val token = runBlocking { userPreferences.authToken.first() }
         val api = remoteDataSource.buildApi(GetProductApi::class.java, token)
         return ProductRepository(api)

@@ -147,6 +147,7 @@ class ProductAdapter(
         notifyDataSetChanged()
     }
 
+
     inner class ViewHolder(private val binding: ProductListLayoutBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
@@ -161,6 +162,7 @@ class ProductAdapter(
 
         fun bind(product: GetProduct) {
             binding.apply {
+                productNumber.text = "${bindingAdapterPosition + 1}."
 
                 val initial = getInitials(product.name)
                 productInitial.text = initial

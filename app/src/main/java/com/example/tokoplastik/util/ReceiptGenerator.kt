@@ -172,10 +172,22 @@ class ReceiptGenerator(
                 }
 
                 // Add aligned detail rows
-                createDetailRow("Referensi", ": TPHA-${orderId}").forEach { detailsTable.addCell(it) }
-                createDetailRow("Tanggal", ": " + formatDate(orderData.createdAt)).forEach { detailsTable.addCell(it) }
-                createDetailRow("Status", ": " + orderData.paymentStatus.toUpperCase()).forEach { detailsTable.addCell(it) }
-                createDetailRow("Jatuh Tempo", ": " + formatDate(orderData.dueDate)).forEach { detailsTable.addCell(it) }
+                createDetailRow(
+                    "Referensi",
+                    ": TPHA-${orderId}"
+                ).forEach { detailsTable.addCell(it) }
+                createDetailRow(
+                    "Tanggal",
+                    ": " + formatDate(orderData.createdAt)
+                ).forEach { detailsTable.addCell(it) }
+                createDetailRow(
+                    "Status",
+                    ": " + orderData.paymentStatus.toUpperCase()
+                ).forEach { detailsTable.addCell(it) }
+                createDetailRow(
+                    "Jatuh Tempo",
+                    ": " + formatDate(orderData.dueDate)
+                ).forEach { detailsTable.addCell(it) }
 
                 addElement(detailsTable)
             }
@@ -275,21 +287,36 @@ class ReceiptGenerator(
                 border = Rectangle.NO_BORDER
                 val penerimaFont = FontFactory.getFont(FontFactory.HELVETICA, 11f)
                 addElement(Paragraph("Penerima\n\n\n\n", penerimaFont))
-                addElement(Paragraph("""(                                  )""".trimIndent(), penerimaFont))
+                addElement(
+                    Paragraph(
+                        """(                                  )""".trimIndent(),
+                        penerimaFont
+                    )
+                )
             }
 
             val pengirimCell = PdfPCell().apply {
                 border = Rectangle.NO_BORDER
                 val pengirimFont = FontFactory.getFont(FontFactory.HELVETICA, 11f)
                 addElement(Paragraph("Pengirim\n\n\n\n", pengirimFont))
-                addElement(Paragraph("""(                                  )""".trimIndent(), pengirimFont))
+                addElement(
+                    Paragraph(
+                        """(                                  )""".trimIndent(),
+                        pengirimFont
+                    )
+                )
             }
 
             val regardCell = PdfPCell().apply {
                 border = Rectangle.NO_BORDER
                 val regardFont = FontFactory.getFont(FontFactory.HELVETICA, 11f)
                 addElement(Paragraph("Dengan Hormat\n\n\n\n", regardFont))
-                addElement(Paragraph("""(                                  )""".trimIndent(), regardFont))
+                addElement(
+                    Paragraph(
+                        """(                                  )""".trimIndent(),
+                        regardFont
+                    )
+                )
             }
 
             footerTable.addCell(penerimaCell)
@@ -355,7 +382,7 @@ class ReceiptGenerator(
             "Tanggal   : ".padStart(31) + formatDate(orderData.createdAt)
         }
         ${"Status    : ".padStart(31) + orderData.paymentStatus.toUpperCase()}
-        ${"Jatuh Tempo  : ".padStart(31) + formatDate(orderData.dueDate)}
+        ${"Jatuh Tempo : ".padStart(31) + formatDate(orderData.dueDate)}
     """.trimIndent()
 
         // Combine Recipient Info and Invoice Details
@@ -369,7 +396,7 @@ class ReceiptGenerator(
         // Table Header
         val tableHeader = """
         +----------------------------------------------------------------------------------------+
-        | NO  | BANYAKNYA       | NAMA PRODUK              | HARGA           | JUMLAH            |
+        | NO  | BANYAKNYA       | NAMA PRODUK              |           HARGA |            JUMLAH |
         |-----|-----------------|--------------------------|-----------------|-------------------|
     """.trimIndent()
 
@@ -391,8 +418,14 @@ class ReceiptGenerator(
                     24
                 )
             } | ${
-                item.customPrice.toString().padEnd(15)
-            } | ${(item.customPrice * item.quantity).toString().padEnd(17)} |"
+                String.format(Locale.GERMANY, "%,d", item.customPrice.toLong()).padStart(15)
+            } | ${
+                String.format(
+                    Locale.GERMANY,
+                    "%,d",
+                    (item.customPrice * item.quantity).toLong()
+                ).padStart(17)
+            } |"
             val descriptionLine =
                 "|     | ${description.padEnd(15)} |                          |                 |                   |"
             val additionalLines = wrappedItemName.drop(1)
@@ -406,10 +439,10 @@ class ReceiptGenerator(
         | 		                                                Total: ${
             String.format(
                 Locale.GERMANY,
-                "Rp %,d",
+                "Rp%,d",
                 orderData.total.toLong()
-            ).padEnd(18)
-        }|
+            ).padStart(17)
+        } |
         +----------------------------------------------------------------------------------------+
 
     """.trimIndent()
@@ -432,11 +465,16 @@ class ReceiptGenerator(
             Perhatian : Barang yang sudah dibeli tidak dapat dikembalikan lagi.
         """.trimIndent()
 
-        val fullText = "$centeredShopName\n\n$combinedInfo\n\n$tableHeader\n$itemsText\n$footer\n$attentionText\n\n$recipientSenderRegard\n$footer3"
+        val fullText =
+            "$centeredShopName\n\n$combinedInfo\n\n$tableHeader\n$itemsText\n$footer\n$attentionText\n\n$recipientSenderRegard\n$footer3"
         return paginateReceiptText(fullText, 28, 4)
     }
 
-    private fun paginateReceiptText(text: String, rowsPerPage: Int, spaceBetweenPages: Int): String {
+    private fun paginateReceiptText(
+        text: String,
+        rowsPerPage: Int,
+        spaceBetweenPages: Int
+    ): String {
         val lines = text.lines()
         val totalLines = lines.size
 

@@ -2,6 +2,7 @@
 <resources>
     <dimen name="totalCardViewMargin">26dp</dimen>
     <dimen name="add_button_margin">40dp</dimen>
+    <dimen name="daily_notes_margin">30dp</dimen>
     <dimen name="buttonCorners">15dp</dimen>
     <dimen name="welcomeTextMargin">115dp</dimen>
     <dimen name="smallButtonWidth">130dp</dimen>

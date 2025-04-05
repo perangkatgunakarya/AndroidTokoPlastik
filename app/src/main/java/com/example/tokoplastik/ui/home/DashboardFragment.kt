@@ -1,11 +1,22 @@
 package com.example.tokoplastik.ui.home
 
+import android.content.Context
+import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
+import com.example.tokoplastik.R
 import com.example.tokoplastik.data.network.DashboardApi
 import com.example.tokoplastik.data.network.GetProductApi
 import com.example.tokoplastik.data.repository.DashboardRepository
@@ -53,6 +64,119 @@ class DashboardFragment :
         viewModel.getChart()
 
         binding.buttonLogout.setOnClickListener { logout() }
+
+        // Atur listener untuk WindowInsets
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime())
+            val imeHeight = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
+            val navigationHeight = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
+
+            val params = binding.dailyNotesLayout.layoutParams as ViewGroup.MarginLayoutParams
+            params.bottomMargin = if (imeVisible) imeHeight + 100 else navigationHeight
+            binding.dailyNotesLayout.layoutParams = params
+
+            WindowInsetsCompat.CONSUMED
+        }
+
+
+        setupDailyNote()
+    }
+
+    private fun setupDailyNote() {
+        // Get references to views
+        val dailyNotes = binding.dailyNotes
+        val dailyNotesCard = binding.dailyNotesCard
+
+        // Load saved notes
+        val savedNotes = loadSavedNotes()
+
+        // Set the saved text (if any)
+        if (!savedNotes.isNullOrEmpty()) {
+            dailyNotes.setText(savedNotes)
+        }
+
+        // Initial setup based on whether text is empty or not
+        updateDailyNotesStyle(dailyNotes.text.isNullOrEmpty(), false)
+
+        // Focus change listener to handle when user clicks on or away from EditText
+        dailyNotes.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                // When EditText gets focus - switch to editing mode style with focus indication
+                dailyNotes.requestFocus()
+                val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.showSoftInput(dailyNotes, InputMethodManager.SHOW_IMPLICIT)
+                updateDailyNotesStyle(false, true)
+            } else {
+                // When EditText loses focus - check if empty and remove focus indication
+                updateDailyNotesStyle(dailyNotes.text.isNullOrEmpty(), false)
+            }
+        }
+
+        // Text change listener to save notes when text changes
+        dailyNotes.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                // Save notes whenever text changes
+                saveNotes(s.toString())
+            }
+        })
+    }
+
+    // Updated helper function to handle both empty state and focus state
+    private fun updateDailyNotesStyle(isEmpty: Boolean, isFocused: Boolean) {
+        val dailyNotes = binding.dailyNotes
+        val dailyNotesCard = binding.dailyNotesCard
+
+        // Set text styling based on empty state
+        if (isEmpty) {
+            dailyNotes.gravity = Gravity.CENTER
+            dailyNotes.hint = "Tidak Ada Catatan Harian"
+            dailyNotes.textSize = 18F
+            dailyNotes.setTypeface(null, Typeface.BOLD)
+        } else {
+            dailyNotes.gravity = Gravity.TOP or Gravity.START
+            dailyNotes.hint = null
+            dailyNotes.textSize = 14F
+            dailyNotes.setTypeface(null, Typeface.NORMAL)
+        }
+
+        // Set background color based on focus state
+        if (isFocused) {
+            // Darker background when focused - user is typing
+            dailyNotesCard.setCardBackgroundColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.secondary_note_focus
+                )
+            )
+        } else {
+            // Normal background when not focused
+            dailyNotesCard.setCardBackgroundColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.secondary_note
+                )
+            )
+        }
+    }
+
+    // Function to save notes to SharedPreferences
+    private fun saveNotes(notes: String) {
+        val sharedPreferences =
+            requireActivity().getSharedPreferences("DailyNotesPrefs", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("daily_notes", notes)
+        editor.apply()
+    }
+
+    // Function to load saved notes from SharedPreferences
+    private fun loadSavedNotes(): String? {
+        val sharedPreferences =
+            requireActivity().getSharedPreferences("DailyNotesPrefs", Context.MODE_PRIVATE)
+        return sharedPreferences.getString("daily_notes", null)
     }
 
 //    private fun setupChipGroupListener() {
@@ -96,7 +220,6 @@ class DashboardFragment :
 //                        val formattedOmzet = formatter.format(it.data.data.todayIncome)
 //                        binding.omzetText.text = "Rp$formattedOmzet"
 //                    }
-
 
 
 //                    if (it.data?.data?.monthlyProfit!! < 0) {

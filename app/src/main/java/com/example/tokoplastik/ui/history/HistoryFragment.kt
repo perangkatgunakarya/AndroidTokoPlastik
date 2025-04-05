@@ -37,6 +37,7 @@ class HistoryFragment :
     private lateinit var transactions: List<AllTransaction>
     private lateinit var historyAdapter: HistoryAdapter
     private var isDateSortAscending: Boolean = true
+    private var lastViewedHistoryId: Int? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -87,6 +88,22 @@ class HistoryFragment :
         }
     }
 
+    private fun scrollToLastViewedHistory() {
+        // Hanya scroll jika memiliki ID produk terakhir
+        lastViewedHistoryId?.let { productId ->
+            val position = transactions.indexOfFirst { it.id == productId }
+            if (position != -1) {
+                binding.historyRecycler.post {
+                    (binding.historyRecycler.layoutManager as? LinearLayoutManager)?.let { layoutManager ->
+                        val offset = binding.historyRecycler.height / 2
+                        layoutManager.scrollToPositionWithOffset(position, offset)
+                    }
+
+                }
+            }
+        }
+    }
+
     private fun setupRecyclerView() {
         historyAdapter = HistoryAdapter(
             onDeleteItem = { item ->
@@ -95,6 +112,8 @@ class HistoryFragment :
         )
         historyAdapter.apply {
             setOnItemClickListener { transaction ->
+                lastViewedHistoryId = transaction.id
+
                 val directions = HistoryFragmentDirections
                     .actionHistoryFragmentToDetailHistoryFragment(transaction.id)
                 findNavController().navigate(directions)
@@ -122,6 +141,8 @@ class HistoryFragment :
                     result.data?.let { response ->
                         transactions = response.data
                         historyAdapter.updateList(transactions)
+
+                        scrollToLastViewedHistory()
                     }
                 }
                 is Resource.Failure -> {

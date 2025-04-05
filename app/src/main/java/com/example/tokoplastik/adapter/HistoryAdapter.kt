@@ -156,6 +156,7 @@ class HistoryAdapter (
 
         fun bind(transaction: AllTransaction) {
             binding.apply {
+                historyNumber.text = "${bindingAdapterPosition + 1}."
                 customerText.text = "${transaction.customer.name}"
 
                 val initial = getInitials(transaction.customer.name)
