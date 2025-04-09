@@ -370,21 +370,19 @@ class HistoryReceiptGenerator(
         } else {
             orderData.customer.address
         }
+
+        // Reduced whitespace in recipient info
         val formattedRecipientInfo = """
-            ${"Yth.".padEnd(59)}
-            ${orderData.customer.name.padEnd(59)}
-            ${address}
-             
-             
-        """.trimIndent()
+        ${"Yth.".padEnd(59)}
+        ${orderData.customer.name.padEnd(59)}
+        ${address}
+    """.trimIndent()
 
         // Invoice Details (Right-Aligned)
         val invoiceDetails = """
         INVOICE
         Referensi : TPHA-${orderId}
-        ${
-            "Tanggal   : ".padStart(31) + formatDate(orderData.createdAt)
-        }
+        ${"Tanggal   : ".padStart(31) + formatDate(orderData.createdAt)}
         ${"Status    : ".padStart(31) + orderData.paymentStatus.toUpperCase()}
         ${"Jatuh Tempo : ".padStart(31) + formatDate(orderData.dueDate)}
     """.trimIndent()
@@ -392,10 +390,9 @@ class HistoryReceiptGenerator(
         // Combine Recipient Info and Invoice Details
         val recipientLines = formattedRecipientInfo.lines()
         val detailLines = invoiceDetails.lines()
-        val combinedInfo =
-            recipientLines.zip(detailLines).joinToString("\n") { (recipient, detail) ->
-                recipient.padEnd(40) + detail
-            }
+        val combinedInfo = recipientLines.zip(detailLines).joinToString("\n") { (recipient, detail) ->
+            recipient.padEnd(40) + detail
+        }
 
         // Table Header
         val tableHeader = """
@@ -404,71 +401,76 @@ class HistoryReceiptGenerator(
         |-----|-----------------|--------------------------|-----------------|-------------------|
     """.trimIndent()
 
-        // Items
-        val itemsText = cartItems.flatMapIndexed { index, item ->
-            historyProductPrice =
-                allProductPrices.filter { it.productId == item.productPrice.product.id }
-            val description =
-                generateTransactionDesc(item.productPrice.unit, item.quantity, historyProductPrice)
+        // Create paginated result with maximum 5 items per page
+        val result = StringBuilder()
+        val itemsPerPage = 5
+        val pages = (cartItems.size + itemsPerPage - 1) / itemsPerPage // Calculate number of pages
 
-            val wrappedItemName =
-                wrapText(item.productPrice.product.name, 24) // Wrap item name to 24 characters
-            val firstLine = "| ${
-                (index + 1).toString().padEnd(3)
-            } | ${(item.quantity.toString() + " " + item.productPrice.unit).padEnd(15)} | ${
-                wrappedItemName[0].padEnd(
-                    24
-                )
-            } | ${
-                String.format(Locale.GERMANY, "%,d", item.priceAdjustment.toLong()).padStart(15)
-            } | ${
-                String.format(
-                    Locale.GERMANY,
-                    "%,d",
-                    (item.priceAdjustment * item.quantity).toLong()
-                ).padStart(17)
-            } |"
-            val descriptionLine =
-                "|     | ${description.padEnd(15)} |                          |                 |                   |"
-            val additionalLines = wrappedItemName.drop(1)
-                .map { "|     |                 | ${it.padEnd(24)} |                 |                   |" }
-            listOf(firstLine, descriptionLine) + additionalLines
-        }.joinToString("\n")
+        for (page in 0 until pages) {
+            if (page > 0) {
+                result.append("\n\n\n\n") // Space between pages
+            }
 
-        // Footer
-        val footer = """
-        |-----|-----------------|--------------------------|-----------------|-------------------|
-        | 		                                                Total: ${
-            String.format(
-                Locale.GERMANY,
-                "Rp%,d",
-                orderData.total.toLong()
-            ).padStart(17)
-        } |
-        +----------------------------------------------------------------------------------------+
+            // Add header content to each page
+            result.append(centeredShopName)
+            result.append("\n")
+            result.append(combinedInfo)
+            result.append("\n")
+            result.append(tableHeader)
+            result.append("\n")
 
-    """.trimIndent()
+            // Process items for current page
+            val startIdx = page * itemsPerPage
+            val endIdx = minOf(startIdx + itemsPerPage, cartItems.size)
 
-        val recipientSenderRegard = """
-            
-            
-       Penerima                           Pengirim                           Dengan Hormat
-    
-    
-    
-       (                )                 (                )                 (                )
-    """.trimIndent()
+            for (i in startIdx until endIdx) {
+                val item = cartItems[i]
+                val itemNumber = i + 1
 
-        val footer3 = """
-        
-        
-    """.trimIndent()
-        val attentionText = """
-            Perhatian : Barang yang sudah dibeli tidak dapat dikembalikan lagi.
+                historyProductPrice = allProductPrices.filter { it.productId == item.productPrice.product.id }
+                val description = generateTransactionDesc(item.productPrice.unit, item.quantity, historyProductPrice)
+
+                // Trim item name to 24 characters max (no wrapping)
+                val trimmedItemName = item.productPrice.product.name.take(24).padEnd(24)
+
+                // Add the item line
+                val itemLine = "| ${itemNumber.toString().padEnd(3)} | ${(item.quantity.toString() + " " + item.productPrice.unit).padEnd(15)} | $trimmedItemName | ${
+                    String.format(Locale.GERMANY, "%,d", item.priceAdjustment.toLong()).padStart(15)
+                } | ${
+                    String.format(Locale.GERMANY, "%,d", (item.priceAdjustment * item.quantity).toLong()).padStart(17)
+                } |"
+                result.append(itemLine)
+                result.append("\n")
+
+                // Add description line if needed
+                if (description.isNotEmpty()) {
+                    val descriptionLine = "|     | ${description.padEnd(15)} |                          |                 |                   |"
+                    result.append(descriptionLine)
+                    result.append("\n")
+                }
+            }
+
+            // Add footer to each page
+            val footer = """
+            |-----|-----------------|--------------------------|-----------------|-------------------|
+            |                                                   Total: ${String.format(Locale.GERMANY, "Rp%,d", orderData.total.toLong()).padStart(17)} |
+            +----------------------------------------------------------------------------------------+
         """.trimIndent()
+            result.append(footer)
+            result.append("\n")
+            result.append("Perhatian : Barang yang sudah dibeli tidak dapat dikembalikan lagi.")
 
-        val fullText = "$centeredShopName\n\n$combinedInfo\n\n$tableHeader\n$itemsText\n$footer\n$attentionText\n\n$recipientSenderRegard\n$footer3"
-        return paginateReceiptText(fullText, 28, 4)
+            // Only add signature section to the last page
+            if (page == pages - 1) {
+                result.append("\n")
+                result.append("""
+                Penerima                 Pengirim                 Dengan Hormat
+                (            )           (            )           (            )
+            """.trimIndent())
+            }
+        }
+
+        return result.toString()
     }
 
     private fun paginateReceiptText(text: String, rowsPerPage: Int, spaceBetweenPages: Int): String {
