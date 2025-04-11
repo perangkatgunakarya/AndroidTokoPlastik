@@ -73,7 +73,7 @@ class HistoryReceiptGenerator(
 
         val isLowestUnit = selectedUnitIndex == sortedProductPrice.size - 1
         if (isLowestUnit) {
-            return ""
+            return "$quantity ${selectedUnit.unit}"
         }
 
         val lowestProductPrice = sortedProductPrice[sortedProductPrice.size - 1]
