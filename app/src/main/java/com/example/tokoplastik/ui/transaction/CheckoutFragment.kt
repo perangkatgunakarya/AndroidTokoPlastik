@@ -177,7 +177,7 @@ class CheckoutFragment :
             val productList = result.data?.data ?: emptyList()
             if (productList.isEmpty()) return@observe
 
-            val displayList = productList.map { "${it.supplier} - ${it.name}" to it.id }
+            val displayList = productList.map { "${it.name}" to it.id }
 
             // Create adapter only once or when data changes
             val productAdapter = ArrayAdapter(

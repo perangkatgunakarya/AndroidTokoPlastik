@@ -73,7 +73,7 @@ class HistoryReceiptGenerator(
 
         val isLowestUnit = selectedUnitIndex == sortedProductPrice.size - 1
         if (isLowestUnit) {
-            return "$quantity ${selectedUnit.unit}"
+            return ""
         }
 
         val lowestProductPrice = sortedProductPrice[sortedProductPrice.size - 1]
@@ -360,7 +360,10 @@ class HistoryReceiptGenerator(
         cartItems: List<TransactionDetailProduct>,
         orderId: String
     ): String {
-        // Centered Shop Name
+        val MAX_LINES_PER_PAGE = 28
+        val PAGE_SPACING = 5 // Number of blank lines between pages
+
+        // Common header elements
         val shopName = "TOKO PLASTIK H. ALI"
         val centeredShopName = shopName.padStart((84 + shopName.length) / 2, ' ').padEnd(84, ' ')
 
@@ -371,156 +374,247 @@ class HistoryReceiptGenerator(
             orderData.customer.address
         }
 
-        // Reduced whitespace in recipient info
+        // Recipient info
         val formattedRecipientInfo = """
-        ${"Yth.".padEnd(59)}
+        ${"Yth.".padEnd(59)}                                      
         ${orderData.customer.name.padEnd(59)}
         ${address}
     """.trimIndent()
 
-        // Invoice Details (Right-Aligned)
+        // Invoice details
         val invoiceDetails = """
         INVOICE
-        Referensi : TPHA-${orderId}
-        ${"Tanggal   : ".padStart(31) + formatDate(orderData.createdAt)}
-        ${"Status    : ".padStart(31) + orderData.paymentStatus.toUpperCase()}
-        ${"Jatuh Tempo : ".padStart(31) + formatDate(orderData.dueDate)}
+        Referensi  : TPHA-${orderId}
+        Tanggal    : ${formatDate(orderData.createdAt)}
+        Status     : ${orderData.paymentStatus.toUpperCase()}
+        Jatuh Tempo: ${formatDate(orderData.dueDate)}
     """.trimIndent()
 
-        // Combine Recipient Info and Invoice Details
+        // Combine recipient info and invoice details side by side
         val recipientLines = formattedRecipientInfo.lines()
         val detailLines = invoiceDetails.lines()
-        val combinedInfo = recipientLines.zip(detailLines).joinToString("\n") { (recipient, detail) ->
-            recipient.padEnd(40) + detail
+        val headerHeight = maxOf(recipientLines.size, detailLines.size)
+
+        val combinedHeader = ArrayList<String>()
+        for (i in 0 until headerHeight) {
+            val recipientLine = if (i < recipientLines.size) recipientLines[i].padEnd(59) else " ".repeat(59)
+            val detailLine = if (i < detailLines.size) detailLines[i] else ""
+            combinedHeader.add(recipientLine + detailLine)
         }
 
-        // Table Header
+        // Table header
         val tableHeader = """
         +----------------------------------------------------------------------------------------+
         | NO  | BANYAKNYA       | NAMA PRODUK              |           HARGA |            JUMLAH |
         |-----|-----------------|--------------------------|-----------------|-------------------|
-    """.trimIndent()
+    """.trimIndent().lines()
 
-        // Create paginated result with maximum 5 items per page
+        // Table footer for last page
+        val tableFooter = """
+        |-----|-----------------|--------------------------|-----------------|-------------------|
+        | Terbilang :                                      |           Total: ${String.format(Locale.GERMANY, "Rp%,d", orderData.total.toLong()).padStart(17)} |
+        | ${getAmountInWords(orderData.total.toLong())}${" ".repeat(48 - getAmountInWords(orderData.total.toLong()).length)}|                                     |
+        +----------------------------------------------------------------------------------------+
+    """.trimIndent().lines()
+
+        // Simple table footer for intermediate pages
+        val intermediateFooter = """
+        +----------------------------------------------------------------------------------------+
+    """.trimIndent().lines()
+
+        // Calculate fixed content lines
+        val fixedHeaderLinesCount = 1 + combinedHeader.size + tableHeader.size // shop name + combined header + table header
+        val fixedFooterLinesCount = tableFooter.size
+
+        // Calculate maximum number of content lines per page
+        val maxContentLinesPerPage = MAX_LINES_PER_PAGE - fixedHeaderLinesCount - 1 // -1 for safety
+
+        // Process items into pages
+        val pages = ArrayList<ArrayList<String>>()
+        var currentPage = ArrayList<String>()
+        var currentLineCount = 0
+
+        for (i in cartItems.indices) {
+            val item = cartItems[i]
+            val itemNumber = i + 1
+
+            historyProductPrice = allProductPrices.filter { it.productId == item.productPrice.product.id }
+            val description = generateTransactionDesc(item.productPrice.unit, item.quantity, historyProductPrice)
+
+            // Process product name - split into multiple lines if needed (limit to 3 lines)
+            val productName = item.productPrice.product.name
+            val productNameLines = wrapText(productName, 24)
+            val limitedProductNameLines = productNameLines.take(3) // Limit to 3 lines max
+
+            // Calculate how many lines this item will take
+            val itemLines = ArrayList<String>()
+
+            // First line with item number, quantity, first line of product name, and prices
+            val firstLine = "| ${itemNumber.toString().padEnd(3)} | ${(item.quantity.toString() + " " + item.productPrice.unit).padEnd(15)} | ${limitedProductNameLines[0].padEnd(24)} | ${
+                String.format(Locale.GERMANY, "%,d", item.priceAdjustment.toLong()).padStart(15)
+            } | ${
+                String.format(Locale.GERMANY, "%,d", (item.priceAdjustment * item.quantity).toLong()).padStart(17)
+            } |"
+            itemLines.add(firstLine)
+
+            // Add description line if needed
+            if (description.isNotEmpty()) {
+                val descriptionLine = "|     | ${description.padEnd(15)} |                          |                 |                   |"
+                itemLines.add(descriptionLine)
+            }
+
+            // Additional product name lines if any
+            for (j in 1 until limitedProductNameLines.size) {
+                val productNameLine = "|     |                 | ${limitedProductNameLines[j].padEnd(24)}|                 |                   |"
+                itemLines.add(productNameLine)
+            }
+
+            // Empty line after each item for better readability (except last item on page)
+            if (i < cartItems.size - 1) {
+                itemLines.add("|     |                 |                          |                 |                   |")
+            }
+
+            // Check if this item will fit on current page, if not start a new page
+            if (currentLineCount + itemLines.size > maxContentLinesPerPage && currentLineCount > 0) {
+                pages.add(currentPage)
+                currentPage = ArrayList<String>()
+                currentLineCount = 0
+            }
+
+            // Add item lines to current page
+            currentPage.addAll(itemLines)
+            currentLineCount += itemLines.size
+        }
+
+        // Add last page if not empty
+        if (currentPage.isNotEmpty()) {
+            pages.add(currentPage)
+        }
+
+        // Combine all pages into final result
         val result = StringBuilder()
-        val itemsPerPage = 5
-        val pages = (cartItems.size + itemsPerPage - 1) / itemsPerPage // Calculate number of pages
 
-        for (page in 0 until pages) {
-            if (page > 0) {
-                result.append("\n\n\n\n") // Space between pages
+        for (pageIndex in pages.indices) {
+            if (pageIndex > 0) {
+                // Add spacing between pages
+                result.append("\n".repeat(PAGE_SPACING))
             }
 
-            // Add header content to each page
-            result.append(centeredShopName)
-            result.append("\n")
-            result.append(combinedInfo)
-            result.append("\n")
-            result.append(tableHeader)
-            result.append("\n")
+            // Add header
+            result.append(centeredShopName).append("\n")
+            for (line in combinedHeader) {
+                result.append(line).append("\n")
+            }
+            for (line in tableHeader) {
+                result.append(line).append("\n")
+            }
 
-            // Process items for current page
-            val startIdx = page * itemsPerPage
-            val endIdx = minOf(startIdx + itemsPerPage, cartItems.size)
+            // Add page content
+            for (line in pages[pageIndex]) {
+                result.append(line).append("\n")
+            }
 
-            for (i in startIdx until endIdx) {
-                val item = cartItems[i]
-                val itemNumber = i + 1
-
-                historyProductPrice = allProductPrices.filter { it.productId == item.productPrice.product.id }
-                val description = generateTransactionDesc(item.productPrice.unit, item.quantity, historyProductPrice)
-
-                // Trim item name to 24 characters max (no wrapping)
-                val trimmedItemName = item.productPrice.product.name.take(24).padEnd(24)
-
-                // Add the item line
-                val itemLine = "| ${itemNumber.toString().padEnd(3)} | ${(item.quantity.toString() + " " + item.productPrice.unit).padEnd(15)} | $trimmedItemName | ${
-                    String.format(Locale.GERMANY, "%,d", item.priceAdjustment.toLong()).padStart(15)
-                } | ${
-                    String.format(Locale.GERMANY, "%,d", (item.priceAdjustment * item.quantity).toLong()).padStart(17)
-                } |"
-                result.append(itemLine)
-                result.append("\n")
-
-                // Add description line if needed
-                if (description.isNotEmpty()) {
-                    val descriptionLine = "|     | ${description.padEnd(15)} |                          |                 |                   |"
-                    result.append(descriptionLine)
-                    result.append("\n")
+            // Add footer (full footer for last page, simple footer for intermediate pages)
+            if (pageIndex == pages.size - 1) {
+                // Last page gets full footer with total
+                for (line in tableFooter) {
+                    result.append(line).append("\n")
                 }
-            }
-
-            // Add footer to each page
-            val footer = """
-            |-----|-----------------|--------------------------|-----------------|-------------------|
-            |                                                   Total: ${String.format(Locale.GERMANY, "Rp%,d", orderData.total.toLong()).padStart(17)} |
-            +----------------------------------------------------------------------------------------+
-        """.trimIndent()
-            result.append(footer)
-            result.append("\n")
-            result.append("Perhatian : Barang yang sudah dibeli tidak dapat dikembalikan lagi.")
-
-            // Only add signature section to the last page
-            if (page == pages - 1) {
-                result.append("\n")
-                result.append("""
-                Penerima                 Pengirim                 Dengan Hormat
-                (            )           (            )           (            )
-            """.trimIndent())
+            } else {
+                // Intermediate pages get simple footer
+                for (line in intermediateFooter) {
+                    result.append(line).append("\n")
+                }
             }
         }
 
-        return result.toString()
+        return result.toString().trimEnd()
     }
 
-    private fun paginateReceiptText(text: String, rowsPerPage: Int, spaceBetweenPages: Int): String {
-        val lines = text.lines()
-        val totalLines = lines.size
+    // Helper function to convert number to words in Indonesian
+    private fun getAmountInWords(number: Long): String {
+        // This is a simplified version - you might want to implement a more complete number-to-words converter
+        val units = arrayOf("", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh",
+            "sebelas", "dua belas", "tiga belas", "empat belas", "lima belas", "enam belas", "tujuh belas",
+            "delapan belas", "sembilan belas")
+        val tens = arrayOf("", "", "dua puluh", "tiga puluh", "empat puluh", "lima puluh", "enam puluh", "tujuh puluh",
+            "delapan puluh", "sembilan puluh")
 
-        if (totalLines <= rowsPerPage) {
-            return text
-        }
-
-        val paginatedText = StringBuilder()
-        var currentLine = 0
-
-        while (currentLine < totalLines) {
-            val endLine = minOf(currentLine + rowsPerPage, totalLines)
-            for (i in currentLine until endLine) {
-                paginatedText.append(lines[i])
-                paginatedText.append("\n")
-            }
-
-            currentLine = endLine
-
-            if (currentLine < totalLines) {
-                repeat(spaceBetweenPages) {
-                    paginatedText.append("\n")
+        fun convertLessThanOneThousand(n: Int): String {
+            return when {
+                n < 20 -> units[n]
+                n < 100 -> "${tens[n / 10]} ${units[n % 10]}".trim()
+                n < 1000 -> {
+                    val hundreds = n / 100
+                    val remainder = n % 100
+                    val hundredsStr = if (hundreds == 1) "seratus" else "${units[hundreds]} ratus"
+                    val remainderStr = if (remainder > 0) " ${convertLessThanOneThousand(remainder)}" else ""
+                    "$hundredsStr$remainderStr"
                 }
+                else -> ""
             }
         }
 
-        return paginatedText.toString()
+        if (number == 0L) return "nol"
+
+        val billions = (number / 1_000_000_000).toInt()
+        val millions = ((number % 1_000_000_000) / 1_000_000).toInt()
+        val thousands = ((number % 1_000_000) / 1_000).toInt()
+        val remainder = (number % 1_000).toInt()
+
+        val billionsStr = if (billions > 0) {
+            val billionsWord = if (billions == 1) "satu milyar" else "${convertLessThanOneThousand(billions)} milyar"
+            billionsWord
+        } else ""
+
+        val millionsStr = if (millions > 0) {
+            val millionsWord = if (millions == 1) "satu juta" else "${convertLessThanOneThousand(millions)} juta"
+            if (billionsStr.isNotEmpty()) " $millionsWord" else millionsWord
+        } else ""
+
+        val thousandsStr = if (thousands > 0) {
+            val thousandsWord = if (thousands == 1) "seribu" else "${convertLessThanOneThousand(thousands)} ribu"
+            if (billionsStr.isNotEmpty() || millionsStr.isNotEmpty()) " $thousandsWord" else thousandsWord
+        } else ""
+
+        val remainderStr = if (remainder > 0) {
+            val remainderWord = convertLessThanOneThousand(remainder)
+            if (billionsStr.isNotEmpty() || millionsStr.isNotEmpty() || thousandsStr.isNotEmpty()) " $remainderWord" else remainderWord
+        } else ""
+
+        return "$billionsStr$millionsStr$thousandsStr$remainderStr".trim().capitalize()
     }
 
     // Helper function to wrap text
-    fun wrapText(text: String, width: Int): List<String> {
-        val words = text.split(" ")
-        val lines = mutableListOf<String>()
-        var currentLine = ""
+    private fun wrapText(text: String, width: Int): List<String> {
+        if (text.length <= width) {
+            return listOf(text)
+        }
 
-        for (word in words) {
-            if (currentLine.length + word.length + 1 <= width) {
-                currentLine += "$word "
+        val result = mutableListOf<String>()
+        var remaining = text
+
+        while (remaining.isNotEmpty()) {
+            val cutIndex = if (remaining.length > width) {
+                val spaceIndex = remaining.substring(0, width).lastIndexOf(' ')
+                if (spaceIndex > 0) spaceIndex else width
             } else {
-                lines.add(currentLine.trim())
-                currentLine = "$word "
+                remaining.length
+            }
+
+            result.add(remaining.substring(0, cutIndex))
+            remaining = if (cutIndex < remaining.length) {
+                if (remaining[cutIndex] == ' ') {
+                    remaining.substring(cutIndex + 1)
+                } else {
+                    remaining.substring(cutIndex)
+                }
+            } else {
+                ""
             }
         }
-        if (currentLine.isNotEmpty()) {
-            lines.add(currentLine.trim())
-        }
-        return lines
+
+        return result
     }
 
     fun saveInvoiceToFile(context: Context, invoiceText: String, fileName: String): File {
