@@ -73,7 +73,7 @@ class HistoryReceiptGenerator(
 
         val isLowestUnit = selectedUnitIndex == sortedProductPrice.size - 1
         if (isLowestUnit) {
-            return ""
+            return "(1 ${selectedUnit.unit})"
         }
 
         val lowestProductPrice = sortedProductPrice[sortedProductPrice.size - 1]
@@ -361,7 +361,7 @@ class HistoryReceiptGenerator(
         orderId: String
     ): String {
         val MAX_LINES_PER_PAGE = 28
-        val PAGE_SPACING = 5 // Number of blank lines between pages
+        val PAGE_SPACING = 6 // Number of blank lines between pages
 
         // Common header elements
         val shopName = "TOKO PLASTIK H. ALI"
@@ -467,11 +467,6 @@ class HistoryReceiptGenerator(
             for (j in 1 until limitedProductNameLines.size) {
                 val productNameLine = "|     |                 | ${limitedProductNameLines[j].padEnd(24)}|                 |                   |"
                 itemLines.add(productNameLine)
-            }
-
-            // Empty line after each item for better readability (except last item on page)
-            if (i < cartItems.size - 1) {
-                itemLines.add("|     |                 |                          |                 |                   |")
             }
 
             // Check if this item will fit on current page, if not start a new page
