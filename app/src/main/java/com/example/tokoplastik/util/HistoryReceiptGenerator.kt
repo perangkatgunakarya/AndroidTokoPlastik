@@ -13,6 +13,7 @@ import com.example.tokoplastik.data.responses.TransactionDetailProduct
 import com.itextpdf.text.BaseColor
 import com.itextpdf.text.Document
 import com.itextpdf.text.Element
+import com.itextpdf.text.Font
 import com.itextpdf.text.FontFactory
 import com.itextpdf.text.PageSize
 import com.itextpdf.text.Paragraph
@@ -296,7 +297,34 @@ class HistoryReceiptGenerator(
             totalPara.alignment = Element.ALIGN_RIGHT
             document.add(totalPara)
 
-            document.add(Paragraph("\n\n"))
+            val terbilangTitle = Paragraph(
+                "Terbilang :",
+                FontFactory.getFont(FontFactory.HELVETICA, 10f)
+            )
+            document.add(terbilangTitle)
+
+            // Buat table dengan 1 kolom saja untuk membatasi lebar
+            val terbilangTable = PdfPTable(1)
+            terbilangTable.widthPercentage = 50f // Batasi lebar hanya 50% dari halaman
+            terbilangTable.horizontalAlignment = Element.ALIGN_LEFT
+
+            // Tambahkan teks ke dalam cell
+            val terbilangCell = PdfPCell(
+                Phrase(
+                    getAmountInWords(orderData.total.toLong()),
+                    FontFactory.getFont(FontFactory.HELVETICA, 10f, Font.ITALIC)
+                )
+            ).apply {
+                border = Rectangle.NO_BORDER
+                setPadding(4f)
+            }
+
+            // Tambahkan cell ke tabel, lalu tambahkan tabel ke dokumen
+            terbilangTable.addCell(terbilangCell)
+            document.add(terbilangTable)
+
+
+//            document.add(Paragraph("\n\n"))
 
             val footerTable = PdfPTable(3)
             footerTable.widthPercentage = 100f
@@ -323,11 +351,11 @@ class HistoryReceiptGenerator(
                 addElement(Paragraph("""(                                  )""".trimIndent(), regardFont))
             }
 
-            footerTable.addCell(penerimaCell)
-            footerTable.addCell(pengirimCell)
-            footerTable.addCell(regardCell)
+//            footerTable.addCell(penerimaCell)
+//            footerTable.addCell(pengirimCell)
+//            footerTable.addCell(regardCell)
 
-            document.add(footerTable)
+//            document.add(footerTable)
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -376,7 +404,7 @@ class HistoryReceiptGenerator(
 
         // Recipient info
         val formattedRecipientInfo = """
-        ${"Yth.".padEnd(59)}                                      
+        ${"Yth."}                                      
         ${orderData.customer.name.padEnd(59)}
         ${address}
     """.trimIndent()
@@ -410,12 +438,24 @@ class HistoryReceiptGenerator(
     """.trimIndent().lines()
 
         // Table footer for last page
-        val tableFooter = """
-        |-----|-----------------|--------------------------|-----------------|-------------------|
-        | Terbilang :                                      |           Total: ${String.format(Locale.GERMANY, "Rp%,d", orderData.total.toLong()).padStart(17)} |
-        | ${getAmountInWords(orderData.total.toLong())}${" ".repeat(48 - getAmountInWords(orderData.total.toLong()).length)}|                                     |
-        +----------------------------------------------------------------------------------------+
-    """.trimIndent().lines()
+        val tableFooter = buildString {
+            appendLine("|-----|-----------------|--------------------------|-----------------|-------------------|")
+            appendLine("| Terbilang :                                      |            Total: ${String.format(Locale.GERMANY, "Rp%,d", orderData.total.toLong()).padStart(17)} |")
+
+            // Wrap teks terbilang jika melebihi 48 karakter
+            val terbilangText = getAmountInWords(orderData.total.toLong())
+            val wrappedTerbilang = wrapTerbilang(terbilangText, 48)
+
+            // Tambahkan baris pertama terbilang
+            appendLine("| ${wrappedTerbilang[0].padEnd(48)} |                                     |")
+
+            // Jika ada baris tambahan untuk terbilang, tambahkan sebagai baris baru
+            for (i in 1 until wrappedTerbilang.size) {
+                appendLine("| ${wrappedTerbilang[i].padEnd(48)} |                                     |")
+            }
+
+            appendLine("+----------------------------------------------------------------------------------------+")
+        }.trimIndent().lines()
 
         // Simple table footer for intermediate pages
         val intermediateFooter = """
@@ -441,10 +481,10 @@ class HistoryReceiptGenerator(
             historyProductPrice = allProductPrices.filter { it.productId == item.productPrice.product.id }
             val description = generateTransactionDesc(item.productPrice.unit, item.quantity, historyProductPrice)
 
-            // Process product name - split into multiple lines if needed (limit to 3 lines)
+            // Process product name - split into multiple lines if needed (limit to 2 lines max)
             val productName = item.productPrice.product.name
             val productNameLines = wrapText(productName, 24)
-            val limitedProductNameLines = productNameLines.take(3) // Limit to 3 lines max
+            val limitedProductNameLines = productNameLines.take(2) // Limit to 2 lines max
 
             // Calculate how many lines this item will take
             val itemLines = ArrayList<String>()
@@ -457,16 +497,24 @@ class HistoryReceiptGenerator(
             } |"
             itemLines.add(firstLine)
 
-            // Add description line if needed
-            if (description.isNotEmpty()) {
+            // For the second line, combine the second line of product name (if exists) with description
+            if (limitedProductNameLines.size > 1) {
+                // If there's a second line of product name, show it along with description
+                val secondLine = "|     | ${
+                    if (description.isNotEmpty()) description.padEnd(15) else " ".repeat(15)
+                } | ${limitedProductNameLines[1].padEnd(24)} |                 |                   |"
+                itemLines.add(secondLine)
+            } else if (description.isNotEmpty()) {
+                // If there's no second product name line but there is a description, show just description
                 val descriptionLine = "|     | ${description.padEnd(15)} |                          |                 |                   |"
                 itemLines.add(descriptionLine)
             }
 
-            // Additional product name lines if any
-            for (j in 1 until limitedProductNameLines.size) {
-                val productNameLine = "|     |                 | ${limitedProductNameLines[j].padEnd(24)}|                 |                   |"
-                itemLines.add(productNameLine)
+            // Add an empty line between items for better readability
+            // But only add if this isn't the last item to avoid extra space before the footer
+            if (i < cartItems.size - 1) {
+                val emptyLine = "|     |                 |                          |                 |                   |"
+                itemLines.add(emptyLine)
             }
 
             // Check if this item will fit on current page, if not start a new page
@@ -577,7 +625,9 @@ class HistoryReceiptGenerator(
             if (billionsStr.isNotEmpty() || millionsStr.isNotEmpty() || thousandsStr.isNotEmpty()) " $remainderWord" else remainderWord
         } else ""
 
-        return "$billionsStr$millionsStr$thousandsStr$remainderStr".trim().capitalize()
+        val rupiah = " rupiah"
+
+        return "$billionsStr$millionsStr$thousandsStr$remainderStr$rupiah".trim().capitalize()
     }
 
     // Helper function to wrap text
@@ -606,6 +656,36 @@ class HistoryReceiptGenerator(
                 }
             } else {
                 ""
+            }
+        }
+
+        return result
+    }
+
+    // Tambahkan fungsi untuk wrapping teks terbilang
+    fun wrapTerbilang(text: String, maxLength: Int): List<String> {
+        val result = ArrayList<String>()
+        var remainingText = text
+
+        while (remainingText.isNotEmpty()) {
+            if (remainingText.length <= maxLength) {
+                // Jika sisa teks sudah cukup pendek, tambahkan semuanya
+                result.add(remainingText)
+                break
+            } else {
+                // Cari posisi spasi terakhir sebelum batas panjang
+                var cutIndex = remainingText.substring(0, maxLength).lastIndexOf(' ')
+
+                // Jika tidak ada spasi dalam range, potong di maxLength
+                if (cutIndex == -1) {
+                    cutIndex = maxLength
+                }
+
+                // Tambahkan potongan teks ke hasil
+                result.add(remainingText.substring(0, cutIndex))
+
+                // Update sisa teks dengan menghilangkan spasi di awal jika ada
+                remainingText = remainingText.substring(cutIndex).trimStart()
             }
         }
 
