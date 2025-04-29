@@ -19,19 +19,39 @@
             style="@style/h4_bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=""
-            android:textSize="17sp"
-            android:textColor="@color/black"
             android:layout_marginBottom="8dp"
+            android:text=""
+            android:textColor="@color/black"
+            android:textSize="17sp"
             app:layout_constraintStart_toStartOf="@id/product_initial"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/black"
+            app:cardCornerRadius="4dp"
+            app:cardElevation="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/modal_last_update"
+                style="@style/p"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="5dp"
+                android:paddingVertical="2dp"
+                android:text="20-10 -2025"
+                android:textColor="@color/white" />
+        </androidx.cardview.widget.CardView>
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/product_initial"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_marginTop="8dp"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
             android:background="@drawable/circle_background"
             android:gravity="center"
             android:textColor="@android:color/white"

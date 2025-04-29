@@ -507,10 +507,10 @@ class ReceiptGenerator(
 
             // Add an empty line between items for better readability
             // But only add if this isn't the last item to avoid extra space before the footer
-            if (i < cartItems.size - 1) {
-                val emptyLine = "|     |                 |                          |                 |                   |"
-                itemLines.add(emptyLine)
-            }
+//            if (i < cartItems.size - 1) {
+//                val emptyLine = "|     |                 |                          |                 |                   |"
+//                itemLines.add(emptyLine)
+//            }
 
             // Check if item fits on current page
             if (currentLineCount + itemLines.size > maxContentLinesPerPage && currentLineCount > 0) {

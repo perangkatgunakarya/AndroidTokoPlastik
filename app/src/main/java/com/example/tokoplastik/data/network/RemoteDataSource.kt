@@ -10,6 +10,7 @@ class RemoteDataSource {
 
     companion object {
         private const val BASE_URL = "https://Admintokoplastik.my.id/api/"
+//        private const val BASE_URL = "https://pgk.pk237lpdp.com/api/"
     }
 
     fun<Api> buildApi (

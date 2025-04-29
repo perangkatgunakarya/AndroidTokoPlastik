@@ -9,6 +9,7 @@ import android.widget.ImageButton
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -26,6 +27,7 @@ import com.example.tokoplastik.util.handleApiError
 import com.example.tokoplastik.util.visible
 import com.example.tokoplastik.viewmodel.ProductViewModel
 import com.example.tokoplastik.viewmodel.SortType
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -48,6 +50,13 @@ class ProductFragment :
         binding.productProgressBar.visible(false)
 
         getProduct = listOf()
+
+        val bottomNavigationView = activity?.findViewById<BottomNavigationView>(R.id.bottom_navigation)
+        val height = bottomNavigationView?.height?.minus(140);
+
+        if (height != null) {
+            binding.productRecycler.updatePadding(bottom = height)
+        }
 
         setupRecyclerView()
         setupSwipeRefresh()

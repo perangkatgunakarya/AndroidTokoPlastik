@@ -78,23 +78,23 @@ class HomeActivity : AppCompatActivity() {
         NavigationUI.setupWithNavController(bottomNav, navController)
         bottomNav.labelVisibilityMode = BottomNavigationView.LABEL_VISIBILITY_LABELED
 
-        supportFragmentManager.registerFragmentLifecycleCallbacks(object :
-            FragmentManager.FragmentLifecycleCallbacks() {
-            override fun onFragmentResumed(fm: FragmentManager, f: Fragment) {
-                super.onFragmentResumed(fm, f)
-                when (f) {
-                    is CheckoutFragment -> disableBottomNavScroll()
-                    else -> enableBottomNavScroll()
-                }
-            }
-        }, true)
+//        supportFragmentManager.registerFragmentLifecycleCallbacks(object :
+//            FragmentManager.FragmentLifecycleCallbacks() {
+//            override fun onFragmentResumed(fm: FragmentManager, f: Fragment) {
+//                super.onFragmentResumed(fm, f)
+//                when (f) {
+//                    is CheckoutFragment -> disableBottomNavScroll()
+//                    else -> enableBottomNavScroll()
+//                }
+//            }
+//        }, true)
     }
 
-    private fun enableBottomNavScroll() {
-        val params = bottomNav.layoutParams as CoordinatorLayout.LayoutParams
-        params.behavior = HideBottomViewOnScrollBehavior<BottomNavigationView>()
-        bottomNav.layoutParams = params
-    }
+//    private fun enableBottomNavScroll() {
+//        val params = bottomNav.layoutParams as CoordinatorLayout.LayoutParams
+//        params.behavior = HideBottomViewOnScrollBehavior<BottomNavigationView>()
+//        bottomNav.layoutParams = params
+//    }
 
     private fun disableBottomNavScroll() {
         val params = bottomNav.layoutParams as CoordinatorLayout.LayoutParams

@@ -10,7 +10,9 @@ import com.example.tokoplastik.data.responses.GetProduct
 import com.example.tokoplastik.databinding.ProductListLayoutBinding
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
+import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.TimeZone
 
 class ProductAdapter(
     private val onDeleteItem: (GetProduct) -> Unit
@@ -169,6 +171,12 @@ class ProductAdapter(
 
                 supplierText.text = "(${product.supplier})"
                 productNameText.text = product.name
+
+                val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'")
+                parser.timeZone = TimeZone.getTimeZone("UTC")
+                val date = parser.parse(product.updatedAt)
+                binding.modalLastUpdate.text =
+                    "${SimpleDateFormat("dd MMM Y").format(date)}"
 
                 val symbols = DecimalFormatSymbols(Locale.getDefault()).apply {
                     groupingSeparator = '.'

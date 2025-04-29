@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -24,6 +25,7 @@ import com.example.tokoplastik.util.handleApiError
 import com.example.tokoplastik.util.visible
 import com.example.tokoplastik.viewmodel.CheckoutViewModel
 import com.example.tokoplastik.viewmodel.SortOrder
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
@@ -45,6 +47,13 @@ class HistoryFragment :
         binding.historyProgressBar.visible(false)
 
         transactions = listOf()
+
+        val bottomNavigationView = activity?.findViewById<BottomNavigationView>(R.id.bottom_navigation)
+        val height = bottomNavigationView?.height?.minus(140);
+
+        if (height != null) {
+            binding.historyRecycler.updatePadding(bottom = height)
+        }
 
         setupRecyclerView()
         setupSwipeRefresh()
