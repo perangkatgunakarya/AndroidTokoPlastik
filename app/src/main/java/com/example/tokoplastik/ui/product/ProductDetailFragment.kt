@@ -1,5 +1,6 @@
 package com.example.tokoplastik.ui.product
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -10,6 +11,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Spinner
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
@@ -86,7 +88,7 @@ class ProductDetailFragment :
                 putExtra("openProductPriceFragment", true)
                 putExtra("productId", productId)
             }
-            startActivity(intent)
+            addProductPricesLauncher.launch(intent)
         }
 
 //        spinner
@@ -158,6 +160,18 @@ class ProductDetailFragment :
                 }
             }
         })
+    }
+
+    private val addProductPricesLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data = result.data
+            val returnedProductId = data?.getIntExtra("PRODUCT_ID", -1) ?: -1
+            if (returnedProductId != -1) {
+                viewModel.getProductDetail(returnedProductId)
+            }
+        }
     }
 
     private fun setupSaveButton() {

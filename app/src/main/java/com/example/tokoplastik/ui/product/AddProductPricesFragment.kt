@@ -1,6 +1,8 @@
 package com.example.tokoplastik.ui.product
 
 import android.R
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -105,7 +107,11 @@ class AddProductPricesFragment :
         binding.productPricesProgressbar.visible(false)
 
         binding.buttonBack.setOnClickListener {
-            requireActivity().onBackPressed()
+            val intent = Intent().apply {
+                putExtra("PRODUCT_ID", args.productId)
+            }
+            requireActivity().setResult(Activity.RESULT_OK, intent)
+            requireActivity().finish()
         }
 
         priceEdit = view.findViewById(com.example.tokoplastik.R.id.price_edit_text)
