@@ -42,6 +42,15 @@ class HomeActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.fragmentContainerView2) as NavHostFragment
         navController = navHostFragment.navController
 
+        if (intent.getBooleanExtra("openDetailProductFragment", false)) {
+            val productId = intent.getIntExtra("productId", -1)
+            if (productId != -1) {
+                navController.navigate(R.id.detailProductFragment, Bundle().apply {
+                    putInt("productId", productId)
+                })
+            }
+        }
+
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
                 R.id.detailProductFragment -> {

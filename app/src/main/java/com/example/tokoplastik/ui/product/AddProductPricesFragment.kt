@@ -12,10 +12,15 @@ import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.navigation.NavOptions
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.tokoplastik.HomeActivity
+import com.example.tokoplastik.MainActivity
 import com.example.tokoplastik.adapter.ProductPricesAdapter
 import com.example.tokoplastik.data.network.AddProductPricesApi
 import com.example.tokoplastik.data.network.GetProductApi
@@ -107,11 +112,11 @@ class AddProductPricesFragment :
         binding.productPricesProgressbar.visible(false)
 
         binding.buttonBack.setOnClickListener {
-            val intent = Intent().apply {
-                putExtra("PRODUCT_ID", args.productId)
+            val intent = Intent(requireContext(), HomeActivity::class.java).apply {
+                putExtra("openDetailProductFragment", true)
+                putExtra("productId", args.productId)
             }
-            requireActivity().setResult(Activity.RESULT_OK, intent)
-            requireActivity().finish()
+            detailProductLauncher.launch(intent)
         }
 
         priceEdit = view.findViewById(com.example.tokoplastik.R.id.price_edit_text)
@@ -122,6 +127,18 @@ class AddProductPricesFragment :
         viewModel.getProductPrices(args.productId)
 
         productDetailViewModel.getProductDetail(args.productId)
+    }
+
+    private val detailProductLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data = result.data
+            val returnedProductId = data?.getIntExtra("PRODUCT_ID", -1) ?: -1
+            if (returnedProductId != -1) {
+                viewModel.getProductPrices(returnedProductId)
+            }
+        }
     }
 
     private fun initProductDetailViewModel() {
