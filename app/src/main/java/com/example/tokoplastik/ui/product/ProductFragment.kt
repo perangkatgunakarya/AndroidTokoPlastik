@@ -12,6 +12,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.tokoplastik.R
@@ -22,6 +23,7 @@ import com.example.tokoplastik.data.responses.GetProduct
 import com.example.tokoplastik.databinding.FragmentProductBinding
 import com.example.tokoplastik.ui.base.BaseFragment
 import com.example.tokoplastik.ui.history.SortFilterBottomSheet
+import com.example.tokoplastik.ui.stock.StockFragmentArgs
 import com.example.tokoplastik.util.Resource
 import com.example.tokoplastik.util.handleApiError
 import com.example.tokoplastik.util.visible
@@ -49,9 +51,15 @@ class ProductFragment :
 
         binding.productProgressBar.visible(false)
 
+        if (arguments != null && requireArguments().containsKey("productId")) {
+            lastViewedProductId = requireArguments().getInt("productId")
+        }
+
+
         getProduct = listOf()
 
-        val bottomNavigationView = activity?.findViewById<BottomNavigationView>(R.id.bottom_navigation)
+        val bottomNavigationView =
+            activity?.findViewById<BottomNavigationView>(R.id.bottom_navigation)
         val height = bottomNavigationView?.height?.minus(140);
 
         if (height != null) {

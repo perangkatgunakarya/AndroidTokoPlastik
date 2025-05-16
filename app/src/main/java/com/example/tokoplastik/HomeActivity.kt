@@ -51,6 +51,15 @@ class HomeActivity : AppCompatActivity() {
             }
         }
 
+        if (intent.getBooleanExtra("openStockProductFragment", false)) {
+            val productId = intent.getIntExtra("productId", -1)
+            if (productId != -1) {
+                navController.navigate(R.id.stockFragment, Bundle().apply {
+                    putInt("productId", productId)
+                })
+            }
+        }
+
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
                 R.id.detailProductFragment -> {
@@ -68,12 +77,15 @@ class HomeActivity : AppCompatActivity() {
                 R.id.detailHistoryFragment -> {
                     bottomNav.visibility = View.GONE
                 }
-                R.id.addCustomerFragment  -> {
+
+                R.id.addCustomerFragment -> {
                     bottomNav.visibility = View.GONE
                 }
+
                 R.id.customerFragment -> {
                     bottomNav.visibility = View.GONE
                 }
+
                 R.id.updateCustomerFragment -> {
                     bottomNav.visibility = View.GONE
                 }
