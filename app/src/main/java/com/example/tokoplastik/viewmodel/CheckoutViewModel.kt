@@ -170,19 +170,37 @@ class CheckoutViewModel(
     }
 
     fun updateItemQuantity(item: CartItem, newQuantity: Int) {
-        item.quantity = newQuantity
-        _cartItems.value = currentCartItems.toList()
+        // Cari index dari item yang ingin diubah
+        val index = currentCartItems.indexOf(item)
+        if (index != -1) {
+            // Buat salinan (copy) dari item dengan kuantitas baru
+            val updatedItem = item.copy(quantity = newQuantity)
+            // Ganti item lama dengan item baru di dalam list
+            currentCartItems[index] = updatedItem
+            // Kirim list baru ke LiveData agar UI diperbarui
+            _cartItems.value = currentCartItems.toList()
+        }
     }
 
     fun updateItemPrice(item: CartItem, newPrice: Int) {
-        item.customPrice = newPrice
-        _cartItems.value = currentCartItems.toList()
+        val index = currentCartItems.indexOf(item)
+        if (index != -1) {
+            // Buat salinan dengan harga kustom baru
+            val updatedItem = item.copy(customPrice = newPrice)
+            currentCartItems[index] = updatedItem
+            _cartItems.value = currentCartItems.toList()
+        }
     }
 
     fun updateItemUnit(item: CartItem, newUnit: ProductPrice) {
-        item.selectedPrice = newUnit
-        item.customPrice = newUnit.price
-        _cartItems.value = currentCartItems.toList()
+        val index = currentCartItems.indexOf(item)
+        if (index != -1) {
+            // Buat salinan dengan unit & harga default baru
+            // Harga juga di-reset ke harga default dari unit yang baru dipilih
+            val updatedItem = item.copy(selectedPrice = newUnit, customPrice = newUnit.price)
+            currentCartItems[index] = updatedItem
+            _cartItems.value = currentCartItems.toList()
+        }
     }
 
     fun removeCartItem(item: CartItem) {

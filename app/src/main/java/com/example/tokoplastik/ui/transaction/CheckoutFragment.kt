@@ -87,14 +87,15 @@ class CheckoutFragment :
     }
 
     override fun onDestroyView() {
+        super.onDestroyView() // Sebaiknya panggil superclass terlebih dahulu
         // Cleanup resources
         loadingDialog?.dismissWithAnimation()
         loadingDialog = null
 
         // Clean adapter resources
-        if (::cartAdapter.isInitialized) {
-            cartAdapter.onDetached()
-        }
+//        if (::cartAdapter.isInitialized) {
+//            cartAdapter.onDetached()
+//        }
 
         // Clear all potentially leaking observers
         viewModel.selectedProductPricesLoaded.removeObservers(viewLifecycleOwner)

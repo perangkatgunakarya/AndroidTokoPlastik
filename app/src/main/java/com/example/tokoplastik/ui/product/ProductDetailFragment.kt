@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -96,6 +97,8 @@ class ProductDetailFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+
         productId = args.productId
         spinner = binding.lowestUnit
 
@@ -106,6 +109,18 @@ class ProductDetailFragment :
             val imeHeight = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
             binding.productDetailScrollView.updatePadding(bottom = imeHeight)
             insets
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            // Ambil productId dari arguments fragment ini
+            val productId = args.productId
+
+            // Buat action yang sama untuk pindah ke ProductDetailFragment
+            val action =
+                ProductDetailFragmentDirections.actionDetailProductFragmentToProductFragment()
+
+            // Lakukan navigasi
+            findNavController().navigate(action)
         }
 
         setupViews()
@@ -290,6 +305,7 @@ class ProductDetailFragment :
                         shouldShowUpdateToast = false
                     }
                 }
+
                 is Resource.Failure -> {
                     binding.progressBar.visibility = View.GONE
                     handleApiError(result)
@@ -297,6 +313,7 @@ class ProductDetailFragment :
                     // Reset penanda jika gagal
                     shouldShowUpdateToast = false
                 }
+
                 is Resource.Loading -> {
                     binding.progressBar.visibility = View.VISIBLE
                     binding.saveButton.isEnabled = false
