@@ -103,8 +103,17 @@ class AddProductPricesFragment :
         observeViewModel()
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            requireActivity().finish()
+            // Ambil productId dari arguments fragment ini
+            val productId = args.productId
+
+            // Buat action yang sama untuk pindah ke ProductDetailFragment
+            val action = AddProductPricesFragmentDirections
+                .actionAddProductPricesFragmentToDetailProductFragment(productId)
+
+            // Lakukan navigasi
+            findNavController().navigate(action)
         }
+
         arguments?.let {
             productId = it.getInt(ARG_PRODUCT_ID)
         }
@@ -112,11 +121,14 @@ class AddProductPricesFragment :
         binding.productPricesProgressbar.visible(false)
 
         binding.buttonBack.setOnClickListener {
-            val intent = Intent(requireContext(), HomeActivity::class.java).apply {
-                putExtra("openDetailProductFragment", true)
-                putExtra("productId", args.productId)
-            }
-            detailProductLauncher.launch(intent)
+            val productId = args.productId
+
+            // Buat action untuk pindah ke ProductDetailFragment
+            val action = AddProductPricesFragmentDirections
+                .actionAddProductPricesFragmentToDetailProductFragment(productId)
+
+            // Lakukan navigasi
+            findNavController().navigate(action)
         }
 
         priceEdit = view.findViewById(com.example.tokoplastik.R.id.price_edit_text)

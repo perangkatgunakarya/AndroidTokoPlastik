@@ -19,6 +19,7 @@ import com.example.tokoplastik.data.repository.StockRepository
 import com.example.tokoplastik.data.responses.Stock
 import com.example.tokoplastik.databinding.FragmentStockBinding
 import com.example.tokoplastik.ui.base.BaseFragment
+import com.example.tokoplastik.ui.product.AddProductPricesFragmentDirections
 import com.example.tokoplastik.ui.product.ProductSortBottomSheet
 import com.example.tokoplastik.util.Resource
 import com.example.tokoplastik.util.handleApiError
@@ -44,7 +45,14 @@ class StockFragment : BaseFragment<StockViewModel, FragmentStockBinding, StockRe
         viewModel.productId = productId
 
         binding.buttonBack.setOnClickListener {
-            requireActivity().onBackPressed()
+            val productId = args.productId
+
+            // Buat action untuk pindah ke ProductDetailFragment
+            val action = StockFragmentDirections
+                .actionStockFragmentToDetailProductFragment(productId)
+
+            // Lakukan navigasi
+            findNavController().navigate(action)
         }
 
         binding.buttonAddStock.setOnClickListener {

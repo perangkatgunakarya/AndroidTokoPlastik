@@ -62,30 +62,14 @@ class HomeActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.detailProductFragment -> {
-                    bottomNav.visibility = View.GONE
-                }
-
-                R.id.stockFragment -> {
-                    bottomNav.visibility = View.GONE
-                }
-
-                R.id.checkoutFragment -> {
-                    bottomNav.visibility = View.GONE
-                }
-
-                R.id.detailHistoryFragment -> {
-                    bottomNav.visibility = View.GONE
-                }
-
-                R.id.addCustomerFragment -> {
-                    bottomNav.visibility = View.GONE
-                }
-
-                R.id.customerFragment -> {
-                    bottomNav.visibility = View.GONE
-                }
-
+                R.id.addProductFragment,
+                R.id.addProductPricesFragment,
+                R.id.detailProductFragment,
+                R.id.stockFragment,
+                R.id.checkoutFragment,
+                R.id.detailHistoryFragment,
+                R.id.addCustomerFragment,
+                R.id.customerFragment,
                 R.id.updateCustomerFragment -> {
                     bottomNav.visibility = View.GONE
                 }

@@ -89,8 +89,7 @@ class ProductFragment :
         }
 
         binding.buttonAddProduct.setOnClickListener {
-            val intent = Intent(requireContext(), AddProductActivity::class.java)
-            startActivity(intent)
+            findNavController().navigate(R.id.action_productFragment_to_addProductFragment)
         }
 
         binding.searchIcon.setOnClickListener {

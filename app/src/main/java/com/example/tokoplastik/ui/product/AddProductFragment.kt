@@ -116,16 +116,19 @@ class AddProductFragment : BaseFragment<AddProductViewModel, FragmentAddProductB
             when (result) {
                 is Resource.Success -> {
                     binding.addProductProgressBar.visible(false)
-                    Toast.makeText( requireContext(), "Barang berhasil ditambahkan", Toast.LENGTH_SHORT ).show()
-                    val directions = AddProductFragmentDirections
-                        .actionAddProductFragmentToAddProductPricesFragment(result.data?.data?.id!!)
-                    findNavController().navigate(directions)
-                }
+                    Toast.makeText(requireContext(), "Barang berhasil ditambahkan", Toast.LENGTH_SHORT).show()
 
+                    val newProductId = result.data?.data?.id
+                    if (newProductId != null) {
+                        val directions = AddProductFragmentDirections
+                            .actionAddProductFragmentToAddProductPricesFragment(newProductId)
+                        findNavController().navigate(directions)
+                    }
+                }
                 is Resource.Failure -> {
                     handleApiError(result)
                 }
-                is Resource.Loading -> {  }
+                is Resource.Loading -> { /* Biarkan progress bar terlihat */ }
             }
         }
     }

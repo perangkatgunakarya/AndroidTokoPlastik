@@ -41,7 +41,7 @@ import java.util.TimeZone
 
 class ProductDetailFragment :
     BaseFragment<ProductDetailViewModel, FragmentProductDetailBinding, ProductRepository>() {
-
+    private var shouldShowUpdateToast = false
     private val args: ProductDetailFragmentArgs by navArgs()
     private var productId: Int = -1
     private lateinit var spinner: Spinner
@@ -110,7 +110,7 @@ class ProductDetailFragment :
 
         setupViews()
         setupObservers()
-        setupSaveButton()
+        setupUpdateObserver()
     }
 
     private fun setupViews() {
@@ -126,6 +126,7 @@ class ProductDetailFragment :
         }
 
         binding.stockCardButton.setOnClickListener {
+            shouldShowUpdateToast = false
             val name = binding.productName.text.toString()
             val supplier = binding.supplierName.text.toString()
             val notes = binding.notes.text.toString()
@@ -145,18 +146,15 @@ class ProductDetailFragment :
             // Hanya memanggil update product, tanpa mendaftarkan observer baru
             viewModel.updateProduct(productId, name, supplier, latest, newest, lowestUnit, notes)
 
-            val intent = Intent(requireContext(), AddProductActivity::class.java).apply {
-                putExtra("openProductPriceFragment", true)
-                putExtra("productId", productId)
-            }
-            addStockProductLauncher.launch(intent)
+            val action = ProductDetailFragmentDirections
+                .actionDetailProductFragmentToStockFragment(productId)
 
-//            val direction =
-//                ProductDetailFragmentDirections.actionDetailProductFragmentToStockFragment(productId)
-//            findNavController().navigate(direction)
+            findNavController().navigate(action)
+
         }
 
         binding.goToProductPriceButton.setOnClickListener {
+            shouldShowUpdateToast = false
             val name = binding.productName.text.toString()
             val supplier = binding.supplierName.text.toString()
             val notes = binding.notes.text.toString()
@@ -175,14 +173,35 @@ class ProductDetailFragment :
 
             viewModel.updateProduct(productId, name, supplier, latest, newest, lowestUnit, notes)
 
-            val intent = Intent(requireContext(), AddProductActivity::class.java).apply {
-                putExtra("openProductPriceFragment", true)
-                putExtra("productId", productId)
-            }
-            addProductPricesLauncher.launch(intent)
+
+            val action = ProductDetailFragmentDirections
+                .actionDetailProductFragmentToAddProductPricesFragment(productId)
+
+            findNavController().navigate(action)
         }
 
-//        spinner
+        binding.saveButton.setOnClickListener {
+            shouldShowUpdateToast = true
+            val name = binding.productName.text.toString()
+            val supplier = binding.supplierName.text.toString()
+            val notes = binding.notes.text.toString()
+            var latest: Int?
+            var newest: Int?
+
+            if (binding.currentCapital.text.toString() == "") {
+                latest = latestCapitalPrice
+                newest = newestCapitalPrice
+            } else {
+                newest = currentCapitalInput.getRawValue()
+                latest = currentCapitalInput.getRawValue()
+            }
+
+            val lowestUnit = selectedUnit
+
+            // Hanya memanggil update product, tanpa mendaftarkan observer baru
+            viewModel.updateProduct(productId, name, supplier, latest, newest, lowestUnit, notes)
+        }
+
         val adapter = ArrayAdapter(
             requireContext(),
             android.R.layout.simple_spinner_item,
@@ -253,74 +272,36 @@ class ProductDetailFragment :
         })
     }
 
-    private val addProductPricesLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val data = result.data
-            val returnedProductId = data?.getIntExtra("PRODUCT_ID", -1) ?: -1
-            if (returnedProductId != -1) {
-                viewModel.getProductDetail(returnedProductId)
-            }
-        }
-    }
-    private val addStockProductLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val data = result.data
-            val returnedProductId = data?.getIntExtra("PRODUCT_ID", -1) ?: -1
-            if (returnedProductId != -1) {
-                viewModel.getProductDetail(returnedProductId)
-            }
-        }
-    }
-
-    private fun setupSaveButton() {
+    private fun setupUpdateObserver() {
         viewModel.updateProduct.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is Resource.Success -> {
                     binding.progressBar.visibility = View.GONE
-                    Toast.makeText(
-                        requireContext(),
-                        "Harga berhasil ditambahkan",
-                        Toast.LENGTH_SHORT
-                    ).show()
                     binding.saveButton.isEnabled = true
-                }
 
+                    // Hanya tampilkan Toast jika penanda aktif
+                    if (shouldShowUpdateToast) {
+                        Toast.makeText(
+                            requireContext(),
+                            "Data produk berhasil di update",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        // Reset penanda setelah Toast ditampilkan
+                        shouldShowUpdateToast = false
+                    }
+                }
                 is Resource.Failure -> {
                     binding.progressBar.visibility = View.GONE
                     handleApiError(result)
                     binding.saveButton.isEnabled = true
+                    // Reset penanda jika gagal
+                    shouldShowUpdateToast = false
                 }
-
                 is Resource.Loading -> {
                     binding.progressBar.visibility = View.VISIBLE
                     binding.saveButton.isEnabled = false
                 }
             }
-        }
-
-        binding.saveButton.setOnClickListener {
-            val name = binding.productName.text.toString()
-            val supplier = binding.supplierName.text.toString()
-            val notes = binding.notes.text.toString()
-            var latest: Int?
-            var newest: Int?
-
-            if (binding.currentCapital.text.toString() == "") {
-                latest = latestCapitalPrice
-                newest = newestCapitalPrice
-            } else {
-                newest = currentCapitalInput.getRawValue()
-                latest = currentCapitalInput.getRawValue()
-            }
-
-            val lowestUnit = selectedUnit
-
-            // Hanya memanggil update product, tanpa mendaftarkan observer baru
-            viewModel.updateProduct(productId, name, supplier, latest, newest, lowestUnit, notes)
         }
     }
 

@@ -1,13 +1,8 @@
 package com.example.tokoplastik.ui.transaction
 
 import android.content.Context
-import android.content.Context.INPUT_METHOD_SERVICE
-import android.content.Intent
 import android.content.RestrictionEntry.TYPE_NULL
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,10 +18,7 @@ import com.example.tokoplastik.data.repository.CustomerRepository
 import com.example.tokoplastik.data.responses.Customer
 import com.example.tokoplastik.databinding.FragmentTransactionBinding
 import com.example.tokoplastik.ui.base.BaseFragment
-import com.example.tokoplastik.ui.product.AddProductActivity
-import com.example.tokoplastik.ui.product.ProductSortBottomSheet
 import com.example.tokoplastik.util.enable
-import com.example.tokoplastik.util.visible
 import com.example.tokoplastik.viewmodel.TransactionViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
